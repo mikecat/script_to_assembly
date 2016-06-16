@@ -1,5 +1,8 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.FileReader;
 
 public class ScriptToAssembly {
 	private String inputFile = null;
@@ -23,7 +26,22 @@ public class ScriptToAssembly {
 		this.targetName = targetName;
 	}
 
-	public void doWork() {
+	public void doWork() throws Exception {
+		// 入力のファイルを開く
+		BufferedReader br;
+		String inputFileName;
+		if (inputFile == null) {
+			br = new BufferedReader(new InputStreamReader(System.in));
+			inputFileName = "(stdin)";
+		} else {
+			br = new BufferedReader(new FileReader(inputFile));
+			inputFileName = inputFile;
+		}
+		// パース処理を実行する
+		ScriptParser parser = new ScriptParser();
+		parser.parse(br, inputFileName, 10);
+		// 入力のファイルを閉じる
+		br.close();
 	}
 
 	public static void printHelp() {
@@ -88,7 +106,7 @@ public class ScriptToAssembly {
 				sta.doWork();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println(e);
 		}
 	}
 }
