@@ -100,7 +100,7 @@ public class BinaryOperator extends Expression {
 				} else if (this.left.getType() instanceof PointerType && this.right.getType() instanceof PointerType) {
 					this.type = new PrimitiveType(4, true);
 				} else {
-					throw new RuntimeException("invalid operand for addition");
+					throw new RuntimeException("invalid operand for subtraction");
 				}
 			break;
 		case OP_LEFT_SHIFT:
