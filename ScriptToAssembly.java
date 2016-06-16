@@ -44,6 +44,7 @@ public class ScriptToAssembly {
 		}
 		// パース処理を実行する
 		ScriptParser parser = new ScriptParser();
+		parser.setLibraryDir(libraryDir);
 		parser.parse(br, inputFileName, ttl);
 		// 入力のファイルを閉じる
 		br.close();

@@ -1,12 +1,18 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
 public class ScriptParser {
+	String[] libraryDir = new String[0];
 
 	public ScriptParser() {
+	}
+
+	public void setLibraryDir(List<String> libraryDir) {
+		this.libraryDir = libraryDir.toArray(new String[libraryDir.size()]);
 	}
 
 	public boolean parse(BufferedReader br, String fileName, int ttl) {
@@ -25,6 +31,8 @@ public class ScriptParser {
 				// 指示に従って動く
 				if (action.equals("include")) {
 					if (!include(fileName, lineCount, ttl, data)) return false;
+				} else if (action.equals("uselib")) {
+					if (!uselib(fileName, lineCount, ttl, data)) return false;
 				} else {
 					// キーワードが無かったので、式とみなす
 				}
@@ -48,4 +56,13 @@ public class ScriptParser {
 		return true;
 	}
 
+	private boolean uselib(String fileName, int lineNumber, int ttl, String data) throws IOException {
+		for (int i = 0; i < libraryDir.length; i++) {
+			File file = new File(libraryDir[i], data);
+			if (file.exists()) {
+				return include(fileName, lineNumber, ttl, file.getPath());
+			}
+		}
+		throw new IllegalArgumentException("file " + data + " not found in library path(es)");
+	}
 }
