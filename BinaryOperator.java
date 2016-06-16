@@ -31,6 +31,23 @@ public class BinaryOperator extends Expression {
 	private Expression left, right;
 	private Type type;
 
+	private Type getAritimeticType(Type left, Type right) {
+		if (!(left instanceof PrimitiveType) || !(right instanceof PrimitiveType)) {
+			throw new RuntimeException("invalid operand for aritimetic");
+		}
+		PrimitiveType pt1 = (PrimitiveType)this.left.getType();
+		PrimitiveType pt2 = (PrimitiveType)this.right.getType();
+		// 大きい方の型に合わせる
+		if (pt1.getWidth() > pt2.getWidth()) {
+			return pt1;
+		} else if (pt1.getWidth() < pt2.getWidth()) {
+			return pt2;
+		} else {
+			// サイズが同じ場合、少なくとも1方が符号なしなら符号なし
+			return new PrimitiveType(pt1.getWidth(), pt1.isSigned() && pt2.isSigned());
+		}
+	}
+
 	public BinaryOperator(Kind kind, Expression left, Expression right) {
 		this.kind = kind;
 		this.left = left;
@@ -42,7 +59,6 @@ public class BinaryOperator extends Expression {
 			this.right = new UnaryOperator(UnaryOperator.Kind.UNARY_AUTO_TO_POINTER, this.right);
 		}
 
-		PrimitiveType pt1, pt2;
 		switch(this.kind) {
 		case OP_FUNCTION_CALL:
 			if (!(this.left.getType() instanceof FunctionType)) {
@@ -65,34 +81,11 @@ public class BinaryOperator extends Expression {
 		case OP_BIT_AND:
 		case OP_BIT_OR:
 		case OP_BIT_XOR:
-			if (!(this.left.getType() instanceof PrimitiveType) || !(this.right.getType() instanceof PrimitiveType)) {
-				throw new RuntimeException("invalid operand");
-			}
-			pt1 = (PrimitiveType)this.left.getType();
-			pt2 = (PrimitiveType)this.right.getType();
-			// 大きい方の型に合わせる
-			if (pt1.getWidth() > pt2.getWidth()) {
-				this.type = pt1;
-			} else if (pt1.getWidth() < pt2.getWidth()) {
-				this.type = pt2;
-			} else {
-				// サイズが同じ場合、少なくとも1方が符号なしなら符号なし
-				this.type = new PrimitiveType(pt1.getWidth(), pt1.isSigned() && pt2.isSigned());
-			}
+			this.type = getAritimeticType(this.left.getType(), this.right.getType());
 			break;
 		case OP_ADD:
 			if (this.left.getType() instanceof PrimitiveType && this.right.getType() instanceof PrimitiveType) {
-				pt1 = (PrimitiveType)this.left.getType();
-				pt2 = (PrimitiveType)this.right.getType();
-				// 大きい方の型に合わせる
-				if (pt1.getWidth() > pt2.getWidth()) {
-					this.type = pt1;
-				} else if (pt1.getWidth() < pt2.getWidth()) {
-					this.type = pt2;
-				} else {
-					// サイズが同じ場合、少なくとも1方が符号なしなら符号なし
-					this.type = new PrimitiveType(pt1.getWidth(), pt1.isSigned() && pt2.isSigned());
-				}
+				this.type = getAritimeticType(this.left.getType(), this.right.getType());
 			} else if (this.left.getType() instanceof PointerType && this.right.getType() instanceof PrimitiveType) {
 				this.type = this.left.getType();
 			} else if (this.left.getType() instanceof PrimitiveType && this.right.getType() instanceof PointerType) {
@@ -103,22 +96,12 @@ public class BinaryOperator extends Expression {
 			break;
 		case OP_SUB:
 			if (this.left.getType() instanceof PrimitiveType && this.right.getType() instanceof PrimitiveType) {
-				pt1 = (PrimitiveType)this.left.getType();
-				pt2 = (PrimitiveType)this.right.getType();
-				// 大きい方の型に合わせる
-				if (pt1.getWidth() > pt2.getWidth()) {
-					this.type = pt1;
-				} else if (pt1.getWidth() < pt2.getWidth()) {
-					this.type = pt2;
+				this.type = getAritimeticType(this.left.getType(), this.right.getType());
+				} else if (this.left.getType() instanceof PointerType && this.right.getType() instanceof PointerType) {
+					this.type = new PrimitiveType(4, true);
 				} else {
-					// サイズが同じ場合、少なくとも1方が符号なしなら符号なし
-					this.type = new PrimitiveType(pt1.getWidth(), pt1.isSigned() && pt2.isSigned());
+					throw new RuntimeException("invalid operand for addition");
 				}
-			} else if (this.left.getType() instanceof PointerType && this.right.getType() instanceof PointerType) {
-				this.type = new PrimitiveType(4, true);
-			} else {
-				throw new RuntimeException("invalid operand for addition");
-			}
 			break;
 		case OP_LEFT_SHIFT:
 		case OP_RIGHT_SHIFT_ARITIMETIC:
