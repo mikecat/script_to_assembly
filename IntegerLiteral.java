@@ -9,6 +9,11 @@ public class IntegerLiteral extends Expression {
 		this.width = width;
 		this.signed = signed;
 		this.type = new PrimitiveType(width, signed);
+		if (this.signed && this.value < 0) {
+			this.value |= ~((1 << (8 * width)) - 1);
+		} else {
+			this.value &= (1 << (8 * width)) - 1;
+		}
 	}
 
 	public long getValue() {
