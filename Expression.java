@@ -59,7 +59,7 @@ public abstract class Expression {
 		if (initialized) return;
 		binaryOperators = new HashMap<String, OperatorInExpression>();
 
-		binaryOperators.put("@", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_ARRAY, 1, false));
+		binaryOperators.put("@", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_ARRAY, 2, false));
 
 		binaryOperators.put("*", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_MUL, 3, false));
 		binaryOperators.put("/", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_DIV, 3, false));
@@ -94,13 +94,13 @@ public abstract class Expression {
 		binaryOperators.put(",", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_FUNCTION_ARGS_SEPARATOR, 11, true));
 
 		unaryOperators = new HashMap<String, OperatorInExpression>();
-		unaryOperators.put("-", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_MINUS, 2, true));
-		unaryOperators.put("+", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_PLUS, 2, true));
-		unaryOperators.put("!", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_LOGICAL_NOT, 2, true));
-		unaryOperators.put("~", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_BIT_NOT, 2, true));
-		unaryOperators.put("*", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_DEREFERENCE, 2, true));
-		unaryOperators.put("&", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_ADDRESS, 2, true));
-		unaryOperators.put("#", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_SIZE, 2, true));
+		unaryOperators.put("-", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_MINUS, 1, true));
+		unaryOperators.put("+", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_PLUS, 1, true));
+		unaryOperators.put("!", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_LOGICAL_NOT, 1, true));
+		unaryOperators.put("~", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_BIT_NOT, 1, true));
+		unaryOperators.put("*", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_DEREFERENCE, 1, true));
+		unaryOperators.put("&", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_ADDRESS, 1, true));
+		unaryOperators.put("#", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_SIZE, 1, true));
 
 		initialized = true;
 	}

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/06/16 19:51:53"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/06/16 22:38:17"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -209,13 +209,13 @@ whileループ
   x(y) : 関数xを1個の引数yで呼び出す
   x(y,z) : 関数xを2個の引数y,zで呼び出す
   以下同様
-</text></node><node name="演算子の優先順位と結合" expanded="no" selstart="65" sellength="0" selected="yes"><text>
+</text></node><node name="演算子の優先順位と結合" expanded="no" selstart="57" sellength="0" selected="yes"><text>
 演算子の優先順位と結合
 
 ↑高い
 左結合: ()
-左結合: @
 右結合: 単項- 単項+ ! ~ 単項* 単項&amp; #
+左結合: @
 左結合: 二項* 二項/ %
 左結合: 二項+ 二項-
 左結合: &lt;&lt; &gt;&gt; &gt;&gt;&gt; ^&lt; &gt;^
