@@ -9,6 +9,7 @@ public class ScriptToAssembly {
 	private String outputFile = null;
 	private List<String> libraryDir = new java.util.ArrayList<String>();
 	private String targetName = null;
+	private int ttl = 10;
 
 	public void setInputFile(String inputFile) {
 		this.inputFile = inputFile;
@@ -26,6 +27,10 @@ public class ScriptToAssembly {
 		this.targetName = targetName;
 	}
 
+	public void setTtl(int ttl) {
+		this.ttl = ttl;
+	}
+
 	public void doWork() throws Exception {
 		// 入力のファイルを開く
 		BufferedReader br;
@@ -39,7 +44,7 @@ public class ScriptToAssembly {
 		}
 		// パース処理を実行する
 		ScriptParser parser = new ScriptParser();
-		parser.parse(br, inputFileName, 10);
+		parser.parse(br, inputFileName, ttl);
 		// 入力のファイルを閉じる
 		br.close();
 	}
@@ -52,6 +57,7 @@ public class ScriptToAssembly {
 		System.out.println("  -o file_name : specify output file name (use stdout if not specified)");
 		System.out.println("  -l directory_name : add library directory");
 		System.out.println("  -t target_name : specify target name");
+		System.out.println("  --ttl ttl_value : specify maximum depth of include (default: 10)");
 		System.out.println("  -h : print this help");
 		System.out.println("  -v : print version information");
 	}
@@ -90,6 +96,12 @@ public class ScriptToAssembly {
 						sta.setTargetName(args[++i]);
 					} else {
 						throw new IllegalArgumentException("target name not specified for -t");
+					}
+				} else if (args[i].equals("--ttl")) {
+					if (i + 1 < args.length) {
+						sta.setTtl(Integer.parseInt(args[++i]));
+					} else {
+						throw new IllegalArgumentException("TTL value not specified for --ttl");
 					}
 				} else if (args[i].equals("-h")) {
 					wantHelp = true;
