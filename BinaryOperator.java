@@ -117,10 +117,35 @@ public class BinaryOperator extends Expression {
 		case OP_GTE:
 		case OP_LT:
 		case OP_LTE:
+			if (this.left.getType() instanceof PrimitiveType && this.right.getType() instanceof PrimitiveType) {
+				// 整数同士の比較はできる
+				PrimitiveType pt1 = (PrimitiveType)this.left.getType();
+				PrimitiveType pt2 = (PrimitiveType)this.right.getType();
+				// ただし、同じサイズで符号の有無が違う場合はめんどいからダメ
+				if (pt1.getWidth() == pt2.getWidth() && pt1.isSigned() != pt2.isSigned()) {
+					throw new RuntimeException("comparing primitives with same width and different signedness isn't allowed");
+				}
+			} else if (!(this.left.getType() instanceof PointerType && this.left.getType() instanceof PointerType)) {
+				// ポインタ同士の比較はできる、それ以外はエラー
+				throw new RuntimeException("invaild operands for comparision");
+			}
 			this.type = new PrimitiveType(4, true);
 			break;
 		case OP_EQUAL:
 		case OP_NOT_EQUAL:
+			if (this.left.getType() instanceof PrimitiveType && this.right.getType() instanceof PrimitiveType) {
+				// 整数同士の等価かの判断はできる
+				PrimitiveType pt1 = (PrimitiveType)this.left.getType();
+				PrimitiveType pt2 = (PrimitiveType)this.right.getType();
+				// ただし、同じサイズで符号の有無が違う場合はめんどいからダメ
+				if (pt1.getWidth() == pt2.getWidth() && pt1.isSigned() != pt2.isSigned()) {
+					throw new RuntimeException("checking equality of primitives with same width and different signedness isn't allowed");
+				}
+			} else if (!(this.left.getType() instanceof PointerType && this.left.getType() instanceof PointerType) &&
+			!(this.left.getType() instanceof FunctionType && this.left.getType() instanceof FunctionType)) {
+				// ポインタや関数同士の等価かの判断はできる、それ以外はエラー
+				throw new RuntimeException("invaild operands for equality check");
+			}
 			this.type = new PrimitiveType(4, true);
 			break;
 		case OP_LOGICAL_AND:
