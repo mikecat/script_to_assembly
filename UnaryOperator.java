@@ -66,4 +66,34 @@ public class UnaryOperator extends Expression {
 	public Type getType() {
 		return type;
 	}
+
+	public Expression evaluate() {
+		Expression operand = this.operand.evaluate();
+		if (kind == Kind.UNARY_SIZE) {
+			// サイズは型のみを見るので評価できる
+			return new IntegerLiteral(operand.getType().getWidth(), 4, false);
+		}
+		if (!(operand instanceof IntegerLiteral)) {
+			// 値が決まっていなければ評価できない
+			return this;
+		}
+		IntegerLiteral op = (IntegerLiteral)operand;
+		switch (kind) {
+		case UNARY_MINUS:
+			return new IntegerLiteral(-op.getValue(), op.getWidth(), op.isSigned());
+		case UNARY_PLUS:
+			return op;
+		case UNARY_LOGICAL_NOT:
+			return new IntegerLiteral(op.getValue() == 0 ? 1 : 0, 4, true);
+		case UNARY_BIT_NOT:
+			return new IntegerLiteral(~op.getValue(), op.getWidth(), op.isSigned());
+		case UNARY_SIZE:
+			return new IntegerLiteral(op.getType().getWidth(), 4, false);
+		case UNARY_DEREFERENCE:
+		case UNARY_ADDRESS:
+		case UNARY_AUTO_TO_POINTER:
+		default:
+			return this;
+		}
+	}
 }

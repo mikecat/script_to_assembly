@@ -18,4 +18,8 @@ public class StringLiteral extends Expression {
 	public Type getType() {
 		return type;
 	}
+
+	public Expression evaluate() {
+		return this;
+	}
 }

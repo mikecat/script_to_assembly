@@ -167,4 +167,92 @@ public class BinaryOperator extends Expression {
 	public Type getType() {
 		return type;
 	}
+
+	public Expression evaluate() {
+		Expression left = this.left.evaluate();
+		Expression right = this.right.evaluate();
+		if ((!(left instanceof IntegerLiteral) || !(right instanceof IntegerLiteral)) &&
+		kind != Kind.OP_LOGICAL_AND && kind != Kind.OP_LOGICAL_OR) {
+			// 値が決まっていなければ評価できない
+			return this;
+		}
+		IntegerLiteral lop = left instanceof IntegerLiteral ? (IntegerLiteral)left : null;
+		IntegerLiteral rop = right instanceof IntegerLiteral ? (IntegerLiteral)right : null;
+		int width = 0;
+		boolean isSigned = true;
+		if (lop != null && rop != null) {
+			if (lop.getWidth() > rop.getWidth()) {
+				width = lop.getWidth();
+				isSigned = lop.isSigned();
+			} else if (lop.getWidth() < rop.getWidth()) {
+				width = rop.getWidth();
+				isSigned = rop.isSigned();
+			} else {
+				width = lop.getWidth();
+				isSigned = lop.isSigned() && rop.isSigned();
+			}
+		}
+		switch (kind) {
+		case OP_MUL:
+			return new IntegerLiteral(lop.getValue() * rop.getValue(), width, isSigned);
+		case OP_DIV:
+			return new IntegerLiteral(lop.getValue() / rop.getValue(), width, isSigned);
+		case OP_MOD:
+			return new IntegerLiteral(lop.getValue() % rop.getValue(), width, isSigned);
+		case OP_ADD:
+			return new IntegerLiteral(lop.getValue() + rop.getValue(), width, isSigned);
+		case OP_SUB:
+			return new IntegerLiteral(lop.getValue() - rop.getValue(), width, isSigned);
+		case OP_LEFT_SHIFT:
+			return new IntegerLiteral(lop.getValue() << rop.getValue(), width, isSigned);
+		case OP_RIGHT_SHIFT_ARITIMETIC:
+			return this; // not implemented yet
+		case OP_RIGHT_SHIFT_LOGICAL:
+			return this; // not implemented yet
+		case OP_LEFT_ROTATE:
+			return this; // not implemented yet
+		case OP_RIGHT_ROTATE:
+			return this; // not implemented yet
+		case OP_BIT_AND:
+			return new IntegerLiteral(lop.getValue() & rop.getValue(), width, isSigned);
+		case OP_BIT_OR:
+			return new IntegerLiteral(lop.getValue() | rop.getValue(), width, isSigned);
+		case OP_BIT_XOR:
+			return new IntegerLiteral(lop.getValue() ^ rop.getValue(), width, isSigned);
+		case OP_GT:
+			return new IntegerLiteral(lop.getValue() > rop.getValue() ? 1 : 0, 4, true);
+		case OP_GTE:
+			return new IntegerLiteral(lop.getValue() >= rop.getValue() ? 1 : 0, 4, true);
+		case OP_LT:
+			return new IntegerLiteral(lop.getValue() < rop.getValue() ? 1 : 0, 4, true);
+		case OP_LTE:
+			return new IntegerLiteral(lop.getValue() <= rop.getValue() ? 1 : 0, 4, true);
+		case OP_EQUAL:
+			return new IntegerLiteral(lop.getValue() == rop.getValue() ? 1 : 0, 4, true);
+		case OP_NOT_EQUAL:
+			return new IntegerLiteral(lop.getValue() != rop.getValue() ? 1 : 0, 4, true);
+		case OP_LOGICAL_AND:
+			if (!(left instanceof IntegerLiteral)) return this;
+			if (((IntegerLiteral)left).getValue() == 0) {
+				return new IntegerLiteral(0, 4, true);
+			} else {
+				if (!(right instanceof IntegerLiteral)) return this;
+				return new IntegerLiteral(((IntegerLiteral)right).getValue() == 0 ? 0 : 1, 4, true);
+			}
+		case OP_LOGICAL_OR:
+			if (!(left instanceof IntegerLiteral)) return this;
+			if (((IntegerLiteral)left).getValue() != 0) {
+				return new IntegerLiteral(1, 4, true);
+			} else {
+				if (!(right instanceof IntegerLiteral)) return this;
+				return new IntegerLiteral(((IntegerLiteral)right).getValue() == 0 ? 0 : 1, 4, true);
+			}
+		case OP_FUNCTION_CALL:
+		case OP_FUNCTION_ARGS_SEPARATOR:
+		case OP_ARRAY:
+		case OP_ASSIGN:
+		default:
+			return this;
+		}
+	}
 }
