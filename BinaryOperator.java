@@ -1,5 +1,7 @@
 public class BinaryOperator extends Expression {
 	static enum Kind {
+		OP_FUNCTION_CALL,
+		OP_FUNCTION_ARGS_SEPARATOR,
 		OP_ARRAY,
 		OP_MUL,
 		OP_DIV,

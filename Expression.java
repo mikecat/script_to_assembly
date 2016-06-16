@@ -52,6 +52,8 @@ public abstract class Expression {
 	private static int longestOperatorSize = 3;
 	private static Map<String, OperatorInExpression> binaryOperators;
 	private static Map<String, OperatorInExpression> unaryOperators;
+	private static OperatorInExpression functionCall = new BinaryOperatorInExpression(BinaryOperator.Kind.OP_FUNCTION_CALL, 12, false);
+	private static OperatorInExpression parenthesis = new BinaryOperatorInExpression(null, 12, false);
 
 	private static void initializeOperatorList() {
 		if (initialized) return;
@@ -89,6 +91,8 @@ public abstract class Expression {
 		binaryOperators.put("&&", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_LOGICAL_AND, 10, false));
 		binaryOperators.put("||", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_LOGICAL_OR, 10, false));
 
+		binaryOperators.put(",", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_FUNCTION_ARGS_SEPARATOR, 11, true));
+
 		unaryOperators = new HashMap<String, OperatorInExpression>();
 		unaryOperators.put("-", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_MINUS, 2, true));
 		unaryOperators.put("+", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_PLUS, 2, true));
@@ -106,8 +110,10 @@ public abstract class Expression {
 		initializeOperatorList();
 		Deque<Expression> valueStack = new LinkedList<Expression>();
 		Deque<OperatorInExpression> expStack = new LinkedList<OperatorInExpression>();
+		Deque<Integer> functionNestStack = new LinkedList<Integer>();
 
 		boolean expectNumber = true;
+		int functionNest = 1;
 		for (int i = 0; i < expression.length(); i++) {
 			Map<String, OperatorInExpression> operators = expectNumber ? unaryOperators : binaryOperators;
 			// 空白文字は無視
@@ -118,6 +124,10 @@ public abstract class Expression {
 			for (int j = longestOperatorSize; j > 0; j--) {
 				if (i + j > expression.length()) continue;
 				String key = expression.substring(i, i + j);
+				if (key.equals(",") && !expectNumber && functionNest != 0) {
+					// 関数の引数以外では関数の引数の区切りを認識させない
+					continue;
+				}
 				if ((operator = operators.get(key)) != null) {
 					i += j - 1;
 					break;
@@ -138,6 +148,57 @@ public abstract class Expression {
 				}
 				expStack.addFirst(operator);
 				expectNumber = true;
+				continue;
+			}
+
+			// 括弧か?
+			if (expression.charAt(i) == '(') {
+				if (expectNumber) {
+					// 優先順位を変える括弧
+					expStack.addFirst(parenthesis);
+					functionNestStack.addFirst(functionNest);
+					functionNest++;
+					expectNumber = true;
+				} else {
+					// 関数呼び出し
+					expStack.addFirst(functionCall);
+					functionNestStack.addFirst(functionNest);
+					functionNest = 0;
+					expectNumber = true;
+				}
+				continue;
+			}
+
+			// 閉じカッコか?
+			if (expression.charAt(i) == ')' && !expectNumber) {
+				BinaryOperatorInExpression parenthesisFound = null;
+				while (expStack.size() > 0) {
+					OperatorInExpression popOperator = expStack.removeFirst();
+					if (popOperator instanceof BinaryOperatorInExpression) {
+						if (((BinaryOperatorInExpression)popOperator).getKind() == BinaryOperator.Kind.OP_FUNCTION_CALL ||
+						((BinaryOperatorInExpression)popOperator).getKind() == null) {
+							parenthesisFound = (BinaryOperatorInExpression)popOperator;
+							break;
+						}
+						Expression right = valueStack.removeFirst();
+						Expression left = valueStack.removeFirst();
+						valueStack.addFirst(new BinaryOperator(((BinaryOperatorInExpression)popOperator).getKind(), left, right));
+					} else {
+						Expression operand = valueStack.removeFirst();
+						valueStack.addFirst(new UnaryOperator(((UnaryOperatorInExpression)popOperator).getKind(), operand));
+					}
+				}
+				if (parenthesisFound == null) {
+					throw new RuntimeException("parenthesis closed before opening");
+				}
+				if (parenthesisFound.getKind() != null) {
+					// 関数呼び出しである
+					Expression right = valueStack.removeFirst();
+					Expression left = valueStack.removeFirst();
+					valueStack.addFirst(new BinaryOperator(BinaryOperator.Kind.OP_FUNCTION_CALL, left, right));
+				}
+				expectNumber = false;
+				functionNest = functionNestStack.removeFirst();
 				continue;
 			}
 
@@ -193,6 +254,10 @@ public abstract class Expression {
 		while (expStack.size() > 0) {
 			OperatorInExpression popOperator = expStack.removeFirst();
 			if (popOperator instanceof BinaryOperatorInExpression) {
+				if (((BinaryOperatorInExpression)popOperator).getKind() == BinaryOperator.Kind.OP_FUNCTION_CALL ||
+				((BinaryOperatorInExpression)popOperator).getKind() == null) {
+					throw new RuntimeException("parenthesis opened but not closed");
+				}
 				Expression right = valueStack.removeFirst();
 				Expression left = valueStack.removeFirst();
 				valueStack.addFirst(new BinaryOperator(((BinaryOperatorInExpression)popOperator).getKind(), left, right));
