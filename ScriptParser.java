@@ -35,6 +35,7 @@ public class ScriptParser {
 					if (!uselib(fileName, lineCount, ttl, data)) return false;
 				} else {
 					// キーワードが無かったので、式とみなす
+					Expression exp = Expression.parse(line);
 				}
 			}
 		} catch (Exception e) {

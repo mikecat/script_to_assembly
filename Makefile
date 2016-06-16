@@ -3,10 +3,16 @@ CLASSES = \
 	ScriptToAssembly.class \
 	ScriptParser.class \
 	Type.class \
+	Expression.class \
+	IntegerLiteral.class \
+	StringLiteral.class \
+	Identifier.class \
+	UnaryOperator.class \
+	BinaryOperator.class \
 # blank line (allow \ after the last class)
 
 $(TARGET): $(CLASSES) jar-manifest.txt
-	jar cfm $(TARGET) jar-manifest.txt $(CLASSES)
+	jar cfm $(TARGET) jar-manifest.txt *.class
 
 %.class: %.java
 	javac -encoding UTF-8 $<
