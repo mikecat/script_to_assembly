@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/06/16 22:56:27"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/06/17 01:12:08"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -27,14 +27,14 @@ C言語でいうところの#include的なやつ
   uselib パス
 
 無限再帰にならないように、適当な深さで打ち切る。
-</text></node><node name="定数の定義" expanded="no" selstart="70" sellength="0"><text>
+</text></node><node name="定数の定義" expanded="no" selstart="35" sellength="0" selected="yes"><text>
 定数の定義
 
 定数を定義する
-  define 識別子 = 定数式
+  define 識別子 型 = 定数式
 
 定数式とは、変数や関数の呼び出しを含まない式である。
-</text></node><node name="変数の定義" expanded="no" selstart="88" sellength="0"><text>変数の定義
+</text></node><node name="変数の定義" expanded="no" selstart="73" sellength="0"><text>変数の定義
 
 グローバル変数を定義する
 (関数の定義中以外で)
@@ -286,7 +286,7 @@ whileループ
 型
 
 型は変数をどう扱うかを決めるのに重要な役割を担う。
-</text><node name="基本型" expanded="no" selstart="361" sellength="0" selected="yes"><text>
+</text><node name="基本型" expanded="no" selstart="151" sellength="0"><text>
 基本型
 
 int8 : 1バイト符号つき整数
