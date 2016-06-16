@@ -204,6 +204,9 @@ public abstract class Expression {
 
 			// 数値リテラルか?
 			if ('0' <= expression.charAt(i) && expression.charAt(i) <= '9') {
+				if (!expectNumber) {
+					throw new RuntimeException("integer found where not expected");
+				}
 				int j = i + 1;
 				while (j <= expression.length() && expression.substring(i, j).matches("\\A([0-9]+|0[bB][01]*|0[xX][0-9a-fA-F]*)\\z")) {
 					j++;
@@ -229,16 +232,46 @@ public abstract class Expression {
 				expectNumber = false;
 				continue;
 			} else if (expression.charAt(i) == '\'') {
-				throw new RuntimeException("character literal not implemented yet");
+				if (!expectNumber) {
+					throw new RuntimeException("character literal found where not expected");
+				}
+				int j = i + 1;
+				for (; j < expression.length(); j++) {
+					if (expression.charAt(j) == '\'') break;
+				}
+				if (j >= expression.length()) {
+					throw new RuntimeException("character literal not ended");
+				}
+				// 8ビット符号なし整数
+				valueStack.addFirst(new IntegerLiteral(expression.charAt(i + 1) & 0xff, 1, false));
+				i = j;
+				expectNumber = false;
+				continue;
 			}
 
 			// 文字列リテラルか?
 			if (expression.charAt(i) == '"') {
-				throw new RuntimeException("string literal not implemented yet");
+				if (!expectNumber) {
+					throw new RuntimeException("string literal found where not expected");
+				}
+				int j = i + 1;
+				for (; j < expression.length(); j++) {
+					if (expression.charAt(j) == '"') break;
+				}
+				if (j >= expression.length()) {
+					throw new RuntimeException("string literal not ended");
+				}
+				valueStack.addFirst(new StringLiteral(expression.substring(i + 1, j)));
+				i = j;
+				expectNumber = false;
+				continue;
 			}
 
 			// 識別子か?
 			if (expression.substring(i, i + 1).matches("\\A[_a-zA-Z]\\z")) {
+				if (!expectNumber) {
+					throw new RuntimeException("string literal found where not expected");
+				}
 				throw new RuntimeException("identifier not implemented yet");
 			}
 
