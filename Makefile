@@ -3,6 +3,10 @@ CLASSES = \
 	ScriptToAssembly.class \
 	ScriptParser.class \
 	Type.class \
+	PrimitiveType.class \
+	PointerType.class \
+	ArrayType.class \
+	FunctionType.class \
 	Expression.class \
 	IntegerLiteral.class \
 	StringLiteral.class \
