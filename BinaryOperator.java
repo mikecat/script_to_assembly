@@ -97,11 +97,11 @@ public class BinaryOperator extends Expression {
 		case OP_SUB:
 			if (this.left.getType() instanceof PrimitiveType && this.right.getType() instanceof PrimitiveType) {
 				this.type = getAritimeticType(this.left.getType(), this.right.getType());
-				} else if (this.left.getType() instanceof PointerType && this.right.getType() instanceof PointerType) {
-					this.type = new PrimitiveType(4, true);
-				} else {
-					throw new RuntimeException("invalid operand for subtraction");
-				}
+			} else if (this.left.getType() instanceof PointerType && this.right.getType() instanceof PointerType) {
+				this.type = new PrimitiveType(4, true);
+			} else {
+				throw new RuntimeException("invalid operand for subtraction");
+			}
 			break;
 		case OP_LEFT_SHIFT:
 		case OP_RIGHT_SHIFT_ARITIMETIC:
