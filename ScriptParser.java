@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class ScriptParser {
-	String[] libraryDir = new String[0];
-	boolean debug = false;
+	private String[] libraryDir = new String[0];
+	private boolean debug = false;
 
 	public ScriptParser() {
 	}
