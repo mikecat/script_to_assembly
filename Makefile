@@ -1,6 +1,7 @@
 CLASSES = \
 	ScriptToAssembly.class \
 	ScriptParser.class \
+	Type.class \
 # blank line (allow \ after the last class)
 
 ScriptToAssembly.jar: $(CLASSES) jar-manifest.txt
