@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/06/16 17:20:33"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/06/16 19:51:53"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -126,7 +126,7 @@ whileループ
 式
 
 式は計算の基本である。
-</text><node name="リテラル" expanded="no" selstart="183" sellength="0"><text>
+</text><node name="リテラル" expanded="no" selstart="185" sellength="0"><text>
 リテラル
 
 数値リテラル
@@ -158,7 +158,7 @@ whileループ
     代入などに使用するアドレスを取得する。
 </text></node><node name="演算子" expanded="yes" selstart="20" sellength="0"><text>
 演算子は、計算を行うのに用いる。
-</text><node name="単項演算子" expanded="no" selstart="11" sellength="90"><text>
+</text><node name="単項演算子" expanded="no" selstart="131" sellength="0"><text>
 単項演算子
 
 -x : xに(-1)を掛ける
@@ -167,6 +167,7 @@ whileループ
 ~x : xのビット反転
 *x : ポインタxが指すデータ
 &amp;x : xのアドレス
+#x : xのバイト数(C言語のsizeof演算子)
 </text></node><node name="二項演算子" expanded="no" selstart="7" sellength="0"><text>
 二項演算子
 
@@ -208,13 +209,13 @@ whileループ
   x(y) : 関数xを1個の引数yで呼び出す
   x(y,z) : 関数xを2個の引数y,zで呼び出す
   以下同様
-</text></node><node name="演算子の優先順位と結合" expanded="no" selstart="37" sellength="0" selected="yes"><text>
+</text></node><node name="演算子の優先順位と結合" expanded="no" selstart="65" sellength="0" selected="yes"><text>
 演算子の優先順位と結合
 
 ↑高い
 左結合: ()
 左結合: @
-右結合: 単項- 単項+ ! ~ 単項* 単項&amp;
+右結合: 単項- 単項+ ! ~ 単項* 単項&amp; #
 左結合: 二項* 二項/ %
 左結合: 二項+ 二項-
 左結合: &lt;&lt; &gt;&gt; &gt;&gt;&gt; ^&lt; &gt;^
@@ -225,7 +226,7 @@ whileループ
 左結合: &amp;&amp;
 左結合: ||
 ↓低い
-</text></node></node><node name="式をASTに変換する" expanded="no" selstart="958" sellength="0"><text>
+</text></node></node><node name="式をASTに変換する" expanded="no" selstart="714" sellength="0"><text>
 式をASTに変換する
 
 例: 234+b+-h(1+(3+hgg),nrr)&gt;&gt;&gt;4&gt;&gt;b^y^&lt;nrtrtr

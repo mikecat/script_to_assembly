@@ -5,7 +5,8 @@ public class UnaryOperator extends Expression {
 		UNARY_LOGICAL_NOT,
 		UNARY_BIT_NOT,
 		UNARY_DEREFERENCE,
-		UNARY_ADDRESS
+		UNARY_ADDRESS,
+		UNARY_SIZE
 	}
 
 	private Kind kind;

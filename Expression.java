@@ -100,6 +100,7 @@ public abstract class Expression {
 		unaryOperators.put("~", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_BIT_NOT, 2, true));
 		unaryOperators.put("*", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_DEREFERENCE, 2, true));
 		unaryOperators.put("&", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_ADDRESS, 2, true));
+		unaryOperators.put("#", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_SIZE, 2, true));
 
 		initialized = true;
 	}
