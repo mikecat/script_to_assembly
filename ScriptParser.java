@@ -7,12 +7,17 @@ import java.util.ArrayList;
 
 public class ScriptParser {
 	String[] libraryDir = new String[0];
+	boolean debug = false;
 
 	public ScriptParser() {
 	}
 
 	public void setLibraryDir(List<String> libraryDir) {
 		this.libraryDir = libraryDir.toArray(new String[libraryDir.size()]);
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 	public boolean parse(BufferedReader br, String fileName, int ttl) {
@@ -40,7 +45,7 @@ public class ScriptParser {
 			}
 		} catch (Exception e) {
 			System.err.println("following error occured at file " + fileName + ", line " + lineCount);
-			System.err.println(e);
+			if (debug) e.printStackTrace(); else System.err.println(e);
 			return false;
 		}
 		return true;

@@ -10,6 +10,7 @@ public class ScriptToAssembly {
 	private List<String> libraryDir = new java.util.ArrayList<String>();
 	private String targetName = null;
 	private int ttl = 10;
+	private boolean debug = false;
 
 	public void setInputFile(String inputFile) {
 		this.inputFile = inputFile;
@@ -31,6 +32,10 @@ public class ScriptToAssembly {
 		this.ttl = ttl;
 	}
 
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+
 	public void doWork() throws Exception {
 		// 入力のファイルを開く
 		BufferedReader br;
@@ -45,6 +50,7 @@ public class ScriptToAssembly {
 		// パース処理を実行する
 		ScriptParser parser = new ScriptParser();
 		parser.setLibraryDir(libraryDir);
+		parser.setDebug(debug);
 		parser.parse(br, inputFileName, ttl);
 		// 入力のファイルを閉じる
 		br.close();
@@ -59,6 +65,7 @@ public class ScriptToAssembly {
 		System.out.println("  -l directory_name : add library directory");
 		System.out.println("  -t target_name : specify target name");
 		System.out.println("  --ttl ttl_value : specify maximum depth of include (default: 10)");
+		System.out.println("  --debug : turn on stack trace");
 		System.out.println("  -h : print this help");
 		System.out.println("  -v : print version information");
 	}
@@ -68,6 +75,7 @@ public class ScriptToAssembly {
 	}
 
 	public static void main(String[] args) {
+		boolean debug = false;
 		try {
 			ScriptToAssembly sta = new ScriptToAssembly();
 			// オプションを読み込む
@@ -104,6 +112,9 @@ public class ScriptToAssembly {
 					} else {
 						throw new IllegalArgumentException("TTL value not specified for --ttl");
 					}
+				} else if (args[i].equals("--debug")) {
+					sta.setDebug(true);
+					debug = true;
 				} else if (args[i].equals("-h")) {
 					wantHelp = true;
 				} else if (args[i].equals("-v")) {
@@ -119,7 +130,7 @@ public class ScriptToAssembly {
 				sta.doWork();
 			}
 		} catch (Exception e) {
-			System.err.println(e);
+			if (debug) e.printStackTrace(); else System.err.println(e);
 		}
 	}
 }
