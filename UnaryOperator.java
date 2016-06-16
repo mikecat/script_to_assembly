@@ -10,10 +10,12 @@ public class UnaryOperator extends Expression {
 
 	private Kind kind;
 	private Expression operand;
+	private Type type;
 
 	public UnaryOperator(Kind kind, Expression operand) {
 		this.kind = kind;
 		this.operand = operand;
+		this.type = null;
 	}
 
 	public Kind getKind() {
@@ -21,5 +23,8 @@ public class UnaryOperator extends Expression {
 	}
 	public Expression getOperand() {
 		return operand;
+	}
+	public Type getType() {
+		return type;
 	}
 }

@@ -29,11 +29,13 @@ public class BinaryOperator extends Expression {
 
 	private Kind kind;
 	private Expression left, right;
+	private Type type;
 
 	public BinaryOperator(Kind kind, Expression left, Expression right) {
 		this.kind = kind;
 		this.left = left;
 		this.right = right;
+		this.type = null;
 	}
 
 	public Kind getKind() {
@@ -44,5 +46,8 @@ public class BinaryOperator extends Expression {
 	}
 	public Expression getRight() {
 		return right;
+	}
+	public Type getType() {
+		return type;
 	}
 }

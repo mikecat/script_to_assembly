@@ -104,7 +104,7 @@ public abstract class Expression {
 		initialized = true;
 	}
 
-	//public abstract Type getType();
+	public abstract Type getType();
 
 	public static Expression parse(String expression) {
 		initializeOperatorList();
