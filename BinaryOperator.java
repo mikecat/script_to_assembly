@@ -35,6 +35,12 @@ public class BinaryOperator extends Expression {
 		this.kind = kind;
 		this.left = left;
 		this.right = right;
+		if (this.left.getType() instanceof ArrayType) {
+			this.left = new UnaryOperator(UnaryOperator.Kind.UNARY_AUTO_TO_POINTER, this.left);
+		}
+		if (this.right.getType() instanceof ArrayType) {
+			this.right = new UnaryOperator(UnaryOperator.Kind.UNARY_AUTO_TO_POINTER, this.right);
+		}
 		this.type = null;
 	}
 
