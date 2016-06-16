@@ -46,6 +46,7 @@ public class UnaryOperator extends Expression {
 			break;
 		case UNARY_AUTO_TO_POINTER:
 			if (this.operand.getType() instanceof ArrayType) {
+				// 配列をその先頭要素を指すポインタに変換する
 				this.type = new PointerType(((ArrayType)this.operand.getType()).getElementsType());
 			} else {
 				throw new RuntimeException("internal error: strange operand for auto convert to pointer");

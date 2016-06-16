@@ -45,7 +45,10 @@ public class BinaryOperator extends Expression {
 		PrimitiveType pt1, pt2;
 		switch(this.kind) {
 		case OP_FUNCTION_CALL:
-			throw new RuntimeException("function not implemented yet");
+			if (!(this.left.getType() instanceof FunctionType)) {
+				throw new RuntimeException("tried to call something not a function");
+			}
+			this.type = ((FunctionType)this.left.getType()).getReturnType();
 			//break;
 		case OP_FUNCTION_ARGS_SEPARATOR:
 			this.type = null;
