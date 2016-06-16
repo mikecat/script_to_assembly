@@ -10,6 +10,6 @@ public class PointerType extends Type {
 	}
 
 	public int getWidth() {
-		return 4; // ƒ^[ƒQƒbƒg‚ÉˆË‘¶‚·‚é‚Ì‚ÅAŒã‚Å‚È‚ñ‚Æ‚©‚·‚é
+		return 4; // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«ä¾å­˜ã™ã‚‹ã®ã§ã€å¾Œã§ãªã‚“ã¨ã‹ã™ã‚‹
 	}
 }
