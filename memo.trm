@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/06/17 01:12:08"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/01 08:56:04"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -27,7 +27,7 @@ C言語でいうところの#include的なやつ
   uselib パス
 
 無限再帰にならないように、適当な深さで打ち切る。
-</text></node><node name="定数の定義" expanded="no" selstart="35" sellength="0" selected="yes"><text>
+</text></node><node name="定数の定義" expanded="no" selstart="35" sellength="0"><text>
 定数の定義
 
 定数を定義する
@@ -308,23 +308,25 @@ func : 関数
 C言語と異なり、関数が勝手にポインタとして扱われることはない。
 
 (TODO: 「関数」に戻り値の型の情報を入れる)
-</text></node><node name="派生型" expanded="no" selstart="301" sellength="0"><text>
+</text></node><node name="派生型" expanded="no" selstart="93" sellength="0" selected="yes"><text>
 派生型
 
-(型)* : (型)を指すポインタ
-(型)[要素数を表す定数式] : (型)を要素とする配列
+*(型) : (型)を指すポインタ
+[要素数を表す定数式](型) : (型)を要素とする配列
+
+基本型を取り出すためにする操作を左から順番に書く、というイメージ。
 
 例
   int : 4バイト符号付き整数(以下、整数)
-  int* : 整数を指すポインタ
-  int[5] : 整数の配列
-  int*[5] : 整数を指すポインタの配列
-  int[5]* : 整数の配列を指すポインタ
-  int[5][10] : 整数の配列の配列
+  *int : 整数を指すポインタ
+  [5]int : 整数の配列
+  [5]*int : 整数を指すポインタの配列
+  *[5]int : 整数の配列を指すポインタ
+  [10][5]int : 整数の配列の配列
     (要素にアクセスするときは、hoge@(0～9)@(0～4)のようになる)
   func : 関数
-  func* : 関数を指すポインタ
-  func[5] : 関数の配列
+  *func : 関数を指すポインタ
+  [5]func : 関数の配列
 </text></node></node><node name="コメント" expanded="no" selstart="15" sellength="0"><text>
 コメント
 
