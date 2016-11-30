@@ -14,6 +14,8 @@ CLASSES = \
 	UnaryOperator.class \
 	BinaryOperator.class \
 	Function.class \
+	Instruction.class \
+	NormalExpression.class \
 # blank line (allow \ after the last class)
 
 $(TARGET): $(CLASSES) jar-manifest.txt
