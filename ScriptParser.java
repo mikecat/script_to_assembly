@@ -9,6 +9,9 @@ public class ScriptParser {
 	private String[] libraryDir = new String[0];
 	private boolean debug = false;
 
+	private boolean isInFunction;
+	private Function currentFunction;
+
 	public ScriptParser() {
 		resetParseStatus();
 	}
@@ -22,6 +25,8 @@ public class ScriptParser {
 	}
 
 	public void resetParseStatus() {
+		isInFunction = false;
+		currentFunction = null;
 	}
 
 	public boolean parse(BufferedReader br, String fileName, int ttl) {
@@ -46,9 +51,28 @@ public class ScriptParser {
 					if (!include(fileName, lineCount, ttl, data)) return false;
 				} else if (action.equals("uselib")) {
 					if (!uselib(fileName, lineCount, ttl, data)) return false;
+				} else if (action.equals("function")) {
+					if (isInFunction) {
+						throw new RuntimeException("nested function isn't supported");
+					} else {
+						String[] functionNameAndType = data.split("\\s", 2);
+						isInFunction = true;
+						currentFunction = new Function(functionNameAndType[0],
+							functionNameAndType.length > 2 ? Type.parseType(functionNameAndType[1]) : null);
+					}
+				} else if (action.equals("endfunction")) {
+					if (isInFunction) {
+						isInFunction = false;
+					} else {
+						throw new RuntimeException("endfunction without function");
+					}
 				} else {
 					// キーワードが無かったので、式とみなす
-					Expression exp = Expression.parse(line);
+					if (isInFunction) {
+						Expression exp = Expression.parse(line);
+					} else {
+						throw new RuntimeException("expression isn't allowed outside function");
+					}
 				}
 			}
 		} catch (Exception e) {
