@@ -30,6 +30,8 @@ public class ScriptParser {
 			for (; (line = br.readLine()) != null; lineCount++) {
 				// インデントを消す (末尾の空白も消える)
 				line = line.trim();
+				// 空行は無視する
+				if (line.equals("")) continue;
 				// 指示と内容に分割する
 				String[] actionAndData = line.split("\\s", 2);
 				String action = actionAndData.length > 0 ? actionAndData[0] : "";
