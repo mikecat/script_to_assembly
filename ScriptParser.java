@@ -10,6 +10,7 @@ public class ScriptParser {
 	private boolean debug = false;
 
 	public ScriptParser() {
+		resetParseStatus();
 	}
 
 	public void setLibraryDir(List<String> libraryDir) {
@@ -18,6 +19,9 @@ public class ScriptParser {
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
+	}
+
+	public void resetParseStatus() {
 	}
 
 	public boolean parse(BufferedReader br, String fileName, int ttl) {
