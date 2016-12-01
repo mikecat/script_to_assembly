@@ -73,13 +73,12 @@ public class ScriptParser {
 						if (data == null) {
 							throw new SyntaxException("function name not found");
 						}
-						String[] functionNameAndType = data.split("\\s+", 2);
-						if (functionNameAndType.length < 2) {
+						String[] nameAndType = data.split("\\s+", 2);
+						if (nameAndType.length < 2) {
 							throw new SyntaxException("function return type not found");
 						}
 						isInFunction = true;
-						currentFunction = new FunctionBuilder(
-							functionNameAndType[0], DataType.parse(functionNameAndType[1]));
+						currentFunction = new FunctionBuilder(nameAndType[0], DataType.parse(nameAndType[1]));
 					}
 				} else if (action.equals("endfunction")) {
 					if (isInFunction) {
@@ -95,11 +94,11 @@ public class ScriptParser {
 					if (data == null) {
 						throw new SyntaxException("variable name not found");
 					}
-					String[] variableNameAndType = data.split("\\s+", 2);
-					if (variableNameAndType.length < 2) {
+					String[] nameAndType = data.split("\\s+", 2);
+					if (nameAndType.length < 2) {
 						throw new SyntaxException("variable type not found");
 					}
-					Variable var = new Variable(variableNameAndType[0], DataType.parse(variableNameAndType[1]),
+					Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]),
 						isInFunction ? Variable.Kind.LOCAL_VARIABLE : Variable.Kind.GLOBAL_VARIABLE);
 					if (isInFunction) {
 						currentFunction.addVariable(var);
@@ -111,12 +110,11 @@ public class ScriptParser {
 						if (data == null) {
 							throw new SyntaxException("parameter name not found");
 						}
-						String[] parameterNameAndType = data.split("\\s+", 2);
-						if (parameterNameAndType.length < 2) {
+						String[] nameAndType = data.split("\\s+", 2);
+						if (nameAndType.length < 2) {
 							throw new SyntaxException("parameter type not found");
 						}
-						Variable var = new Variable(parameterNameAndType[0], DataType.parse(parameterNameAndType[1]),
-							Variable.Kind.ARGUMENT);
+						Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]), Variable.Kind.ARGUMENT);
 						currentFunction.addVariable(var);
 					} else {
 						throw new SyntaxException("parameter isn't allowed outside function");
