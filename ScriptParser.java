@@ -195,11 +195,11 @@ public class ScriptParser {
 		if (nameAndType.length < 2) {
 			throw new SyntaxException("variable type not found");
 		}
-		Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]),
-			isInFunction ? Variable.Kind.LOCAL_VARIABLE : Variable.Kind.GLOBAL_VARIABLE);
 		if (isInFunction) {
-			currentFunction.addVariable(var);
+			currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
 		} else {
+			Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]),
+				Variable.Kind.GLOBAL_VARIABLE, variableDefinitionList.size());
 			variableDefinitionList.add(var);
 		}
 	}
@@ -213,8 +213,7 @@ public class ScriptParser {
 		if (nameAndType.length < 2) {
 			throw new SyntaxException("parameter type not found");
 		}
-		Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]), Variable.Kind.ARGUMENT);
-		currentFunction.addVariable(var);
+		currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
 	}
 
 	private void processLoop() {

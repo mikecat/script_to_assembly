@@ -6,20 +6,27 @@ public class FunctionBuilder extends InstructionBuilder {
 	private DataType dataType;
 	private List<Variable> variableList;
 	private List<Instruction> instructionList;
+	private int variableCount, argumentCount;
 
 	public FunctionBuilder(String name, DataType dataType) {
 		this.name = name;
 		this.dataType = dataType;
 		this.variableList = new ArrayList<Variable>();
 		this.instructionList = new ArrayList<Instruction>();
+		this.variableCount = 0;
+		this.argumentCount = 0;
 	}
 
 	public String getInstructionName() {
 		return "function";
 	}
 
-	public void addVariable(Variable var) {
-		variableList.add(var);
+	public void addVariable(String name, DataType dataType) {
+		variableList.add(new Variable(name, dataType, Variable.Kind.LOCAL_VARIABLE, variableCount++));
+	}
+
+	public void addArgument(String name, DataType dataType) {
+		variableList.add(new Variable(name, dataType, Variable.Kind.ARGUMENT, argumentCount++));
 	}
 
 	public void addInstruction(Instruction inst) {
