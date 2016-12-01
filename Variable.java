@@ -1,5 +1,5 @@
 public class Variable {
-	public static enum VariableKind {
+	public static enum Kind {
 		GLOBAL_VARIABLE,
 		LOCAL_VARIABLE,
 		ARGUMENT
@@ -7,9 +7,9 @@ public class Variable {
 
 	private String name;
 	private DataType dataType;
-	private VariableKind kind;
+	private Kind kind;
 
-	public Variable(String name, DataType dataType, VariableKind kind) {
+	public Variable(String name, DataType dataType, Kind kind) {
 		this.name = name;
 		this.dataType = dataType;
 		this.kind = kind;
@@ -23,7 +23,7 @@ public class Variable {
 		return dataType;
 	}
 
-	public VariableKind getVariableKind() {
+	public Kind getKind() {
 		return kind;
 	}
 }
