@@ -1,0 +1,14 @@
+function hoge none
+	loop
+		while 0
+		endwhile
+		while 1
+			while 0
+				1 + 1
+			endwhile
+			loop
+				2 + 3
+			endloop
+		endwhile
+	endloop
+endfunction

@@ -77,6 +77,10 @@ public class ScriptParser {
 					processLoop();
 				} else if (action.equals("endloop")) {
 					processEndloop();
+				} else if (action.equals("while")) {
+					processWhile(data);
+				} else if (action.equals("endwhile")) {
+					processEndwhile();
 				} else { // キーワードが無かったので、式とみなす
 					processExpression(line);
 				}
@@ -212,6 +216,25 @@ public class ScriptParser {
 			InfiniteLoopBuilder ilb = (InfiniteLoopBuilder)instructionStack.removeFirst();
 			// 1階層上の命令列に入れる
 			instructionStack.peekFirst().addInstruction(ilb.toInfiniteLoop());
+		} else {
+			throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
+		}
+	}
+
+	private void processWhile(String data) {
+		disallowOutsideFunction("while");
+		// whileループを開始する
+		Expression condition = Expression.parse(data);
+		instructionStack.addFirst(new WhileLoopBuilder(condition));
+	}
+
+	private void processEndwhile() {
+		disallowOutsideFunction("endwhile");
+		if (instructionStack.peekFirst() instanceof WhileLoopBuilder) {
+			// 作成したwhileループを取って
+			WhileLoopBuilder ilb = (WhileLoopBuilder)instructionStack.removeFirst();
+			// 1階層上の命令列に入れる
+			instructionStack.peekFirst().addInstruction(ilb.toWhileLoop());
 		} else {
 			throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
 		}
