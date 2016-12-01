@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/01 08:56:04"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/01 11:08:40"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -27,7 +27,7 @@ C言語でいうところの#include的なやつ
   uselib パス
 
 無限再帰にならないように、適当な深さで打ち切る。
-</text></node><node name="定数の定義" expanded="no" selstart="35" sellength="0"><text>
+</text></node><node name="定数の定義" expanded="no" selstart="72" sellength="0"><text>
 定数の定義
 
 定数を定義する
@@ -286,7 +286,7 @@ whileループ
 型
 
 型は変数をどう扱うかを決めるのに重要な役割を担う。
-</text><node name="基本型" expanded="no" selstart="151" sellength="0"><text>
+</text><node name="基本型" expanded="no" selstart="283" sellength="0" selected="yes"><text>
 基本型
 
 int8 : 1バイト符号つき整数
@@ -302,13 +302,17 @@ uint32 : 4バイト符号なし整数
 int: 4バイト符号付き整数 (int32と同じ)
 uint : 4バイト符号なし整数 (uint32と同じ)
 
+none : データなし
+
+C言語のvoid的なやつ
+
 func : 関数
 
 「関数」のデータの実体は、典型的には関数の先頭アドレスである。
 C言語と異なり、関数が勝手にポインタとして扱われることはない。
 
 (TODO: 「関数」に戻り値の型の情報を入れる)
-</text></node><node name="派生型" expanded="no" selstart="93" sellength="0" selected="yes"><text>
+</text></node><node name="派生型" expanded="no" selstart="338" sellength="0"><text>
 派生型
 
 *(型) : (型)を指すポインタ

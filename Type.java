@@ -49,6 +49,8 @@ public abstract class Type {
 			} else if (trimmedData.equals("uint32") || trimmedData.equals("uint")) {
 				width = 4;
 				signed = false;
+			} else if (trimmedData.equals("none")) {
+				return new NoneType();
 			} else if (trimmedData.equals("func")) {
 				throw new SystemLimitException("type func is not implemented yet");
 			} else {

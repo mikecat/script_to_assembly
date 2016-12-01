@@ -19,6 +19,7 @@ CLASSES = \
 	SyntaxException.class \
 	SystemLimitException.class \
 	FunctionBuilder.class \
+	NoneType.class \
 # blank line (allow \ after the last class)
 
 $(TARGET): $(CLASSES) jar-manifest.txt
