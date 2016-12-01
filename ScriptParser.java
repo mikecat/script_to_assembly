@@ -250,12 +250,6 @@ public class ScriptParser {
 		}
 	}
 
-	private void processExpression(String line) {
-		disallowOutsideFunction("expression");
-		Expression exp = Expression.parse(line);
-		instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
-	}
-
 	private void processIf(String data) {
 		disallowOutsideFunction("if");
 		if (data == null) {
@@ -323,5 +317,11 @@ public class ScriptParser {
 		} else {
 			instructionStack.peekFirst().addInstruction(new ReturnInstruction());
 		}
+	}
+
+	private void processExpression(String line) {
+		disallowOutsideFunction("expression");
+		Expression exp = Expression.parse(line);
+		instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
 	}
 }
