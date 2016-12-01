@@ -106,6 +106,21 @@ public class ScriptParser {
 					} else {
 						variableDefinitionList.add(var);
 					}
+				} else if (action.equals("param") || action.equals("argument")) {
+					if (isInFunction) {
+						if (data == null) {
+							throw new SyntaxException("parameter name not found");
+						}
+						String[] parameterNameAndType = data.split("\\s+", 2);
+						if (parameterNameAndType.length < 2) {
+							throw new SyntaxException("parameter type not found");
+						}
+						Variable var = new Variable(parameterNameAndType[0], DataType.parse(parameterNameAndType[1]),
+							Variable.Kind.ARGUMENT);
+						currentFunction.addVariable(var);
+					} else {
+						throw new SyntaxException("parameter isn't allowed outside function");
+					}
 				} else {
 					// キーワードが無かったので、式とみなす
 					if (isInFunction) {

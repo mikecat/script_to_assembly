@@ -1,0 +1,5 @@
+function hoge none
+	param a int
+	param b *int
+	argument c int
+endfunction
