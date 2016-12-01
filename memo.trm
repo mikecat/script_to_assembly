@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/01 11:08:40"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/01 17:39:59"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -34,7 +34,7 @@ C言語でいうところの#include的なやつ
   define 識別子 型 = 定数式
 
 定数式とは、変数や関数の呼び出しを含まない式である。
-</text></node><node name="変数の定義" expanded="no" selstart="73" sellength="0"><text>変数の定義
+</text></node><node name="変数の定義" expanded="no" selstart="88" sellength="0"><text>変数の定義
 
 グローバル変数を定義する
 (関数の定義中以外で)
@@ -76,7 +76,7 @@ C言語的な意味での関数、すなわちサブルーチンのようなも�
 
 関数の宣言
   funcdeclare 識別子 型
-</text></node><node name="条件分岐・ループ" expanded="yes" selstart="107" sellength="0"><text>
+</text></node><node name="条件分岐・ループ" expanded="yes" selstart="215" sellength="0"><text>
 条件分岐・ループ
 
 条件分岐
@@ -100,7 +100,7 @@ whileループ
   loop
     繰り返す処理
   endloop
-</text><node name="ループ脱出" expanded="no" selstart="161" sellength="0"><text>
+</text><node name="ループ脱出" expanded="no" selstart="143" sellength="0"><text>
 ループ脱出
 
 ループを抜け、次の処理に行く
@@ -112,9 +112,9 @@ whileループ
 ループの最初の処理に戻る
   continue
 
-内側からn番目(1-origin)のループを抜け、次の処理に行く
+内側からn番目(1-origin)のループの最初の処理に戻る
   continue n
-</text></node></node><node name="関数から戻る" expanded="no" selstart="66" sellength="0"><text>
+</text></node></node><node name="関数から戻る" expanded="no" selstart="66" sellength="0" selected="yes"><text>
 関数から戻る
 
 関数から戻る
@@ -226,7 +226,7 @@ whileループ
 左結合: &amp;&amp;
 左結合: ||
 ↓低い
-</text></node></node><node name="式をASTに変換する" expanded="no" selstart="801" sellength="0"><text>
+</text></node></node><node name="式をASTに変換する" expanded="no" selstart="53" sellength="0"><text>
 式をASTに変換する
 
 例: 234+b+-h(1+(3+hgg),nrr)&gt;&gt;&gt;4&gt;&gt;b^y^&lt;nrtrtr
@@ -286,7 +286,7 @@ whileループ
 型
 
 型は変数をどう扱うかを決めるのに重要な役割を担う。
-</text><node name="基本型" expanded="no" selstart="283" sellength="0" selected="yes"><text>
+</text><node name="基本型" expanded="no" selstart="58" sellength="0"><text>
 基本型
 
 int8 : 1バイト符号つき整数
@@ -404,7 +404,7 @@ x = y = n のとき
   op r1
 
 使用レジスタ数 = x
-</text></node><node name="関数呼び出し" expanded="no" selstart="106" sellength="0"><text>
+</text></node><node name="関数呼び出し" expanded="no" selstart="269" sellength="0"><text>
 呼び出し対象の使用レジスタ数x : [1, n]
 k番目(k=1, ... , m)の引数使用レジスタ数y_k : [1, n]
 とする。
