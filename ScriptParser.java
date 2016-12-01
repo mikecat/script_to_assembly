@@ -99,7 +99,8 @@ public class ScriptParser {
 					if (variableNameAndType.length < 2) {
 						throw new SyntaxException("variable type not found");
 					}
-					Variable var = new Variable(variableNameAndType[0], Type.parseType(variableNameAndType[1]));
+					Variable var = new Variable(variableNameAndType[0], Type.parseType(variableNameAndType[1]),
+						isInFunction ? Variable.VariableKind.LOCAL_VARIABLE : Variable.VariableKind.GLOBAL_VARIABLE);
 					if (isInFunction) {
 						currentFunction.addVariable(var);
 					} else {
