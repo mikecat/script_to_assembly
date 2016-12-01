@@ -1,0 +1,6 @@
+var hoge int
+
+function foo int
+	var hoge int
+	var fuga int
+endfunction

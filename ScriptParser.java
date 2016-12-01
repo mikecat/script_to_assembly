@@ -9,6 +9,7 @@ public class ScriptParser {
 	private String[] libraryDir = new String[0];
 	private boolean debug = false;
 
+	private List<Variable> variableDefinitionList;
 	private List<Function> functionDefinitionList;
 
 	private boolean isInFunction;
@@ -31,6 +32,7 @@ public class ScriptParser {
 	}
 
 	public void resetParseStatus() {
+		variableDefinitionList = new ArrayList<Variable>();
 		functionDefinitionList = new ArrayList<Function>();
 		isInFunction = false;
 		currentFunction = null;
@@ -88,6 +90,20 @@ public class ScriptParser {
 						isInFunction = false;
 					} else {
 						throw new SyntaxException("endfunction without function");
+					}
+				} else if (action.equals("var")) {
+					if (data == null) {
+						throw new SyntaxException("variable name not found");
+					}
+					String[] variableNameAndType = data.split("\\s+", 2);
+					if (variableNameAndType.length < 2) {
+						throw new SyntaxException("variable type not found");
+					}
+					Variable var = new Variable(variableNameAndType[0], Type.parseType(variableNameAndType[1]));
+					if (isInFunction) {
+						currentFunction.addVariable(var);
+					} else {
+						variableDefinitionList.add(var);
 					}
 				} else {
 					// キーワードが無かったので、式とみなす
