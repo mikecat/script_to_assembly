@@ -9,6 +9,8 @@ public class ScriptParser {
 	private String[] libraryDir = new String[0];
 	private boolean debug = false;
 
+	private List<Function> functionDefinitionList;
+
 	private boolean isInFunction;
 	private FunctionBuilder currentFunction;
 
@@ -24,7 +26,12 @@ public class ScriptParser {
 		this.debug = debug;
 	}
 
+	public Function[] getFunctionDefinitionList() {
+		return functionDefinitionList.toArray(new Function[functionDefinitionList.size()]);
+	}
+
 	public void resetParseStatus() {
+		functionDefinitionList = new ArrayList<Function>();
 		isInFunction = false;
 		currentFunction = null;
 	}
@@ -62,6 +69,10 @@ public class ScriptParser {
 					}
 				} else if (action.equals("endfunction")) {
 					if (isInFunction) {
+						// 関数の定義を確定させて登録する
+						Function definedFunction = currentFunction.toFunction();
+						functionDefinitionList.add(definedFunction);
+						currentFunction = null;
 						isInFunction = false;
 					} else {
 						throw new SyntaxException("endfunction without function");
