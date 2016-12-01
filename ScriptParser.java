@@ -31,7 +31,7 @@ public class ScriptParser {
 
 	public boolean parse(BufferedReader br, String fileName, int ttl) {
 		if (ttl <= 0) {
-			throw new IllegalStateException("TTL expired when trying to parse " + fileName);
+			throw new SystemLimitException("TTL expired when trying to parse " + fileName);
 		}
 		String line;
 		int lineCount = 1;
@@ -53,7 +53,7 @@ public class ScriptParser {
 					if (!uselib(fileName, lineCount, ttl, data)) return false;
 				} else if (action.equals("function")) {
 					if (isInFunction) {
-						throw new RuntimeException("nested function isn't supported");
+						throw new SyntaxException("nested function isn't allowed");
 					} else {
 						String[] functionNameAndType = data.split("\\s", 2);
 						isInFunction = true;
@@ -64,14 +64,14 @@ public class ScriptParser {
 					if (isInFunction) {
 						isInFunction = false;
 					} else {
-						throw new RuntimeException("endfunction without function");
+						throw new SyntaxException("endfunction without function");
 					}
 				} else {
 					// キーワードが無かったので、式とみなす
 					if (isInFunction) {
 						Expression exp = Expression.parse(line);
 					} else {
-						throw new RuntimeException("expression isn't allowed outside function");
+						throw new SyntaxException("expression isn't allowed outside function");
 					}
 				}
 			}
@@ -101,6 +101,6 @@ public class ScriptParser {
 				return include(fileName, lineNumber, ttl, file.getPath());
 			}
 		}
-		throw new IllegalArgumentException("file " + data + " not found in library path(es)");
+		throw new SyntaxException("file " + data + " not found in library path(es)");
 	}
 }

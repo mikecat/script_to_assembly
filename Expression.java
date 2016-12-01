@@ -191,7 +191,7 @@ public abstract class Expression {
 					}
 				}
 				if (parenthesisFound == null) {
-					throw new RuntimeException("parenthesis closed before opening");
+					throw new SyntaxException("parenthesis closed before opening");
 				}
 				if (parenthesisFound.getKind() != null) {
 					// 関数呼び出しである
@@ -207,7 +207,7 @@ public abstract class Expression {
 			// 数値リテラルか?
 			if ('0' <= expression.charAt(i) && expression.charAt(i) <= '9') {
 				if (!expectNumber) {
-					throw new RuntimeException("integer found where not expected");
+					throw new SyntaxException("integer found where not expected");
 				}
 				int j = i + 1;
 				while (j <= expression.length() && expression.substring(i, j).matches("\\A([0-9]+|0[bB][01]*|0[xX][0-9a-fA-F]*)\\z")) {
@@ -235,14 +235,14 @@ public abstract class Expression {
 				continue;
 			} else if (expression.charAt(i) == '\'') {
 				if (!expectNumber) {
-					throw new RuntimeException("character literal found where not expected");
+					throw new SyntaxException("character literal found where not expected");
 				}
 				int j = i + 1;
 				for (; j < expression.length(); j++) {
 					if (expression.charAt(j) == '\'') break;
 				}
 				if (j >= expression.length()) {
-					throw new RuntimeException("character literal not ended");
+					throw new SyntaxException("character literal not ended");
 				}
 				// 8ビット符号なし整数
 				valueStack.addFirst(new IntegerLiteral(expression.charAt(i + 1) & 0xff, 1, false));
@@ -254,14 +254,14 @@ public abstract class Expression {
 			// 文字列リテラルか?
 			if (expression.charAt(i) == '"') {
 				if (!expectNumber) {
-					throw new RuntimeException("string literal found where not expected");
+					throw new SyntaxException("string literal found where not expected");
 				}
 				int j = i + 1;
 				for (; j < expression.length(); j++) {
 					if (expression.charAt(j) == '"') break;
 				}
 				if (j >= expression.length()) {
-					throw new RuntimeException("string literal not ended");
+					throw new SyntaxException("string literal not ended");
 				}
 				valueStack.addFirst(new StringLiteral(expression.substring(i + 1, j)));
 				i = j;
@@ -272,17 +272,17 @@ public abstract class Expression {
 			// 識別子か?
 			if (expression.substring(i, i + 1).matches("\\A[_a-zA-Z]\\z")) {
 				if (!expectNumber) {
-					throw new RuntimeException("string literal found where not expected");
+					throw new SyntaxException("string literal found where not expected");
 				}
-				throw new RuntimeException("identifier not implemented yet");
+				throw new SystemLimitException("identifier not implemented yet");
 			}
 
 			// その他
-			throw new RuntimeException("illegal character " + expression.charAt(i) + " in expression");
+			throw new SyntaxException("illegal character " + expression.charAt(i) + " in expression");
 		}
 
 		if (expectNumber) {
-			throw new RuntimeException("required number not found in expression");
+			throw new SyntaxException("required number not found in expression");
 		}
 
 		// 残りの演算子を処理する
@@ -291,7 +291,7 @@ public abstract class Expression {
 			if (popOperator instanceof BinaryOperatorInExpression) {
 				if (((BinaryOperatorInExpression)popOperator).getKind() == BinaryOperator.Kind.OP_FUNCTION_CALL ||
 				((BinaryOperatorInExpression)popOperator).getKind() == null) {
-					throw new RuntimeException("parenthesis opened but not closed");
+					throw new SyntaxException("parenthesis opened but not closed");
 				}
 				Expression right = valueStack.removeFirst();
 				Expression left = valueStack.removeFirst();

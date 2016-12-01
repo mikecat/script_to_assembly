@@ -16,6 +16,8 @@ CLASSES = \
 	Function.class \
 	Instruction.class \
 	NormalExpression.class \
+	SyntaxException.class \
+	SystemLimitException.class \
 # blank line (allow \ after the last class)
 
 $(TARGET): $(CLASSES) jar-manifest.txt

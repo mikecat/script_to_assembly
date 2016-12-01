@@ -33,7 +33,7 @@ public class BinaryOperator extends Expression {
 
 	private Type getAritimeticType(Type left, Type right) {
 		if (!(left instanceof PrimitiveType) || !(right instanceof PrimitiveType)) {
-			throw new RuntimeException("invalid operand for aritimetic");
+			throw new SyntaxException("invalid operand for aritimetic");
 		}
 		PrimitiveType pt1 = (PrimitiveType)this.left.getType();
 		PrimitiveType pt2 = (PrimitiveType)this.right.getType();
@@ -62,7 +62,7 @@ public class BinaryOperator extends Expression {
 		switch(this.kind) {
 		case OP_FUNCTION_CALL:
 			if (!(this.left.getType() instanceof FunctionType)) {
-				throw new RuntimeException("tried to call something not a function");
+				throw new SyntaxException("tried to call something not a function");
 			}
 			this.type = ((FunctionType)this.left.getType()).getReturnType();
 			//break;
@@ -71,7 +71,7 @@ public class BinaryOperator extends Expression {
 			break;
 		case OP_ARRAY:
 			if (!(this.left.getType() instanceof PointerType) || !(this.right.getType() instanceof PrimitiveType)) {
-				throw new RuntimeException("invalid operand for array indexing");
+				throw new SyntaxException("invalid operand for array indexing");
 			}
 			this.type = ((PointerType)this.left.getType()).getPointsAt();
 			break;
@@ -91,7 +91,7 @@ public class BinaryOperator extends Expression {
 			} else if (this.left.getType() instanceof PrimitiveType && this.right.getType() instanceof PointerType) {
 				this.type = this.right.getType();
 			} else {
-				throw new RuntimeException("invalid operand for addition");
+				throw new SyntaxException("invalid operand for addition");
 			}
 			break;
 		case OP_SUB:
@@ -100,7 +100,7 @@ public class BinaryOperator extends Expression {
 			} else if (this.left.getType() instanceof PointerType && this.right.getType() instanceof PointerType) {
 				this.type = new PrimitiveType(4, true);
 			} else {
-				throw new RuntimeException("invalid operand for subtraction");
+				throw new SyntaxException("invalid operand for subtraction");
 			}
 			break;
 		case OP_LEFT_SHIFT:
@@ -123,11 +123,11 @@ public class BinaryOperator extends Expression {
 				PrimitiveType pt2 = (PrimitiveType)this.right.getType();
 				// ただし、同じサイズで符号の有無が違う場合はめんどいからダメ
 				if (pt1.getWidth() == pt2.getWidth() && pt1.isSigned() != pt2.isSigned()) {
-					throw new RuntimeException("comparing primitives with same width and different signedness isn't allowed");
+					throw new SyntaxException("comparing primitives with same width and different signedness isn't allowed");
 				}
 			} else if (!(this.left.getType() instanceof PointerType && this.left.getType() instanceof PointerType)) {
 				// ポインタ同士の比較はできる、それ以外はエラー
-				throw new RuntimeException("invaild operands for comparision");
+				throw new SyntaxException("invaild operands for comparision");
 			}
 			this.type = new PrimitiveType(4, true);
 			break;
@@ -139,12 +139,12 @@ public class BinaryOperator extends Expression {
 				PrimitiveType pt2 = (PrimitiveType)this.right.getType();
 				// ただし、同じサイズで符号の有無が違う場合はめんどいからダメ
 				if (pt1.getWidth() == pt2.getWidth() && pt1.isSigned() != pt2.isSigned()) {
-					throw new RuntimeException("checking equality of primitives with same width and different signedness isn't allowed");
+					throw new SyntaxException("checking equality of primitives with same width and different signedness isn't allowed");
 				}
 			} else if (!(this.left.getType() instanceof PointerType && this.left.getType() instanceof PointerType) &&
 			!(this.left.getType() instanceof FunctionType && this.left.getType() instanceof FunctionType)) {
 				// ポインタや関数同士の等価かの判断はできる、それ以外はエラー
-				throw new RuntimeException("invaild operands for equality check");
+				throw new SyntaxException("invaild operands for equality check");
 			}
 			this.type = new PrimitiveType(4, true);
 			break;

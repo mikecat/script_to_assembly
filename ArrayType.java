@@ -17,7 +17,7 @@ public class ArrayType extends Type {
 	public int getWidth() {
 		int elementWidth = elementsType.getWidth();
 		if (elementsNum > Integer.MAX_VALUE / elementWidth) {
-			throw new RuntimeException("array size too big");
+			throw new SystemLimitException("array size too big");
 		}
 		return elementWidth * elementsNum;
 	}

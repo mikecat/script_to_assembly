@@ -35,7 +35,7 @@ public class UnaryOperator extends Expression {
 			if (this.operand.getType() instanceof PointerType) {
 				this.type = ((PointerType)this.operand.getType()).getPointsAt();
 			} else {
-				throw new RuntimeException("cannot dereference what is not a pointer");
+				throw new SyntaxException("cannot dereference what is not a pointer");
 			}
 			break;
 		case UNARY_ADDRESS:
@@ -49,11 +49,11 @@ public class UnaryOperator extends Expression {
 				// 配列をその先頭要素を指すポインタに変換する
 				this.type = new PointerType(((ArrayType)this.operand.getType()).getElementsType());
 			} else {
-				throw new RuntimeException("internal error: strange operand for auto convert to pointer");
+				throw new SystemLimitException("internal error: strange operand for auto convert to pointer");
 			}
 			break;
 		default:
-			throw new RuntimeException("internal error: strange unary operator type");
+			throw new SystemLimitException("internal error: strange unary operator type");
 		}
 	}
 
