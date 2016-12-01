@@ -12,12 +12,12 @@ public class UnaryOperator extends Expression {
 
 	private Kind kind;
 	private Expression operand;
-	private Type type;
+	private DataType dataType;
 
 	public UnaryOperator(Kind kind, Expression operand) {
 		this.kind = kind;
 		this.operand = operand;
-		if (this.operand.getType() instanceof ArrayType &&
+		if (this.operand.getDataType() instanceof ArrayType &&
 		this.kind != Kind.UNARY_ADDRESS && this.kind != Kind.UNARY_SIZE && this.kind != Kind.UNARY_AUTO_TO_POINTER) {
 			this.operand = new UnaryOperator(Kind.UNARY_AUTO_TO_POINTER, this.operand);
 		}
@@ -26,28 +26,28 @@ public class UnaryOperator extends Expression {
 		case UNARY_MINUS:
 		case UNARY_PLUS:
 		case UNARY_BIT_NOT:
-			this.type = this.operand.getType();
+			this.dataType = this.operand.getDataType();
 			break;
 		case UNARY_LOGICAL_NOT:
-			this.type = new PrimitiveType(4, true); // TBD
+			this.dataType = new PrimitiveType(4, true); // TBD
 			break;
 		case UNARY_DEREFERENCE:
-			if (this.operand.getType() instanceof PointerType) {
-				this.type = ((PointerType)this.operand.getType()).getPointsAt();
+			if (this.operand.getDataType() instanceof PointerType) {
+				this.dataType = ((PointerType)this.operand.getDataType()).getPointsAt();
 			} else {
 				throw new SyntaxException("cannot dereference what is not a pointer");
 			}
 			break;
 		case UNARY_ADDRESS:
-			this.type = new PointerType(this.operand.getType());
+			this.dataType = new PointerType(this.operand.getDataType());
 			break;
 		case UNARY_SIZE:
-			this.type = new PrimitiveType(4, false); // ターゲットに依存するので後でなんとかする
+			this.dataType = new PrimitiveType(4, false); // ターゲットに依存するので後でなんとかする
 			break;
 		case UNARY_AUTO_TO_POINTER:
-			if (this.operand.getType() instanceof ArrayType) {
+			if (this.operand.getDataType() instanceof ArrayType) {
 				// 配列をその先頭要素を指すポインタに変換する
-				this.type = new PointerType(((ArrayType)this.operand.getType()).getElementsType());
+				this.dataType = new PointerType(((ArrayType)this.operand.getDataType()).getElementDataType());
 			} else {
 				throw new SystemLimitException("internal error: strange operand for auto convert to pointer");
 			}
@@ -63,15 +63,15 @@ public class UnaryOperator extends Expression {
 	public Expression getOperand() {
 		return operand;
 	}
-	public Type getType() {
-		return type;
+	public DataType getDataType() {
+		return dataType;
 	}
 
 	public Expression evaluate() {
 		Expression operand = this.operand.evaluate();
 		if (kind == Kind.UNARY_SIZE) {
 			// サイズは型のみを見るので評価できる
-			return new IntegerLiteral(operand.getType().getWidth(), 4, false);
+			return new IntegerLiteral(operand.getDataType().getWidth(), 4, false);
 		}
 		if (!(operand instanceof IntegerLiteral)) {
 			// 値が決まっていなければ評価できない
@@ -88,7 +88,7 @@ public class UnaryOperator extends Expression {
 		case UNARY_BIT_NOT:
 			return new IntegerLiteral(~op.getValue(), op.getWidth(), op.isSigned());
 		case UNARY_SIZE:
-			return new IntegerLiteral(op.getType().getWidth(), 4, false);
+			return new IntegerLiteral(op.getDataType().getWidth(), 4, false);
 		case UNARY_DEREFERENCE:
 		case UNARY_ADDRESS:
 		case UNARY_AUTO_TO_POINTER:

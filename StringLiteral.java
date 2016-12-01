@@ -1,12 +1,12 @@
 public class StringLiteral extends Expression {
 	private String string;
 	private byte[] bytes;
-	private Type type;
+	private DataType dataType;
 
 	public StringLiteral(String string) {
 		this.string = string;
 		this.bytes = string.getBytes();
-		this.type = new ArrayType(new PrimitiveType(1, false), bytes.length + 1);
+		this.dataType = new ArrayType(new PrimitiveType(1, false), bytes.length + 1);
 	}
 
 	public String getString() {
@@ -15,8 +15,8 @@ public class StringLiteral extends Expression {
 	public byte[] getBytes() {
 		return bytes;
 	}
-	public Type getType() {
-		return type;
+	public DataType getDataType() {
+		return dataType;
 	}
 
 	public Expression evaluate() {

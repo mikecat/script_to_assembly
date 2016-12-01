@@ -3,13 +3,13 @@ import java.util.ArrayList;
 
 public class FunctionBuilder {
 	private String name;
-	private Type type;
+	private DataType dataType;
 	private List<Variable> variableList;
 	private List<Instruction> instructionList;
 
-	public FunctionBuilder(String name, Type type) {
+	public FunctionBuilder(String name, DataType dataType) {
 		this.name = name;
-		this.type = type;
+		this.dataType = dataType;
 		this.variableList = new ArrayList<Variable>();
 		this.instructionList = new ArrayList<Instruction>();
 	}
@@ -23,6 +23,6 @@ public class FunctionBuilder {
 	}
 
 	public Function toFunction() {
-		return new Function(name, type, variableList, instructionList);
+		return new Function(name, dataType, variableList, instructionList);
 	}
 }

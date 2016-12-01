@@ -105,7 +105,7 @@ public abstract class Expression {
 		initialized = true;
 	}
 
-	public abstract Type getType();
+	public abstract DataType getDataType();
 	public abstract Expression evaluate();
 
 	public static Expression parse(String expression) {

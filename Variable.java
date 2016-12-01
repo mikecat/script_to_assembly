@@ -6,12 +6,12 @@ public class Variable {
 	}
 
 	private String name;
-	private Type type;
+	private DataType dataType;
 	private VariableKind kind;
 
-	public Variable(String name, Type type, VariableKind kind) {
+	public Variable(String name, DataType dataType, VariableKind kind) {
 		this.name = name;
-		this.type = type;
+		this.dataType = dataType;
 		this.kind = kind;
 	}
 
@@ -19,8 +19,8 @@ public class Variable {
 		return name;
 	}
 
-	public Type getType() {
-		return type;
+	public DataType getDataType() {
+		return dataType;
 	}
 
 	public VariableKind getVariableKind() {

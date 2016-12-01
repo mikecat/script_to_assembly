@@ -1,11 +1,11 @@
-public class PointerType extends Type {
-	private Type pointsAt;
+public class PointerType extends DataType {
+	private DataType pointsAt;
 
-	public PointerType(Type pointsAt) {
+	public PointerType(DataType pointsAt) {
 		this.pointsAt = pointsAt;
 	}
 
-	public Type getPointsAt() {
+	public DataType getPointsAt() {
 		return pointsAt;
 	}
 

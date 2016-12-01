@@ -1,4 +1,4 @@
-public class PrimitiveType extends Type {
+public class PrimitiveType extends DataType {
 	private int width; // バイト数
 	private boolean signed;
 

@@ -2,7 +2,7 @@ TARGET = ScriptToAssembly.jar
 CLASSES = \
 	ScriptToAssembly.class \
 	ScriptParser.class \
-	Type.class \
+	DataType.class \
 	PrimitiveType.class \
 	PointerType.class \
 	ArrayType.class \

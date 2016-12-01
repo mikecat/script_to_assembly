@@ -1,9 +1,9 @@
-public abstract class Type {
-	public static Type parseType(String data) {
+public abstract class DataType {
+	public static DataType parse(String data) {
 		String trimmedData = data.trim();
 		if (trimmedData.startsWith("*")) {
 			// ポインタ
-			Type innerType = parseType(trimmedData.substring(1));
+			DataType innerType = parse(trimmedData.substring(1));
 			return new PointerType(innerType);
 		} else if (trimmedData.startsWith("[")) {
 			// 配列
@@ -25,7 +25,7 @@ public abstract class Type {
 				throw new SystemLimitException("array length too big");
 			}
 			// 配列型を作成して返す
-			Type innerType = parseType(trimmedData.substring(arrayClose + 1));
+			DataType innerType = parse(trimmedData.substring(arrayClose + 1));
 			return new ArrayType(innerType, (int)arrayLengthValue);
 		} else {
 			// 基本型

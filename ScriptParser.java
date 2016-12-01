@@ -79,7 +79,7 @@ public class ScriptParser {
 						}
 						isInFunction = true;
 						currentFunction = new FunctionBuilder(
-							functionNameAndType[0], Type.parseType(functionNameAndType[1]));
+							functionNameAndType[0], DataType.parse(functionNameAndType[1]));
 					}
 				} else if (action.equals("endfunction")) {
 					if (isInFunction) {
@@ -99,7 +99,7 @@ public class ScriptParser {
 					if (variableNameAndType.length < 2) {
 						throw new SyntaxException("variable type not found");
 					}
-					Variable var = new Variable(variableNameAndType[0], Type.parseType(variableNameAndType[1]),
+					Variable var = new Variable(variableNameAndType[0], DataType.parse(variableNameAndType[1]),
 						isInFunction ? Variable.VariableKind.LOCAL_VARIABLE : Variable.VariableKind.GLOBAL_VARIABLE);
 					if (isInFunction) {
 						currentFunction.addVariable(var);

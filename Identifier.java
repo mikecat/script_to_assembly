@@ -1,5 +1,5 @@
 public class Identifier extends Expression {
-	public Type getType() {
+	public DataType getDataType() {
 		return null;
 	}
 

@@ -1,11 +1,11 @@
-public class FunctionType extends Type {
-	private Type returnType;
+public class FunctionType extends DataType {
+	private DataType returnType;
 
-	public FunctionType(Type returnType) {
+	public FunctionType(DataType returnType) {
 		this.returnType = returnType;
 	}
 
-	public Type getReturnType() {
+	public DataType getReturnType() {
 		return returnType;
 	}
 

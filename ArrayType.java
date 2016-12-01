@@ -1,21 +1,21 @@
-public class ArrayType extends Type {
-	private Type elementsType;
+public class ArrayType extends DataType {
+	private DataType elementDataType;
 	private int elementsNum;
 
-	public ArrayType(Type elementsType, int elementsNum) {
-		this.elementsType = elementsType;
+	public ArrayType(DataType elementDataType, int elementsNum) {
+		this.elementDataType = elementDataType;
 		this.elementsNum = elementsNum;
 	}
 
-	public Type getElementsType() {
-		return elementsType;
+	public DataType getElementDataType() {
+		return elementDataType;
 	}
 	public int getElementsNum() {
 		return elementsNum;
 	}
 
 	public int getWidth() {
-		int elementWidth = elementsType.getWidth();
+		int elementWidth = elementDataType.getWidth();
 		if (elementsNum > Integer.MAX_VALUE / elementWidth) {
 			throw new SystemLimitException("array size too big");
 		}

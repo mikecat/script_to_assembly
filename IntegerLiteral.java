@@ -2,13 +2,13 @@ public class IntegerLiteral extends Expression {
 	private long value;
 	private int width;
 	private boolean signed;
-	private Type type;
+	private DataType dataType;
 
 	public IntegerLiteral(long value, int width, boolean signed) {
 		this.value = value;
 		this.width = width;
 		this.signed = signed;
-		this.type = new PrimitiveType(width, signed);
+		this.dataType = new PrimitiveType(width, signed);
 		if (this.signed && this.value < 0) {
 			this.value |= ~((((1L << (8 * width - 1)) - 1) << 1) + 1);
 		} else {
@@ -25,8 +25,8 @@ public class IntegerLiteral extends Expression {
 	public boolean isSigned() {
 		return signed;
 	}
-	public Type getType() {
-		return type;
+	public DataType getDataType() {
+		return dataType;
 	}
 
 	public Expression evaluate() {
