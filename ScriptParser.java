@@ -93,6 +93,8 @@ public class ScriptParser {
 					processReturn(data);
 				} else if (action.equals("break")) {
 					processBreak(data);
+				} else if (action.equals("continue")) {
+					processContinue(data);
 				} else { // キーワードが無かったので、式とみなす
 					processExpression(line);
 				}
@@ -342,6 +344,29 @@ public class ScriptParser {
 			}
 		}
 		instructionStack.peekFirst().addInstruction(new BreakInstruction(level));
+	}
+
+	private void processContinue(String data) {
+		disallowOutsideFunction("continue");
+		int level;
+		if (data == null) {
+			level = 1;
+		} else {
+			Expression exp = Expression.parse(data).evaluate();
+			if (exp instanceof IntegerLiteral) {
+				long value = ((IntegerLiteral)exp).getValue();
+				if (value <= 0) {
+					throw new SyntaxException("continue level has to be positive");
+				} else if (value > Integer.MAX_VALUE) {
+					throw new SystemLimitException("continue level too large");
+				} else {
+					level = (int)value;
+				}
+			} else {
+				throw new SyntaxException("break level has to be constant");
+			}
+		}
+		instructionStack.peekFirst().addInstruction(new ContinueInstruction(level));
 	}
 
 	private void processExpression(String line) {
