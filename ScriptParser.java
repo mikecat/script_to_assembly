@@ -61,23 +61,23 @@ public class ScriptParser {
 
 				// 指示に従って動く
 				if (action.equals("include")) {
-					if (!include(fileName, lineCount, ttl, data)) return false;
+					if (!processInclude(fileName, lineCount, ttl, data)) return false;
 				} else if (action.equals("uselib")) {
-					if (!uselib(fileName, lineCount, ttl, data)) return false;
+					if (!processUselib(fileName, lineCount, ttl, data)) return false;
 				} else if (action.equals("function")) {
-					function(data);
+					processFunction(data);
 				} else if (action.equals("endfunction")) {
-					endfunction(data);
+					processEndfunction(data);
 				} else if (action.equals("var")) {
-					var(data);
+					processVar(data);
 				} else if (action.equals("param") || action.equals("argument")) {
-					param(data);
+					processParam(data);
 				} else if (action.equals("loop")) {
-					loop();
+					processLoop();
 				} else if (action.equals("endloop")) {
-					endloop();
+					processEndloop();
 				} else { // キーワードが無かったので、式とみなす
-					expression(line);
+					processExpression(line);
 				}
 			}
 		} catch (Exception e) {
@@ -88,7 +88,7 @@ public class ScriptParser {
 		return true;
 	}
 
-	private boolean include(String fileName, int lineNumber, int ttl, String data) throws IOException {
+	private boolean processInclude(String fileName, int lineNumber, int ttl, String data) throws IOException {
 		if (data == null) {
 			throw new SyntaxException("file name to include not found");
 		}
@@ -102,20 +102,20 @@ public class ScriptParser {
 		return true;
 	}
 
-	private boolean uselib(String fileName, int lineNumber, int ttl, String data) throws IOException {
+	private boolean processUselib(String fileName, int lineNumber, int ttl, String data) throws IOException {
 		if (data == null) {
 			throw new SyntaxException("file name to use not found");
 		}
 		for (int i = 0; i < libraryDir.length; i++) {
 			File file = new File(libraryDir[i], data);
 			if (file.exists()) {
-				return include(fileName, lineNumber, ttl, file.getPath());
+				return processInclude(fileName, lineNumber, ttl, file.getPath());
 			}
 		}
 		throw new SyntaxException("file " + data + " not found in library path(es)");
 	}
 
-	private void function(String data) {
+	private void processFunction(String data) {
 		if (isInFunction) {
 			throw new SyntaxException("nested function isn't allowed");
 		} else {
@@ -133,7 +133,7 @@ public class ScriptParser {
 		}
 	}
 
-	private void endfunction(String data) {
+	private void processEndfunction(String data) {
 		if (isInFunction) {
 			// 制御構造が終わっていなかったらエラーを出す
 			if (!(instructionStack.peekFirst() instanceof FunctionBuilder)) {
@@ -149,7 +149,7 @@ public class ScriptParser {
 		}
 	}
 
-	private void var(String data) {
+	private void processVar(String data) {
 		if (data == null) {
 			throw new SyntaxException("variable name not found");
 		}
@@ -166,7 +166,7 @@ public class ScriptParser {
 		}
 	}
 
-	private void param(String data) {
+	private void processParam(String data) {
 		if (isInFunction) {
 			if (data == null) {
 				throw new SyntaxException("parameter name not found");
@@ -182,7 +182,7 @@ public class ScriptParser {
 		}
 	}
 
-	private void loop() {
+	private void processLoop() {
 		// 無限ループを開始する
 		if (isInFunction) {
 			instructionStack.addFirst(new InfiniteLoopBuilder());
@@ -191,7 +191,7 @@ public class ScriptParser {
 		}
 	}
 
-	private void endloop() {
+	private void processEndloop() {
 		if (isInFunction) {
 			if (instructionStack.peekFirst() instanceof InfiniteLoopBuilder) {
 				// 作成した無限ループを取って
@@ -206,7 +206,7 @@ public class ScriptParser {
 		}
 	}
 
-	private void expression(String line) {
+	private void processExpression(String line) {
 		if (isInFunction) {
 			Expression exp = Expression.parse(line);
 			instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
