@@ -88,6 +88,12 @@ public class ScriptParser {
 		return true;
 	}
 
+	private void disallowOutsideFunction(String name) {
+		if (!isInFunction) {
+			throw new SyntaxException(name + " isn't allowed outside function");
+		}
+	}
+
 	private boolean processInclude(String fileName, int lineNumber, int ttl, String data) throws IOException {
 		if (data == null) {
 			throw new SyntaxException("file name to include not found");
@@ -167,51 +173,39 @@ public class ScriptParser {
 	}
 
 	private void processParam(String data) {
-		if (isInFunction) {
-			if (data == null) {
-				throw new SyntaxException("parameter name not found");
-			}
-			String[] nameAndType = data.split("\\s+", 2);
-			if (nameAndType.length < 2) {
-				throw new SyntaxException("parameter type not found");
-			}
-			Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]), Variable.Kind.ARGUMENT);
-			currentFunction.addVariable(var);
-		} else {
-			throw new SyntaxException("parameter isn't allowed outside function");
+		disallowOutsideFunction("parameter");
+		if (data == null) {
+			throw new SyntaxException("parameter name not found");
 		}
+		String[] nameAndType = data.split("\\s+", 2);
+		if (nameAndType.length < 2) {
+			throw new SyntaxException("parameter type not found");
+		}
+		Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]), Variable.Kind.ARGUMENT);
+		currentFunction.addVariable(var);
 	}
 
 	private void processLoop() {
+		disallowOutsideFunction("loop");
 		// 無限ループを開始する
-		if (isInFunction) {
-			instructionStack.addFirst(new InfiniteLoopBuilder());
-		} else {
-			throw new SyntaxException("loop isn't allowed outside function");
-		}
+		instructionStack.addFirst(new InfiniteLoopBuilder());
 	}
 
 	private void processEndloop() {
-		if (isInFunction) {
-			if (instructionStack.peekFirst() instanceof InfiniteLoopBuilder) {
-				// 作成した無限ループを取って
-				InfiniteLoopBuilder ilb = (InfiniteLoopBuilder)instructionStack.removeFirst();
-				// 1階層上の命令列に入れる
-				instructionStack.peekFirst().addInstruction(ilb.toInfiniteLoop());
-			} else {
-				throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
-			}
+		disallowOutsideFunction("endloop");
+		if (instructionStack.peekFirst() instanceof InfiniteLoopBuilder) {
+			// 作成した無限ループを取って
+			InfiniteLoopBuilder ilb = (InfiniteLoopBuilder)instructionStack.removeFirst();
+			// 1階層上の命令列に入れる
+			instructionStack.peekFirst().addInstruction(ilb.toInfiniteLoop());
 		} else {
-			throw new SyntaxException("endloop isn't allowed outside function");
+			throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
 		}
 	}
 
 	private void processExpression(String line) {
-		if (isInFunction) {
-			Expression exp = Expression.parse(line);
-			instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
-		} else {
-			throw new SyntaxException("expression isn't allowed outside function");
-		}
+		disallowOutsideFunction("expression");
+		Expression exp = Expression.parse(line);
+		instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
 	}
 }
