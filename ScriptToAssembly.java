@@ -3,21 +3,22 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.FileReader;
+import java.io.File;
 
 public class ScriptToAssembly {
-	private String inputFile = null;
-	private String outputFile = null;
+	private String inputFileName = null;
+	private String outputFileName = null;
 	private List<String> libraryDir = new java.util.ArrayList<String>();
 	private String targetName = null;
 	private int ttl = 10;
 	private boolean debug = false;
 
-	public void setInputFile(String inputFile) {
-		this.inputFile = inputFile;
+	public void setInputFileName(String inputFileName) {
+		this.inputFileName = inputFileName;
 	}
 
-	public void setOutputFile(String outputFile) {
-		this.outputFile = outputFile;
+	public void setOutputFileName(String outputFileName) {
+		this.outputFileName = outputFileName;
 	}
 
 	public void addLibraryDir(String libraryDir) {
@@ -39,19 +40,19 @@ public class ScriptToAssembly {
 	public void doWork() throws Exception {
 		// 入力のファイルを開く
 		BufferedReader br;
-		String inputFileName;
-		if (inputFile == null) {
+		File inputFile;
+		if (inputFileName == null) {
+			inputFile = null;
 			br = new BufferedReader(new InputStreamReader(System.in));
-			inputFileName = "(stdin)";
 		} else {
+			inputFile = new File(inputFileName);
 			br = new BufferedReader(new FileReader(inputFile));
-			inputFileName = inputFile;
 		}
 		// パース処理を実行する
 		ScriptParser parser = new ScriptParser();
 		parser.setLibraryDir(libraryDir);
 		parser.setDebug(debug);
-		parser.parse(br, inputFileName, ttl);
+		parser.parse(br, inputFile, ttl);
 		// 入力のファイルを閉じる
 		br.close();
 	}
@@ -84,13 +85,13 @@ public class ScriptToAssembly {
 			for (int i = 0; i < args.length; i++) {
 				if (args[i].equals("-i")) {
 					if (i + 1 < args.length) {
-						sta.setInputFile(args[++i]);
+						sta.setInputFileName(args[++i]);
 					} else {
 						throw new IllegalArgumentException("file name not specified for -i");
 					}
 				} else if (args[i].equals("-o")) {
 					if (i + 1 < args.length) {
-						sta.setOutputFile(args[++i]);
+						sta.setOutputFileName(args[++i]);
 					} else {
 						throw new IllegalArgumentException("file name not specified for -o");
 					}

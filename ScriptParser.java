@@ -42,7 +42,8 @@ public class ScriptParser {
 		instructionStack = new ArrayDeque<InstructionBuilder>();
 	}
 
-	public boolean parse(BufferedReader br, String fileName, int ttl) {
+	public boolean parse(BufferedReader br, File file, int ttl) {
+		String fileName = (file == null ? "(stdin)" : file.getName());
 		if (ttl <= 0) {
 			throw new SystemLimitException("TTL expired when trying to parse " + fileName);
 		}
@@ -61,7 +62,7 @@ public class ScriptParser {
 
 				// 指示に従って動く
 				if (action.equals("include")) {
-					if (!processInclude(fileName, lineCount, ttl, data)) return false;
+					if (!processInclude(file, fileName, lineCount, ttl, data)) return false;
 				} else if (action.equals("uselib")) {
 					if (!processUselib(fileName, lineCount, ttl, data)) return false;
 				} else if (action.equals("function")) {
@@ -94,12 +95,18 @@ public class ScriptParser {
 		}
 	}
 
-	private boolean processInclude(String fileName, int lineNumber, int ttl, String data) throws IOException {
+	private boolean processInclude(File file, String fileName, int lineNumber, int ttl, String data) throws IOException {
 		if (data == null) {
 			throw new SyntaxException("file name to include not found");
 		}
-		BufferedReader br = new BufferedReader(new FileReader(data));
-		if (!parse(br, data, ttl - 1)) {
+		File fileToRead;
+		if (file == null) {
+			fileToRead = new File(data);
+		} else {
+			fileToRead = new File(file.getParentFile(), data);
+		}
+		BufferedReader br = new BufferedReader(new FileReader(fileToRead));
+		if (!parse(br, fileToRead, ttl - 1)) {
 			System.err.println("... included from file " + fileName + ", line " + lineNumber);
 			br.close();
 			return false;
@@ -113,9 +120,16 @@ public class ScriptParser {
 			throw new SyntaxException("file name to use not found");
 		}
 		for (int i = 0; i < libraryDir.length; i++) {
-			File file = new File(libraryDir[i], data);
-			if (file.exists()) {
-				return processInclude(fileName, lineNumber, ttl, file.getPath());
+			File libFile = new File(libraryDir[i], data);
+			if (libFile.exists()) {
+				BufferedReader br = new BufferedReader(new FileReader(libFile));
+				if (!parse(br, libFile, ttl - 1)) {
+					System.err.println("... included from file " + fileName + ", line " + lineNumber);
+					br.close();
+					return false;
+				}
+				br.close();
+				return true;
 			}
 		}
 		throw new SyntaxException("file " + data + " not found in library path(es)");
