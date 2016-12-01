@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 public class ScriptParser {
 	private String[] libraryDir = new String[0];
@@ -14,6 +16,7 @@ public class ScriptParser {
 
 	private boolean isInFunction;
 	private FunctionBuilder currentFunction;
+	private Deque<InstructionBuilder> instructionStack;
 
 	public ScriptParser() {
 		resetParseStatus();
@@ -36,6 +39,7 @@ public class ScriptParser {
 		functionDefinitionList = new ArrayList<Function>();
 		isInFunction = false;
 		currentFunction = null;
+		instructionStack = new ArrayDeque<InstructionBuilder>();
 	}
 
 	public boolean parse(BufferedReader br, String fileName, int ttl) {
@@ -82,6 +86,10 @@ public class ScriptParser {
 					}
 				} else if (action.equals("endfunction")) {
 					if (isInFunction) {
+						// 制御構造が終わっていなかったらエラーを出す
+						if (!instructionStack.isEmpty()) {
+							throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
+						}
 						// 関数の定義を確定させて登録する
 						Function definedFunction = currentFunction.toFunction();
 						functionDefinitionList.add(definedFunction);
@@ -123,7 +131,11 @@ public class ScriptParser {
 					// キーワードが無かったので、式とみなす
 					if (isInFunction) {
 						Expression exp = Expression.parse(line);
-						currentFunction.addInstruction(new NormalExpression(exp));
+						if (instructionStack.isEmpty()) {
+							currentFunction.addInstruction(new NormalExpression(exp));
+						} else {
+							instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
+						}
 					} else {
 						throw new SyntaxException("expression isn't allowed outside function");
 					}

@@ -21,6 +21,7 @@ CLASSES = \
 	FunctionBuilder.class \
 	NoneType.class \
 	Variable.class \
+	InstructionBuilder.class \
 # blank line (allow \ after the last class)
 
 $(TARGET): $(CLASSES) jar-manifest.txt
