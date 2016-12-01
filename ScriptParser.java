@@ -49,23 +49,35 @@ public class ScriptParser {
 				// 空行は無視する
 				if (line.equals("")) continue;
 				// 指示と内容に分割する
-				String[] actionAndData = line.split("\\s", 2);
+				String[] actionAndData = line.split("\\s+", 2);
 				String action = actionAndData.length > 0 ? actionAndData[0] : "";
 				String data = actionAndData.length > 1 ? actionAndData[1] : null;
 
 				// 指示に従って動く
 				if (action.equals("include")) {
+					if (data == null) {
+						throw new SyntaxException("file name to include not found");
+					}
 					if (!include(fileName, lineCount, ttl, data)) return false;
 				} else if (action.equals("uselib")) {
+					if (data == null) {
+						throw new SyntaxException("file name to use not found");
+					}
 					if (!uselib(fileName, lineCount, ttl, data)) return false;
 				} else if (action.equals("function")) {
 					if (isInFunction) {
 						throw new SyntaxException("nested function isn't allowed");
 					} else {
-						String[] functionNameAndType = data.split("\\s", 2);
+						if (data == null) {
+							throw new SyntaxException("function name not found");
+						}
+						String[] functionNameAndType = data.split("\\s+", 2);
+						if (functionNameAndType.length < 2) {
+							throw new SyntaxException("function return type not found");
+						}
 						isInFunction = true;
-						currentFunction = new FunctionBuilder(functionNameAndType[0],
-							functionNameAndType.length > 1 ? Type.parseType(functionNameAndType[1]) : null);
+						currentFunction = new FunctionBuilder(
+							functionNameAndType[0], Type.parseType(functionNameAndType[1]));
 					}
 				} else if (action.equals("endfunction")) {
 					if (isInFunction) {

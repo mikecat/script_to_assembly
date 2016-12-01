@@ -1,0 +1,3 @@
+function    main   [ 5 ] int
+	1 + 1
+endfunction
