@@ -58,7 +58,7 @@ public class ScriptParser {
 						String[] functionNameAndType = data.split("\\s", 2);
 						isInFunction = true;
 						currentFunction = new Function(functionNameAndType[0],
-							functionNameAndType.length > 2 ? Type.parseType(functionNameAndType[1]) : null);
+							functionNameAndType.length > 1 ? Type.parseType(functionNameAndType[1]) : null);
 					}
 				} else if (action.equals("endfunction")) {
 					if (isInFunction) {
