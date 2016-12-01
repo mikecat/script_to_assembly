@@ -70,6 +70,7 @@ public class ScriptParser {
 					// キーワードが無かったので、式とみなす
 					if (isInFunction) {
 						Expression exp = Expression.parse(line);
+						currentFunction.addInstruction(new NormalExpression(exp));
 					} else {
 						throw new SyntaxException("expression isn't allowed outside function");
 					}
