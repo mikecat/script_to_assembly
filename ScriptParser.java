@@ -61,102 +61,23 @@ public class ScriptParser {
 
 				// 指示に従って動く
 				if (action.equals("include")) {
-					if (data == null) {
-						throw new SyntaxException("file name to include not found");
-					}
 					if (!include(fileName, lineCount, ttl, data)) return false;
 				} else if (action.equals("uselib")) {
-					if (data == null) {
-						throw new SyntaxException("file name to use not found");
-					}
 					if (!uselib(fileName, lineCount, ttl, data)) return false;
 				} else if (action.equals("function")) {
-					if (isInFunction) {
-						throw new SyntaxException("nested function isn't allowed");
-					} else {
-						if (data == null) {
-							throw new SyntaxException("function name not found");
-						}
-						String[] nameAndType = data.split("\\s+", 2);
-						if (nameAndType.length < 2) {
-							throw new SyntaxException("function return type not found");
-						}
-						isInFunction = true;
-						currentFunction = new FunctionBuilder(nameAndType[0], DataType.parse(nameAndType[1]));
-						instructionStack.clear();
-						instructionStack.addFirst(currentFunction);
-					}
+					function(data);
 				} else if (action.equals("endfunction")) {
-					if (isInFunction) {
-						// 制御構造が終わっていなかったらエラーを出す
-						if (!(instructionStack.peekFirst() instanceof FunctionBuilder)) {
-							throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
-						}
-						// 関数の定義を確定させて登録する
-						Function definedFunction = currentFunction.toFunction();
-						functionDefinitionList.add(definedFunction);
-						currentFunction = null;
-						isInFunction = false;
-					} else {
-						throw new SyntaxException("endfunction without function");
-					}
+					endfunction(data);
 				} else if (action.equals("var")) {
-					if (data == null) {
-						throw new SyntaxException("variable name not found");
-					}
-					String[] nameAndType = data.split("\\s+", 2);
-					if (nameAndType.length < 2) {
-						throw new SyntaxException("variable type not found");
-					}
-					Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]),
-						isInFunction ? Variable.Kind.LOCAL_VARIABLE : Variable.Kind.GLOBAL_VARIABLE);
-					if (isInFunction) {
-						currentFunction.addVariable(var);
-					} else {
-						variableDefinitionList.add(var);
-					}
+					var(data);
 				} else if (action.equals("param") || action.equals("argument")) {
-					if (isInFunction) {
-						if (data == null) {
-							throw new SyntaxException("parameter name not found");
-						}
-						String[] nameAndType = data.split("\\s+", 2);
-						if (nameAndType.length < 2) {
-							throw new SyntaxException("parameter type not found");
-						}
-						Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]), Variable.Kind.ARGUMENT);
-						currentFunction.addVariable(var);
-					} else {
-						throw new SyntaxException("parameter isn't allowed outside function");
-					}
+					param(data);
 				} else if (action.equals("loop")) {
-					// 無限ループを開始する
-					if (isInFunction) {
-						instructionStack.addFirst(new InfiniteLoopBuilder());
-					} else {
-						throw new SyntaxException("loop isn't allowed outside function");
-					}
+					loop();
 				} else if (action.equals("endloop")) {
-					if (isInFunction) {
-						if (instructionStack.peekFirst() instanceof InfiniteLoopBuilder) {
-							// 作成した無限ループを取って
-							InfiniteLoopBuilder ilb = (InfiniteLoopBuilder)instructionStack.removeFirst();
-							// 1階層上の命令列に入れる
-							instructionStack.peekFirst().addInstruction(ilb.toInfiniteLoop());
-						} else {
-							throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
-						}
-					} else {
-						throw new SyntaxException("endloop isn't allowed outside function");
-					}
-				} else {
-					// キーワードが無かったので、式とみなす
-					if (isInFunction) {
-						Expression exp = Expression.parse(line);
-						instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
-					} else {
-						throw new SyntaxException("expression isn't allowed outside function");
-					}
+					endloop();
+				} else { // キーワードが無かったので、式とみなす
+					expression(line);
 				}
 			}
 		} catch (Exception e) {
@@ -168,6 +89,9 @@ public class ScriptParser {
 	}
 
 	private boolean include(String fileName, int lineNumber, int ttl, String data) throws IOException {
+		if (data == null) {
+			throw new SyntaxException("file name to include not found");
+		}
 		BufferedReader br = new BufferedReader(new FileReader(data));
 		if (!parse(br, data, ttl - 1)) {
 			System.err.println("... included from file " + fileName + ", line " + lineNumber);
@@ -179,6 +103,9 @@ public class ScriptParser {
 	}
 
 	private boolean uselib(String fileName, int lineNumber, int ttl, String data) throws IOException {
+		if (data == null) {
+			throw new SyntaxException("file name to use not found");
+		}
 		for (int i = 0; i < libraryDir.length; i++) {
 			File file = new File(libraryDir[i], data);
 			if (file.exists()) {
@@ -186,5 +113,105 @@ public class ScriptParser {
 			}
 		}
 		throw new SyntaxException("file " + data + " not found in library path(es)");
+	}
+
+	private void function(String data) {
+		if (isInFunction) {
+			throw new SyntaxException("nested function isn't allowed");
+		} else {
+			if (data == null) {
+				throw new SyntaxException("function name not found");
+			}
+			String[] nameAndType = data.split("\\s+", 2);
+			if (nameAndType.length < 2) {
+				throw new SyntaxException("function return type not found");
+			}
+			isInFunction = true;
+			currentFunction = new FunctionBuilder(nameAndType[0], DataType.parse(nameAndType[1]));
+			instructionStack.clear();
+			instructionStack.addFirst(currentFunction);
+		}
+	}
+
+	private void endfunction(String data) {
+		if (isInFunction) {
+			// 制御構造が終わっていなかったらエラーを出す
+			if (!(instructionStack.peekFirst() instanceof FunctionBuilder)) {
+				throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
+			}
+			// 関数の定義を確定させて登録する
+			Function definedFunction = currentFunction.toFunction();
+			functionDefinitionList.add(definedFunction);
+			currentFunction = null;
+			isInFunction = false;
+		} else {
+			throw new SyntaxException("endfunction without function");
+		}
+	}
+
+	private void var(String data) {
+		if (data == null) {
+			throw new SyntaxException("variable name not found");
+		}
+		String[] nameAndType = data.split("\\s+", 2);
+		if (nameAndType.length < 2) {
+			throw new SyntaxException("variable type not found");
+		}
+		Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]),
+			isInFunction ? Variable.Kind.LOCAL_VARIABLE : Variable.Kind.GLOBAL_VARIABLE);
+		if (isInFunction) {
+			currentFunction.addVariable(var);
+		} else {
+			variableDefinitionList.add(var);
+		}
+	}
+
+	private void param(String data) {
+		if (isInFunction) {
+			if (data == null) {
+				throw new SyntaxException("parameter name not found");
+			}
+			String[] nameAndType = data.split("\\s+", 2);
+			if (nameAndType.length < 2) {
+				throw new SyntaxException("parameter type not found");
+			}
+			Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]), Variable.Kind.ARGUMENT);
+			currentFunction.addVariable(var);
+		} else {
+			throw new SyntaxException("parameter isn't allowed outside function");
+		}
+	}
+
+	private void loop() {
+		// 無限ループを開始する
+		if (isInFunction) {
+			instructionStack.addFirst(new InfiniteLoopBuilder());
+		} else {
+			throw new SyntaxException("loop isn't allowed outside function");
+		}
+	}
+
+	private void endloop() {
+		if (isInFunction) {
+			if (instructionStack.peekFirst() instanceof InfiniteLoopBuilder) {
+				// 作成した無限ループを取って
+				InfiniteLoopBuilder ilb = (InfiniteLoopBuilder)instructionStack.removeFirst();
+				// 1階層上の命令列に入れる
+				instructionStack.peekFirst().addInstruction(ilb.toInfiniteLoop());
+			} else {
+				throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
+			}
+		} else {
+			throw new SyntaxException("endloop isn't allowed outside function");
+		}
+	}
+
+	private void expression(String line) {
+		if (isInFunction) {
+			Expression exp = Expression.parse(line);
+			instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
+		} else {
+			throw new SyntaxException("expression isn't allowed outside function");
+		}
 	}
 }
