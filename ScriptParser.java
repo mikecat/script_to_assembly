@@ -83,11 +83,13 @@ public class ScriptParser {
 						}
 						isInFunction = true;
 						currentFunction = new FunctionBuilder(nameAndType[0], DataType.parse(nameAndType[1]));
+						instructionStack.clear();
+						instructionStack.addFirst(currentFunction);
 					}
 				} else if (action.equals("endfunction")) {
 					if (isInFunction) {
 						// 制御構造が終わっていなかったらエラーを出す
-						if (!instructionStack.isEmpty()) {
+						if (!(instructionStack.peekFirst() instanceof FunctionBuilder)) {
 							throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
 						}
 						// 関数の定義を確定させて登録する
@@ -131,11 +133,7 @@ public class ScriptParser {
 					// キーワードが無かったので、式とみなす
 					if (isInFunction) {
 						Expression exp = Expression.parse(line);
-						if (instructionStack.isEmpty()) {
-							currentFunction.addInstruction(new NormalExpression(exp));
-						} else {
-							instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
-						}
+						instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
 					} else {
 						throw new SyntaxException("expression isn't allowed outside function");
 					}

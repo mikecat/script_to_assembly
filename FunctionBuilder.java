@@ -1,7 +1,7 @@
 import java.util.List;
 import java.util.ArrayList;
 
-public class FunctionBuilder {
+public class FunctionBuilder extends InstructionBuilder {
 	private String name;
 	private DataType dataType;
 	private List<Variable> variableList;
@@ -12,6 +12,10 @@ public class FunctionBuilder {
 		this.dataType = dataType;
 		this.variableList = new ArrayList<Variable>();
 		this.instructionList = new ArrayList<Instruction>();
+	}
+
+	public String getInstructionName() {
+		return "function";
 	}
 
 	public void addVariable(Variable var) {
