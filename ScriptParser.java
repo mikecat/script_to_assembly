@@ -10,7 +10,7 @@ public class ScriptParser {
 	private boolean debug = false;
 
 	private boolean isInFunction;
-	private Function currentFunction;
+	private FunctionBuilder currentFunction;
 
 	public ScriptParser() {
 		resetParseStatus();
@@ -57,7 +57,7 @@ public class ScriptParser {
 					} else {
 						String[] functionNameAndType = data.split("\\s", 2);
 						isInFunction = true;
-						currentFunction = new Function(functionNameAndType[0],
+						currentFunction = new FunctionBuilder(functionNameAndType[0],
 							functionNameAndType.length > 1 ? Type.parseType(functionNameAndType[1]) : null);
 					}
 				} else if (action.equals("endfunction")) {
