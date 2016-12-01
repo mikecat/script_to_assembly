@@ -22,6 +22,8 @@ CLASSES = \
 	NoneType.class \
 	Variable.class \
 	InstructionBuilder.class \
+	InfiniteLoop.class \
+	InfiniteLoopBuilder.class \
 # blank line (allow \ after the last class)
 
 $(TARGET): $(CLASSES) jar-manifest.txt

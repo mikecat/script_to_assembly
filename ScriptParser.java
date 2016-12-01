@@ -129,6 +129,26 @@ public class ScriptParser {
 					} else {
 						throw new SyntaxException("parameter isn't allowed outside function");
 					}
+				} else if (action.equals("loop")) {
+					// 無限ループを開始する
+					if (isInFunction) {
+						instructionStack.addFirst(new InfiniteLoopBuilder());
+					} else {
+						throw new SyntaxException("loop isn't allowed outside function");
+					}
+				} else if (action.equals("endloop")) {
+					if (isInFunction) {
+						if (instructionStack.peekFirst() instanceof InfiniteLoopBuilder) {
+							// 作成した無限ループを取って
+							InfiniteLoopBuilder ilb = (InfiniteLoopBuilder)instructionStack.removeFirst();
+							// 1階層上の命令列に入れる
+							instructionStack.peekFirst().addInstruction(ilb.toInfiniteLoop());
+						} else {
+							throw new SyntaxException("unterminated " + instructionStack.peekFirst().getInstructionName());
+						}
+					} else {
+						throw new SyntaxException("endloop isn't allowed outside function");
+					}
 				} else {
 					// キーワードが無かったので、式とみなす
 					if (isInFunction) {
