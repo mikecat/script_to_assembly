@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/01 17:39:59"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="285" sellength="0"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/01 20:04:42"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -11,11 +11,11 @@
 このドキュメントを書いているソフト：「ツリー帳」
 http://www.vector.co.jp/soft/winnt/writing/se396498.html
 http://kazina.com/treepad/index.html
-</text><node name="スクリプトを読み込む" expanded="yes" selstart="18" sellength="0"><text>
+</text><node name="スクリプトを読み込む" expanded="yes" selstart="0" sellength="0"><text>
 まずはスクリプトを読み込む。
-</text><node name="文法" expanded="yes" selstart="13" sellength="0"><text>
+</text><node name="文法" expanded="yes" selstart="0" sellength="0"><text>
 文法は大事である。
-</text><node name="ファイルの取り込み" expanded="no" selstart="166" sellength="0"><text>
+</text><node name="ファイルの取り込み" expanded="no" selstart="0" sellength="0"><text>
 ファイルの取り込み
 C言語でいうところの#include的なやつ
 
@@ -27,14 +27,15 @@ C言語でいうところの#include的なやつ
   uselib パス
 
 無限再帰にならないように、適当な深さで打ち切る。
-</text></node><node name="定数の定義" expanded="no" selstart="72" sellength="0"><text>
+</text></node><node name="定数の定義" expanded="no" selstart="0" sellength="0"><text>
 定数の定義
 
 定数を定義する
   define 識別子 型 = 定数式
 
 定数式とは、変数や関数の呼び出しを含まない式である。
-</text></node><node name="変数の定義" expanded="no" selstart="88" sellength="0"><text>変数の定義
+</text></node><node name="変数の定義" expanded="no" selstart="0" sellength="0"><text>
+変数の定義
 
 グローバル変数を定義する
 (関数の定義中以外で)
@@ -43,7 +44,7 @@ C言語でいうところの#include的なやつ
 ローカル変数を定義する
 (関数の定義中で)
   var 識別子 型
-</text></node><node name="変数の宣言" expanded="no" selstart="97" sellength="0"><text>
+</text></node><node name="変数の宣言" expanded="no" selstart="0" sellength="0"><text>
 変数の宣言
 
 変数を宣言だけして定義しない
@@ -51,7 +52,7 @@ C言語でいうところの#include的なやつ
 
 アドレスを指定して変数を宣言する
   address 識別子 型 = アドレスを表す定数式
-</text></node><node name="関数の定義" expanded="no" selstart="230" sellength="0"><text>
+</text></node><node name="関数の定義" expanded="no" selstart="0" sellength="0"><text>
 関数の定義
 このスクリプトでの「関数」は、
 C言語的な意味での関数、すなわちサブルーチンのようなものである。
@@ -69,14 +70,14 @@ C言語的な意味での関数、すなわちサブルーチンのようなも�
   argument 識別子 型
 
 引数は、関数の中で最初に書かれたものほど前の引数となる。
-</text></node><node name="関数の宣言" expanded="no" selstart="61" sellength="0"><text>
+</text></node><node name="関数の宣言" expanded="no" selstart="0" sellength="0"><text>
 関数の宣言
 
 循環呼び出しがある場合などに用いる。
 
 関数の宣言
   funcdeclare 識別子 型
-</text></node><node name="条件分岐・ループ" expanded="yes" selstart="215" sellength="0"><text>
+</text></node><node name="条件分岐・ループ" expanded="yes" selstart="0" sellength="0"><text>
 条件分岐・ループ
 
 条件分岐
@@ -100,7 +101,7 @@ whileループ
   loop
     繰り返す処理
   endloop
-</text><node name="ループ脱出" expanded="no" selstart="143" sellength="0"><text>
+</text><node name="ループ脱出" expanded="no" selstart="0" sellength="0"><text>
 ループ脱出
 
 ループを抜け、次の処理に行く
@@ -114,7 +115,7 @@ whileループ
 
 内側からn番目(1-origin)のループの最初の処理に戻る
   continue n
-</text></node></node><node name="関数から戻る" expanded="no" selstart="66" sellength="0" selected="yes"><text>
+</text></node></node><node name="関数から戻る" expanded="no" selstart="0" sellength="0"><text>
 関数から戻る
 
 関数から戻る
@@ -122,11 +123,11 @@ whileループ
 
 戻り値を指定して関数から戻る
   return 戻り値を表す式
-</text></node><node name="式" expanded="yes" selstart="20" sellength="0"><text>
+</text></node><node name="式" expanded="yes" selstart="0" sellength="0"><text>
 式
 
 式は計算の基本である。
-</text><node name="リテラル" expanded="no" selstart="185" sellength="0"><text>
+</text><node name="リテラル" expanded="no" selstart="0" sellength="0"><text>
 リテラル
 
 数値リテラル
@@ -140,7 +141,7 @@ whileループ
 文字列リテラル
   文字列リテラルは、1バイトの符号なし整数の配列とみなせる。
   ""で囲まれる
-</text></node><node name="識別子" expanded="no" selstart="67" sellength="0"><text>
+</text></node><node name="識別子" expanded="no" selstart="0" sellength="0"><text>
 識別子
 
 識別子を用いて、変数や関数にアクセスできる。
@@ -156,9 +157,9 @@ whileループ
     計算に使用する値を取得する。
   ・アドレスを取得する
     代入などに使用するアドレスを取得する。
-</text></node><node name="演算子" expanded="yes" selstart="20" sellength="0"><text>
+</text></node><node name="演算子" expanded="yes" selstart="0" sellength="0"><text>
 演算子は、計算を行うのに用いる。
-</text><node name="単項演算子" expanded="no" selstart="131" sellength="0"><text>
+</text><node name="単項演算子" expanded="no" selstart="0" sellength="0"><text>
 単項演算子
 
 -x : xに(-1)を掛ける
@@ -168,7 +169,7 @@ whileループ
 *x : ポインタxが指すデータ
 &amp;x : xのアドレス
 #x : xのバイト数(C言語のsizeof演算子)
-</text></node><node name="二項演算子" expanded="no" selstart="7" sellength="0"><text>
+</text></node><node name="二項演算子" expanded="no" selstart="0" sellength="0"><text>
 二項演算子
 
 計算
@@ -209,7 +210,7 @@ whileループ
   x(y) : 関数xを1個の引数yで呼び出す
   x(y,z) : 関数xを2個の引数y,zで呼び出す
   以下同様
-</text></node><node name="演算子の優先順位と結合" expanded="no" selstart="57" sellength="0"><text>
+</text></node><node name="演算子の優先順位と結合" expanded="no" selstart="0" sellength="0"><text>
 演算子の優先順位と結合
 
 ↑高い
@@ -226,7 +227,7 @@ whileループ
 左結合: &amp;&amp;
 左結合: ||
 ↓低い
-</text></node></node><node name="式をASTに変換する" expanded="no" selstart="53" sellength="0"><text>
+</text></node></node><node name="式をASTに変換する" expanded="no" selstart="0" sellength="0"><text>
 式をASTに変換する
 
 例: 234+b+-h(1+(3+hgg),nrr)&gt;&gt;&gt;4&gt;&gt;b^y^&lt;nrtrtr
@@ -282,11 +283,11 @@ whileループ
 関数の引数の区切り,
   関数階層が0以外の時に出てきたら文法エラー
   演算子としては優先順位は空きカッコの次に低く、左結合として扱う
-</text></node></node><node name="型" expanded="yes" selstart="34" sellength="0"><text>
+</text></node></node><node name="型" expanded="yes" selstart="0" sellength="0"><text>
 型
 
 型は変数をどう扱うかを決めるのに重要な役割を担う。
-</text><node name="基本型" expanded="no" selstart="58" sellength="0"><text>
+</text><node name="基本型" expanded="no" selstart="0" sellength="0"><text>
 基本型
 
 int8 : 1バイト符号つき整数
@@ -312,7 +313,7 @@ func : 関数
 C言語と異なり、関数が勝手にポインタとして扱われることはない。
 
 (TODO: 「関数」に戻り値の型の情報を入れる)
-</text></node><node name="派生型" expanded="no" selstart="338" sellength="0"><text>
+</text></node><node name="派生型" expanded="no" selstart="0" sellength="0"><text>
 派生型
 
 *(型) : (型)を指すポインタ
@@ -331,20 +332,20 @@ C言語と異なり、関数が勝手にポインタとして扱われること�
   func : 関数
   *func : 関数を指すポインタ
   [5]func : 関数の配列
-</text></node></node><node name="コメント" expanded="no" selstart="15" sellength="0"><text>
+</text></node></node><node name="コメント" expanded="no" selstart="0" sellength="0"><text>
 コメント
 
 TBD
-</text></node></node><node name="データ構造" expanded="no" selstart="41" sellength="0"><text>
+</text></node></node><node name="データ構造" expanded="no" selstart="0" sellength="0"><text>
 データ構造
 
 読み込んだスクリプトを表現するデータ構造。
 
 TBD
-</text></node></node><node name="アセンブリ言語を書き出す" expanded="yes" selstart="73" sellength="0"><text>
+</text></node></node><node name="アセンブリ言語を書き出す" expanded="yes" selstart="0" sellength="0"><text>
 スクリプトを読み込んだら、それに基づいてアセンブリ言語を書き出す。
 オブジェクト指向の考え方を用いて、複数のアーキテクチャに対応したい。
-</text><node name="式の処理" expanded="yes" selstart="120" sellength="0"><text>
+</text><node name="式の処理" expanded="yes" selstart="0" sellength="0"><text>
 レジスタを使った式の評価の方法を考える。
 記号を以下のようにおく。
 
@@ -353,7 +354,7 @@ TBD
 ワーキングレジスタ r2, ... , rn
 
 式を計算(r1, [r2, ... , rn])
-</text><node name="二項演算子" expanded="no" selstart="551" sellength="0"><text>
+</text><node name="二項演算子" expanded="no" selstart="0" sellength="0"><text>
 左辺使用レジスタ数x : [1, n]
 右辺使用レジスタ数y : [1, n]
 とおく。
@@ -395,7 +396,7 @@ x = y = n のとき
     op r1, r2
 
   使用レジスタ数 = x
-</text></node><node name="単項演算子" expanded="no" selstart="77" sellength="0"><text>
+</text></node><node name="単項演算子" expanded="no" selstart="0" sellength="0"><text>
 オペランド使用レジスタ数 x : [1, n]
 とする。
 
@@ -404,7 +405,7 @@ x = y = n のとき
   op r1
 
 使用レジスタ数 = x
-</text></node><node name="関数呼び出し" expanded="no" selstart="269" sellength="0"><text>
+</text></node><node name="関数呼び出し" expanded="no" selstart="0" sellength="0"><text>
 呼び出し対象の使用レジスタ数x : [1, n]
 k番目(k=1, ... , m)の引数使用レジスタ数y_k : [1, n]
 とする。
