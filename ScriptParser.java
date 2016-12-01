@@ -89,6 +89,8 @@ public class ScriptParser {
 					processElse();
 				} else if (action.equals("endif")) {
 					processEndif();
+				} else if (action.equals("return")) {
+					processReturn(data);
 				} else { // キーワードが無かったので、式とみなす
 					processExpression(line);
 				}
@@ -310,6 +312,16 @@ public class ScriptParser {
 			instructionStack.peekFirst().addInstruction(cbBuilder.toConditionalBranch());
 		} else {
 			throw new SyntaxException("endif without if");
+		}
+	}
+
+	private void processReturn(String data) {
+		disallowOutsideFunction("return");
+		if (data != null) {
+			Expression exp = Expression.parse(data);
+			instructionStack.peekFirst().addInstruction(new ReturnInstruction(exp));
+		} else {
+			instructionStack.peekFirst().addInstruction(new ReturnInstruction());
 		}
 	}
 }

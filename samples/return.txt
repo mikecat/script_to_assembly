@@ -1,0 +1,6 @@
+function hoge int
+	return 1 + 2
+	loop
+		return 3
+	endloop
+endfunction
