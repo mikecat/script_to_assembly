@@ -1,0 +1,11 @@
+function a int
+endfunction
+
+function b *int
+endfunction
+
+function c [10 + 1]int
+endfunction
+
+function d [10][5]*int
+endfunction
