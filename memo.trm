@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/01 20:04:42"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/01 21:33:16"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
 俗にコンパイラと呼ばれるものに似ているかもしれない。
 
-大きく分けて、スクリプトを読み込むパートとアセンブリ元を書き出すパートに分かれる。
+大きく分けて、スクリプトを読み込むパートとアセンブリ言語を書き出すパートに分かれる。
 
 -----------
 
