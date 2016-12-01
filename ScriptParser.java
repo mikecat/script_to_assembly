@@ -81,6 +81,14 @@ public class ScriptParser {
 					processWhile(data);
 				} else if (action.equals("endwhile")) {
 					processEndwhile();
+				} else if (action.equals("if")) {
+					processIf(data);
+				} else if (action.equals("elseif")) {
+					processElseif(data);
+				} else if (action.equals("else")) {
+					processElse();
+				} else if (action.equals("endif")) {
+					processEndif();
 				} else { // キーワードが無かったので、式とみなす
 					processExpression(line);
 				}
@@ -244,5 +252,64 @@ public class ScriptParser {
 		disallowOutsideFunction("expression");
 		Expression exp = Expression.parse(line);
 		instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
+	}
+
+	private void processIf(String data) {
+		disallowOutsideFunction("if");
+		if (data == null) {
+			throw new SyntaxException("condition doesn't exist for if");
+		}
+		// 条件分岐を開始する
+		Expression condition = Expression.parse(data);
+		instructionStack.addFirst(new ConditionalBranchBuilder(condition));
+	}
+
+	private void processElseif(String data) {
+		disallowOutsideFunction("elseif");
+		if (data == null) {
+			throw new SyntaxException("condition doesn't exist for elseif");
+		}
+		if (instructionStack.peekFirst() instanceof ConditionalBranchBuilder) {
+			// 直前の条件分岐を取って
+			ConditionalBranchBuilder nextBuilder = (ConditionalBranchBuilder)instructionStack.removeFirst();
+			if (nextBuilder.isElseMode()) {
+				throw new SyntaxException("elseif after else");
+			} else {
+				// elseifのリンク先として登録しつつ、新しい条件分岐を開始する
+				nextBuilder.enterElseMode();
+				Expression condition = Expression.parse(data);
+				instructionStack.addFirst(new ConditionalBranchBuilder(condition, nextBuilder));
+			}
+		} else {
+			throw new SyntaxException("elseif without if");
+		}
+	}
+
+	private void processElse() {
+		disallowOutsideFunction("else");
+		if (instructionStack.peekFirst() instanceof ConditionalBranchBuilder) {
+			// 直前の条件分岐を取らずに
+			ConditionalBranchBuilder cbBuilder = (ConditionalBranchBuilder)instructionStack.peekFirst();
+			if (cbBuilder.isElseMode()) {
+				throw new SyntaxException("else after else");
+			} else {
+				// elseの後モードに移行する
+				cbBuilder.enterElseMode();
+			}
+		} else {
+			throw new SyntaxException("else without if");
+		}
+	}
+
+	private void processEndif() {
+		disallowOutsideFunction("endif");
+		if (instructionStack.peekFirst() instanceof ConditionalBranchBuilder) {
+			// 作成した条件分岐を取って
+			ConditionalBranchBuilder cbBuilder = (ConditionalBranchBuilder)instructionStack.removeFirst();
+			// 1階層上の命令列に入れる
+			instructionStack.peekFirst().addInstruction(cbBuilder.toConditionalBranch());
+		} else {
+			throw new SyntaxException("endif without if");
+		}
 	}
 }

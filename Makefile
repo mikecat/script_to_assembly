@@ -26,6 +26,8 @@ CLASSES = \
 	InfiniteLoopBuilder.class \
 	WhileLoop.class \
 	WhileLoopBuilder.class \
+	ConditionalBranch.class \
+	ConditionalBranchBuilder.class \
 # blank line (allow \ after the last class)
 
 $(TARGET): $(CLASSES) jar-manifest.txt
