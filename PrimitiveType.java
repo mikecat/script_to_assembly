@@ -13,4 +13,12 @@ public class PrimitiveType extends DataType {
 	public boolean isSigned() {
 		return signed;
 	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof PrimitiveType)) {
+			return false;
+		}
+		PrimitiveType target = (PrimitiveType)o;
+		return width == target.width && signed == target.signed;
+	}
 }

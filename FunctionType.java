@@ -12,4 +12,12 @@ public class FunctionType extends DataType {
 	public int getWidth() {
 		return 4; // ターゲットに依存するので後でなんとかする
 	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof FunctionType)) {
+			return false;
+		}
+		FunctionType target = (FunctionType)o;
+		return returnType.equals(target.returnType);
+	}
 }

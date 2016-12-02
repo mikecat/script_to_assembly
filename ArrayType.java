@@ -21,4 +21,12 @@ public class ArrayType extends DataType {
 		}
 		return elementWidth * elementsNum;
 	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof ArrayType)) {
+			return false;
+		}
+		ArrayType target = (ArrayType)o;
+		return elementDataType.equals(target.elementDataType) && elementsNum == target.elementsNum;
+	}
 }
