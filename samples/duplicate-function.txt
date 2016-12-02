@@ -1,0 +1,7 @@
+function hoge int
+	return 0
+endfunction
+
+function hoge int
+	return 1
+endfunction

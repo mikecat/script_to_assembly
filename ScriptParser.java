@@ -8,6 +8,7 @@ import java.util.Deque;
 import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class ScriptParser {
 	private String[] libraryDir = new String[0];
@@ -179,17 +180,33 @@ public class ScriptParser {
 			if (nameAndType.length < 2) {
 				throw new SyntaxException("function return type not found");
 			}
-			// 関数の定義を開始する
 			DataType returnType = DataType.parse(nameAndType[1]);
+			DataType thisFunctionType = new FunctionType(returnType);
+			Variable existingFunction = lookupVariable(nameAndType[0]);
+			if (existingFunction != null) {
+				if (existingFunction.getDataType().equals(thisFunctionType)) {
+					// 同じ名前の宣言が既にあり、型が同じ → 定義されているかを調べる
+					for (Iterator<Function> it = functionDefinitionList.iterator(); it.hasNext(); ) {
+						if (it.next().getName().equals(nameAndType[0])) {
+							// 同じ名前の関数が定義されている
+							throw new SyntaxException("function " + nameAndType[0] + " is already defined");
+						}
+					}
+				} else {
+					// 同じ名前の宣言が既にあり、型が違う
+					throw new SyntaxException("declaration of function " + nameAndType[0] + " conflicts");
+				}
+			}
+			// 関数の宣言を登録する
+			Variable newFunction = new Variable(nameAndType[0],
+				thisFunctionType, Variable.Kind.GLOBAL_VARIABLE, functionDefinitionList.size());
+			globalVariableDeclarationList.put(nameAndType[0], newFunction);
+			// 関数の定義を開始する
 			isInFunction = true;
 			currentFunction = new FunctionBuilder(nameAndType[0], returnType);
 			instructionStack.clear();
 			instructionStack.addFirst(currentFunction);
 			localVariableDeclarationList.clear();
-			// 関数の宣言を登録する
-			Variable newFunction = new Variable(nameAndType[0],
-				new FunctionType(returnType), Variable.Kind.GLOBAL_VARIABLE, functionDefinitionList.size());
-			globalVariableDeclarationList.put(nameAndType[0], newFunction);
 		}
 	}
 
@@ -218,10 +235,40 @@ public class ScriptParser {
 			throw new SyntaxException("variable type not found");
 		}
 		if (isInFunction) {
+			// ローカル変数の重複チェック
+			Variable existingVariable = lookupVariable(nameAndType[0]);
+			if (existingVariable != null && existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE) {
+				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
+			}
+			// ローカル変数を作成して登録する
 			Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
 			localVariableDeclarationList.put(nameAndType[0], var);
 		} else {
-			Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]),
+			DataType varType = DataType.parse(nameAndType[1]);
+			// グローバル変数の重複チェック
+			Variable existingVariable = lookupVariable(nameAndType[0]);
+			if (existingVariable != null) {
+				if (existingVariable.getDataType().equals(varType)) {
+					// 同じ名前の宣言が既にあり、型が同じ → 定義されているかを調べる
+					for (Iterator<Variable> it = variableDefinitionList.iterator(); it.hasNext(); ) {
+						if (it.next().getName().equals(nameAndType[0])) {
+							// 同じ名前の変数が定義されている
+							throw new SyntaxException("variable " + nameAndType[0] + " is already defined");
+						}
+					}
+					for (Iterator<Function> it = functionDefinitionList.iterator(); it.hasNext(); ) {
+						if (it.next().getName().equals(nameAndType[0])) {
+							// 同じ名前の関数が定義されている
+							throw new SyntaxException(nameAndType[0] + " is already defined as function");
+						}
+					}
+				} else {
+					// 同じ名前の宣言が既にあり、型が違う
+					throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
+				}
+			}
+			// グローバル変数を作成して登録する
+			Variable var = new Variable(nameAndType[0], varType,
 				Variable.Kind.GLOBAL_VARIABLE, variableDefinitionList.size());
 			variableDefinitionList.add(var);
 			globalVariableDeclarationList.put(nameAndType[0], var);
@@ -237,6 +284,12 @@ public class ScriptParser {
 		if (nameAndType.length < 2) {
 			throw new SyntaxException("parameter type not found");
 		}
+		// 引数の重複チェック
+		Variable existingVariable = lookupVariable(nameAndType[0]);
+		if (existingVariable != null && existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE) {
+			throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
+		}
+		// 引数を作成して登録する
 		Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
 		localVariableDeclarationList.put(nameAndType[0], var);
 	}

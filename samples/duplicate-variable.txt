@@ -1,0 +1,3 @@
+var hoge int
+var fuga [5]int
+var hoge int
