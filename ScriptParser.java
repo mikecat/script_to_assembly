@@ -114,6 +114,14 @@ public class ScriptParser {
 		return true;
 	}
 
+	public Variable lookupVariable(String name) {
+		if (isInFunction) {
+			Variable hit = localVariableDeclarationList.get(name);
+			if (hit != null) return hit;
+		}
+		return globalVariableDeclarationList.get(name);
+	}
+
 	private void disallowOutsideFunction(String name) {
 		if (!isInFunction) {
 			throw new SyntaxException(name + " isn't allowed outside function");
