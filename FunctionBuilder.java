@@ -21,12 +21,16 @@ public class FunctionBuilder extends InstructionBuilder {
 		return "function";
 	}
 
-	public void addVariable(String name, DataType dataType) {
-		variableList.add(new Variable(name, dataType, Variable.Kind.LOCAL_VARIABLE, variableCount++));
+	public Variable addVariable(String name, DataType dataType) {
+		Variable newVariable = new Variable(name, dataType, Variable.Kind.LOCAL_VARIABLE, variableCount++);
+		variableList.add(newVariable);
+		return newVariable;
 	}
 
-	public void addArgument(String name, DataType dataType) {
-		variableList.add(new Variable(name, dataType, Variable.Kind.ARGUMENT, argumentCount++));
+	public Variable addArgument(String name, DataType dataType) {
+		Variable newArgument = new Variable(name, dataType, Variable.Kind.ARGUMENT, argumentCount++);
+		variableList.add(newArgument);
+		return newArgument;
 	}
 
 	public void addInstruction(Instruction inst) {
