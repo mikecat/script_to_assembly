@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.ArrayDeque;
+import java.util.Map;
+import java.util.HashMap;
 
 public class ScriptParser {
 	private String[] libraryDir = new String[0];
@@ -13,6 +15,9 @@ public class ScriptParser {
 
 	private List<Variable> variableDefinitionList;
 	private List<Function> functionDefinitionList;
+
+	private Map<String, Variable> globalVariableDeclarationList;
+	private Map<String, Variable> localVariableDeclarationList;
 
 	private boolean isInFunction;
 	private FunctionBuilder currentFunction;
@@ -37,6 +42,8 @@ public class ScriptParser {
 	public void resetParseStatus() {
 		variableDefinitionList = new ArrayList<Variable>();
 		functionDefinitionList = new ArrayList<Function>();
+		globalVariableDeclarationList = new HashMap<String, Variable>();
+		localVariableDeclarationList = new HashMap<String, Variable>();
 		isInFunction = false;
 		currentFunction = null;
 		instructionStack = new ArrayDeque<InstructionBuilder>();
@@ -164,10 +171,17 @@ public class ScriptParser {
 			if (nameAndType.length < 2) {
 				throw new SyntaxException("function return type not found");
 			}
+			// 関数の定義を開始する
+			DataType returnType = DataType.parse(nameAndType[1]);
 			isInFunction = true;
-			currentFunction = new FunctionBuilder(nameAndType[0], DataType.parse(nameAndType[1]));
+			currentFunction = new FunctionBuilder(nameAndType[0], returnType);
 			instructionStack.clear();
 			instructionStack.addFirst(currentFunction);
+			localVariableDeclarationList.clear();
+			// 関数の宣言を登録する
+			Variable newFunction = new Variable(nameAndType[0],
+				new FunctionType(returnType), Variable.Kind.GLOBAL_VARIABLE, functionDefinitionList.size());
+			globalVariableDeclarationList.put(nameAndType[0], newFunction);
 		}
 	}
 
@@ -196,11 +210,13 @@ public class ScriptParser {
 			throw new SyntaxException("variable type not found");
 		}
 		if (isInFunction) {
-			currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
+			Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
+			localVariableDeclarationList.put(nameAndType[0], var);
 		} else {
 			Variable var = new Variable(nameAndType[0], DataType.parse(nameAndType[1]),
 				Variable.Kind.GLOBAL_VARIABLE, variableDefinitionList.size());
 			variableDefinitionList.add(var);
+			globalVariableDeclarationList.put(nameAndType[0], var);
 		}
 	}
 
@@ -213,7 +229,8 @@ public class ScriptParser {
 		if (nameAndType.length < 2) {
 			throw new SyntaxException("parameter type not found");
 		}
-		currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
+		Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
+		localVariableDeclarationList.put(nameAndType[0], var);
 	}
 
 	private void processLoop() {
