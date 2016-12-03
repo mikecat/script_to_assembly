@@ -1,0 +1,9 @@
+vardeclare hoge int
+vardeclare hoge int
+vardeclare hoge int
+
+function fuga none
+	vardeclare hoge int
+endfunction
+
+var hoge int

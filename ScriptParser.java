@@ -81,6 +81,8 @@ public class ScriptParser {
 					processVar(data);
 				} else if (action.equals("param") || action.equals("argument")) {
 					processParam(data);
+				} else if (action.equals("vardeclare")) {
+					processVardeclare(data);
 				} else if (action.equals("loop")) {
 					processLoop();
 				} else if (action.equals("endloop")) {
@@ -292,6 +294,43 @@ public class ScriptParser {
 		// 引数を作成して登録する
 		Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
 		localVariableDeclarationList.put(nameAndType[0], var);
+	}
+
+	private void processVardeclare(String data) {
+		if (data == null) {
+			throw new SyntaxException("variable name not found");
+		}
+		String[] nameAndType = data.split("\\s+", 2);
+		if (nameAndType.length < 2) {
+			throw new SyntaxException("variable type not found");
+		}
+		DataType varType = DataType.parse(nameAndType[1]);
+		Variable existingVariable = lookupVariable(nameAndType[0]);
+		if (isInFunction) {
+			// ローカル変数と重複しているかチェック
+			if (existingVariable != null) {
+				if (existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE) {
+					throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
+				} else if (!existingVariable.getDataType().equals(varType)) {
+					throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
+				}
+			} else {
+				// ローカルの宣言を作成して登録する
+				Variable var = new Variable(nameAndType[0], varType,
+					Variable.Kind.GLOBAL_VARIABLE, -1);
+				localVariableDeclarationList.put(nameAndType[0], var);
+			}
+		} else {
+			// グローバル変数の重複チェック
+			if (existingVariable != null && !existingVariable.getDataType().equals(varType)) {
+				// 同じ名前の宣言が既にあり、型が違う
+				throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
+			}
+			// グローバル変数を作成して登録する
+			Variable var = new Variable(nameAndType[0], varType,
+				Variable.Kind.GLOBAL_VARIABLE, -1);
+			globalVariableDeclarationList.put(nameAndType[0], var);
+		}
 	}
 
 	private void processLoop() {
