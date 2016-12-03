@@ -1,0 +1,9 @@
+funcdeclare hoge none
+
+function fuga none
+	funcdeclare fuga none
+endfunction
+
+function hoge none
+	1 + 2
+endfunction
