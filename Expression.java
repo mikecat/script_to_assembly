@@ -108,7 +108,7 @@ public abstract class Expression {
 	public abstract DataType getDataType();
 	public abstract Expression evaluate();
 
-	public static Expression parse(String expression) {
+	public static Expression parse(String expression, ScriptParser tableObject) {
 		initializeOperatorList();
 		Deque<Expression> valueStack = new LinkedList<Expression>();
 		Deque<OperatorInExpression> expStack = new LinkedList<OperatorInExpression>();
@@ -272,9 +272,21 @@ public abstract class Expression {
 			// 識別子か?
 			if (expression.substring(i, i + 1).matches("\\A[_a-zA-Z]\\z")) {
 				if (!expectNumber) {
-					throw new SyntaxException("string literal found where not expected");
+					throw new SyntaxException("identifier found where not expected");
 				}
-				throw new SystemLimitException("identifier not implemented yet");
+				int j = i + 1;
+				for (; j < expression.length(); j++) {
+					if (!expression.substring(j, j + 1).matches("\\A[_a-zA-Z0-9]\\z")) break;
+				}
+				String identifierName = expression.substring(i, j);
+				Variable var = tableObject.lookupVariable(identifierName);
+				if (var == null) {
+					throw new SyntaxException("identifier " + identifierName + " is not declared");
+				}
+				valueStack.addFirst(new Identifier(var));
+				i = j - 1;
+				expectNumber = false;
+				continue;
 			}
 
 			// その他

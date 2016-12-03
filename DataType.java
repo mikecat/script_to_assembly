@@ -1,9 +1,9 @@
 public abstract class DataType {
-	public static DataType parse(String data) {
+	public static DataType parse(String data, ScriptParser tableObject) {
 		String trimmedData = data.trim();
 		if (trimmedData.startsWith("*")) {
 			// ポインタ
-			DataType innerType = parse(trimmedData.substring(1));
+			DataType innerType = parse(trimmedData.substring(1), tableObject);
 			return new PointerType(innerType);
 		} else if (trimmedData.startsWith("[")) {
 			// 配列
@@ -13,7 +13,7 @@ public abstract class DataType {
 				throw new SyntaxException("[ found but corresponding ] not found");
 			}
 			// 要素数を取得する
-			Expression arrayLength = Expression.parse(trimmedData.substring(1, arrayClose)).evaluate();
+			Expression arrayLength = Expression.parse(trimmedData.substring(1, arrayClose), tableObject).evaluate();
 			if (!(arrayLength instanceof IntegerLiteral)) {
 				throw new SyntaxException("array length must be integer constant");
 			}
@@ -25,7 +25,7 @@ public abstract class DataType {
 				throw new SystemLimitException("array length too big");
 			}
 			// 配列型を作成して返す
-			DataType innerType = parse(trimmedData.substring(arrayClose + 1));
+			DataType innerType = parse(trimmedData.substring(arrayClose + 1), tableObject);
 			return new ArrayType(innerType, (int)arrayLengthValue);
 		} else {
 			// 基本型

@@ -184,7 +184,7 @@ public class ScriptParser {
 			if (nameAndType.length < 2) {
 				throw new SyntaxException("function return type not found");
 			}
-			DataType returnType = DataType.parse(nameAndType[1]);
+			DataType returnType = DataType.parse(nameAndType[1], this);
 			DataType thisFunctionType = new FunctionType(returnType);
 			Variable existingFunction = lookupVariable(nameAndType[0]);
 			if (existingFunction != null) {
@@ -245,10 +245,10 @@ public class ScriptParser {
 				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 			}
 			// ローカル変数を作成して登録する
-			Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
+			Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1], this));
 			localVariableDeclarationList.put(nameAndType[0], var);
 		} else {
-			DataType varType = DataType.parse(nameAndType[1]);
+			DataType varType = DataType.parse(nameAndType[1], this);
 			// グローバル変数の重複チェック
 			Variable existingVariable = lookupVariable(nameAndType[0]);
 			if (existingVariable != null) {
@@ -294,7 +294,7 @@ public class ScriptParser {
 			throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 		}
 		// 引数を作成して登録する
-		Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1]));
+		Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1], this));
 		localVariableDeclarationList.put(nameAndType[0], var);
 	}
 
@@ -306,7 +306,7 @@ public class ScriptParser {
 		if (nameAndType.length < 2) {
 			throw new SyntaxException("variable type not found");
 		}
-		DataType varType = DataType.parse(nameAndType[1]);
+		DataType varType = DataType.parse(nameAndType[1], this);
 		Variable existingVariable = lookupVariable(nameAndType[0]);
 		if (isInFunction) {
 			// ローカル変数と重複しているかチェック
@@ -343,7 +343,7 @@ public class ScriptParser {
 		if (nameAndType.length < 2) {
 			throw new SyntaxException("function type not found");
 		}
-		DataType returnType = DataType.parse(nameAndType[1]);
+		DataType returnType = DataType.parse(nameAndType[1], this);
 		DataType functionType = new FunctionType(returnType);
 		Variable existingVariable = lookupVariable(nameAndType[0]);
 		if (isInFunction) {
@@ -394,7 +394,7 @@ public class ScriptParser {
 	private void processWhile(String data) {
 		disallowOutsideFunction("while");
 		// whileループを開始する
-		Expression condition = Expression.parse(data);
+		Expression condition = Expression.parse(data, this);
 		instructionStack.addFirst(new WhileLoopBuilder(condition));
 	}
 
@@ -416,7 +416,7 @@ public class ScriptParser {
 			throw new SyntaxException("condition doesn't exist for if");
 		}
 		// 条件分岐を開始する
-		Expression condition = Expression.parse(data);
+		Expression condition = Expression.parse(data, this);
 		instructionStack.addFirst(new ConditionalBranchBuilder(condition));
 	}
 
@@ -433,7 +433,7 @@ public class ScriptParser {
 			} else {
 				// elseifのリンク先として登録しつつ、新しい条件分岐を開始する
 				nextBuilder.enterElseMode();
-				Expression condition = Expression.parse(data);
+				Expression condition = Expression.parse(data, this);
 				instructionStack.addFirst(new ConditionalBranchBuilder(condition, nextBuilder));
 			}
 		} else {
@@ -472,7 +472,7 @@ public class ScriptParser {
 	private void processReturn(String data) {
 		disallowOutsideFunction("return");
 		if (data != null) {
-			Expression exp = Expression.parse(data);
+			Expression exp = Expression.parse(data, this);
 			instructionStack.peekFirst().addInstruction(new ReturnInstruction(exp));
 		} else {
 			instructionStack.peekFirst().addInstruction(new ReturnInstruction());
@@ -485,7 +485,7 @@ public class ScriptParser {
 		if (data == null) {
 			level = 1;
 		} else {
-			Expression exp = Expression.parse(data).evaluate();
+			Expression exp = Expression.parse(data, this).evaluate();
 			if (exp instanceof IntegerLiteral) {
 				long value = ((IntegerLiteral)exp).getValue();
 				if (value <= 0) {
@@ -508,7 +508,7 @@ public class ScriptParser {
 		if (data == null) {
 			level = 1;
 		} else {
-			Expression exp = Expression.parse(data).evaluate();
+			Expression exp = Expression.parse(data, this).evaluate();
 			if (exp instanceof IntegerLiteral) {
 				long value = ((IntegerLiteral)exp).getValue();
 				if (value <= 0) {
@@ -527,7 +527,7 @@ public class ScriptParser {
 
 	private void processExpression(String line) {
 		disallowOutsideFunction("expression");
-		Expression exp = Expression.parse(line);
+		Expression exp = Expression.parse(line, this);
 		instructionStack.peekFirst().addInstruction(new NormalExpression(exp));
 	}
 }

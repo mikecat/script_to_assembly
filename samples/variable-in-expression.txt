@@ -1,0 +1,12 @@
+funcdeclare foo none
+
+function hoge none
+	var a int
+	var b int
+	var c int
+	a = 10
+	b = 20
+	c = a + b
+	foo(123)
+	hoge()
+endfunction
