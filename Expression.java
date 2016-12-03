@@ -172,36 +172,47 @@ public abstract class Expression {
 			}
 
 			// 閉じカッコか?
-			if (expression.charAt(i) == ')' && !expectNumber) {
-				BinaryOperatorInExpression parenthesisFound = null;
-				while (expStack.size() > 0) {
-					OperatorInExpression popOperator = expStack.removeFirst();
-					if (popOperator instanceof BinaryOperatorInExpression) {
-						if (((BinaryOperatorInExpression)popOperator).getKind() == BinaryOperator.Kind.OP_FUNCTION_CALL ||
-						((BinaryOperatorInExpression)popOperator).getKind() == null) {
-							parenthesisFound = (BinaryOperatorInExpression)popOperator;
-							break;
+			if (expression.charAt(i) == ')') {
+				if (!expectNumber) {
+					// 引数や普通の式の後の閉じカッコ
+					BinaryOperatorInExpression parenthesisFound = null;
+					while (expStack.size() > 0) {
+						OperatorInExpression popOperator = expStack.removeFirst();
+						if (popOperator instanceof BinaryOperatorInExpression) {
+							if (((BinaryOperatorInExpression)popOperator).getKind() == BinaryOperator.Kind.OP_FUNCTION_CALL ||
+							((BinaryOperatorInExpression)popOperator).getKind() == null) {
+								parenthesisFound = (BinaryOperatorInExpression)popOperator;
+								break;
+							}
+							Expression right = valueStack.removeFirst();
+							Expression left = valueStack.removeFirst();
+							valueStack.addFirst(new BinaryOperator(((BinaryOperatorInExpression)popOperator).getKind(), left, right));
+						} else {
+							Expression operand = valueStack.removeFirst();
+							valueStack.addFirst(new UnaryOperator(((UnaryOperatorInExpression)popOperator).getKind(), operand));
 						}
+					}
+					if (parenthesisFound == null) {
+						throw new SyntaxException("parenthesis closed before opening");
+					}
+					if (parenthesisFound.getKind() != null) {
+						// 関数呼び出しである
 						Expression right = valueStack.removeFirst();
 						Expression left = valueStack.removeFirst();
-						valueStack.addFirst(new BinaryOperator(((BinaryOperatorInExpression)popOperator).getKind(), left, right));
-					} else {
-						Expression operand = valueStack.removeFirst();
-						valueStack.addFirst(new UnaryOperator(((UnaryOperatorInExpression)popOperator).getKind(), operand));
+						valueStack.addFirst(new BinaryOperator(BinaryOperator.Kind.OP_FUNCTION_CALL, left, right));
 					}
+					expectNumber = false;
+					functionNest = functionNestStack.removeFirst();
+					continue;
+				} else if (expStack.size() > 0 && expStack.peekFirst() == functionCall) {
+					// 引数なしで関数を呼び出す時の閉じカッコ
+					expStack.removeFirst();
+					Expression operand = valueStack.removeFirst();
+					valueStack.addFirst(new UnaryOperator(UnaryOperator.Kind.UNARY_FUNCTION_CALL, operand));
+					expectNumber = false;
+					functionNest = functionNestStack.removeFirst();
+					continue;
 				}
-				if (parenthesisFound == null) {
-					throw new SyntaxException("parenthesis closed before opening");
-				}
-				if (parenthesisFound.getKind() != null) {
-					// 関数呼び出しである
-					Expression right = valueStack.removeFirst();
-					Expression left = valueStack.removeFirst();
-					valueStack.addFirst(new BinaryOperator(BinaryOperator.Kind.OP_FUNCTION_CALL, left, right));
-				}
-				expectNumber = false;
-				functionNest = functionNestStack.removeFirst();
-				continue;
 			}
 
 			// 数値リテラルか?

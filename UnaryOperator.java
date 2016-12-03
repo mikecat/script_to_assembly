@@ -1,5 +1,6 @@
 public class UnaryOperator extends Expression {
 	static enum Kind {
+		UNARY_FUNCTION_CALL,
 		UNARY_MINUS,
 		UNARY_PLUS,
 		UNARY_LOGICAL_NOT,
@@ -23,6 +24,12 @@ public class UnaryOperator extends Expression {
 		}
 
 		switch(kind) {
+		case UNARY_FUNCTION_CALL:
+			if (!(this.operand.getDataType() instanceof FunctionType)) {
+				throw new SyntaxException("tried to call something not a function");
+			}
+			this.dataType = ((FunctionType)this.operand.getDataType()).getReturnType();
+			break;
 		case UNARY_MINUS:
 		case UNARY_PLUS:
 		case UNARY_BIT_NOT:
@@ -89,6 +96,7 @@ public class UnaryOperator extends Expression {
 			return new IntegerLiteral(~op.getValue(), op.getWidth(), op.isSigned());
 		case UNARY_SIZE:
 			return new IntegerLiteral(op.getDataType().getWidth(), 4, false);
+		case UNARY_FUNCTION_CALL:
 		case UNARY_DEREFERENCE:
 		case UNARY_ADDRESS:
 		case UNARY_AUTO_TO_POINTER:
