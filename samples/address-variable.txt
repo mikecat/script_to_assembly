@@ -1,6 +1,6 @@
-address display int = 0x1000000
+address display int : 0x1000000
 
 function reset none
-	address resetSwitch uint8 = 0
+	address resetSwitch uint8 : 0
 	resetSwitch = 1
 endfunction

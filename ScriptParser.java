@@ -383,7 +383,7 @@ public class ScriptParser {
 		if (nameAndType.length < 2) {
 			throw new SyntaxException("address variable type not found");
 		}
-		String[] typeAndValue = nameAndType[1].split("\\s*=\\s*", 2);
+		String[] typeAndValue = nameAndType[1].split("\\s*:\\s*", 2);
 		if (typeAndValue.length < 2) {
 			throw new SyntaxException("address variable value not found");
 		}
