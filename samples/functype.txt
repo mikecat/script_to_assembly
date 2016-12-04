@@ -1,0 +1,6 @@
+var a func(none)
+var b func(int)
+var c func(*int)
+var d func(func(int))
+var e func(*func(*int))
+var f [5]func(*int)

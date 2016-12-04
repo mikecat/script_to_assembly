@@ -1,3 +1,6 @@
+import java.util.Deque;
+import java.util.ArrayDeque;
+
 public abstract class DataType {
 	private static int systemIntSize = 4;
 	private static int pointerSize = 4;
@@ -97,8 +100,39 @@ public abstract class DataType {
 				signed = false;
 			} else if (trimmedData.equals("none")) {
 				return new NoneType();
-			} else if (trimmedData.equals("func")) {
-				throw new SystemLimitException("type func is not implemented yet");
+			} else if (trimmedData.startsWith("func")) {
+				String funcType = trimmedData.substring(4).trim();
+				if (funcType.startsWith("(")) {
+					Deque<Character> parenthesisStack = new ArrayDeque<>();
+					parenthesisStack.addFirst('(');
+					int j = 1;
+					for (; j < funcType.length() && !parenthesisStack.isEmpty(); j++) {
+						boolean parenthesisMismatch = false;
+						switch(funcType.charAt(j)) {
+						case '(':
+						case '{':
+						case '[':
+							parenthesisStack.addFirst(funcType.charAt(j));
+							break;
+						case ')':
+							parenthesisMismatch = (parenthesisStack.removeFirst() != '(');
+							break;
+						case '}':
+							parenthesisMismatch = (parenthesisStack.removeFirst() != '{');
+							break;
+						case ']':
+							parenthesisMismatch = (parenthesisStack.removeFirst() != '[');
+							break;
+						}
+						if (parenthesisMismatch) {
+							throw new SyntaxException("parenthesis mismatch in type declaration");
+						}
+					}
+					DataType returnType = parse(funcType.substring(1, j - 1), tableObject);
+					return new FunctionType(returnType);
+				} else {
+					throw new SyntaxException(" no return type for func type specified");
+				}
 			} else {
 				throw new SyntaxException("unknown type \"" + trimmedData + "\"");
 			}

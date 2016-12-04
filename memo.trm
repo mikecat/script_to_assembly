@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/04 14:15:11"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/04 14:38:34"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -334,12 +334,10 @@ none : データなし
 
 C言語のvoid的なやつ
 
-func : 関数
+func(戻り値の型) : 関数
 
 「関数」は関数ポインタのようなものである。
 一般のポインタと違って、演算(加減算、大小比較)は許可されない。
-
-(TODO: 「関数」に戻り値の型の情報を入れる)
 </text></node><node name="派生型" expanded="no" selstart="0" sellength="0"><text>
 派生型
 
