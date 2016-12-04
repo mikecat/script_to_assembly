@@ -105,9 +105,6 @@ public abstract class Expression {
 		initialized = true;
 	}
 
-	public abstract DataType getDataType();
-	public abstract Expression evaluate();
-
 	public static Expression parse(String expression, ScriptParser tableObject) {
 		initializeOperatorList();
 		Deque<Expression> valueStack = new LinkedList<Expression>();
@@ -326,4 +323,7 @@ public abstract class Expression {
 		}
 		return valueStack.removeFirst();
 	}
+
+	public abstract DataType getDataType();
+	public abstract Expression evaluate();
 }
