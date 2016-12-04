@@ -128,6 +128,9 @@ public abstract class DataType {
 							throw new SyntaxException("parenthesis mismatch in type declaration");
 						}
 					}
+					if (!parenthesisStack.isEmpty()) {
+						throw new SyntaxException("unterminated func type declaration");
+					}
 					DataType returnType = parse(funcType.substring(1, j - 1), tableObject);
 					return new FunctionType(returnType);
 				} else {
