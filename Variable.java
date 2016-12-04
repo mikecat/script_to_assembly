@@ -2,7 +2,8 @@ public class Variable {
 	public static enum Kind {
 		GLOBAL_VARIABLE,
 		LOCAL_VARIABLE,
-		ARGUMENT
+		ARGUMENT,
+		ADDRESS_VARIABLE
 	}
 
 	private String name;
