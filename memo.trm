@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/04 14:38:34"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/05 00:27:44"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -52,6 +52,7 @@ C言語でいうところの#include的なやつ
   define 識別子 型 : 定数式
 
 定数式とは、変数や関数の呼び出しを含まない式である。
+型は整数型のみとする。
 </text></node><node name="変数の定義" expanded="no" selstart="0" sellength="0"><text>
 変数の定義
 
