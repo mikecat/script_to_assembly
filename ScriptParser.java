@@ -243,7 +243,8 @@ public class ScriptParser {
 		if (isInFunction) {
 			// ローカル変数の重複チェック
 			Variable existingVariable = lookupVariable(nameAndType[0]);
-			if (existingVariable != null && existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE) {
+			if (existingVariable != null && existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE &&
+			existingVariable.getKind() != Variable.Kind.ADDRESS_VARIABLE) {
 				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 			}
 			// ローカル変数を作成して登録する
@@ -292,7 +293,8 @@ public class ScriptParser {
 		}
 		// 引数の重複チェック
 		Variable existingVariable = lookupVariable(nameAndType[0]);
-		if (existingVariable != null && existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE) {
+		if (existingVariable != null && existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE &&
+		existingVariable.getKind() != Variable.Kind.ADDRESS_VARIABLE) {
 			throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 		}
 		// 引数を作成して登録する
@@ -313,7 +315,8 @@ public class ScriptParser {
 		if (isInFunction) {
 			// ローカル変数と重複しているかチェック
 			if (existingVariable != null) {
-				if (existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE) {
+				if (existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE &&
+				existingVariable.getKind() != Variable.Kind.ADDRESS_VARIABLE) {
 					throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 				} else if (!existingVariable.getDataType().equals(varType)) {
 					throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
@@ -351,7 +354,8 @@ public class ScriptParser {
 		if (isInFunction) {
 			// ローカル変数と重複しているかチェック
 			if (existingVariable != null) {
-				if (existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE) {
+				if (existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE &&
+				existingVariable.getKind() != Variable.Kind.ADDRESS_VARIABLE) {
 					throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 				} else if (!existingVariable.getDataType().equals(functionType)) {
 					throw new SyntaxException("declaration of function " + nameAndType[0] + " conflicts");
