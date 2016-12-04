@@ -14,11 +14,11 @@ public class ScriptParser {
 	private String[] libraryDir = new String[0];
 	private boolean debug = false;
 
-	private List<Variable> variableDefinitionList;
+	private List<Identifier> variableDefinitionList;
 	private List<Function> functionDefinitionList;
 
-	private Map<String, Variable> globalVariableDeclarationList;
-	private Map<String, Variable> localVariableDeclarationList;
+	private Map<String, Identifier> globalIdentifierDeclarationList;
+	private Map<String, Identifier> localIdentifierDeclarationList;
 
 	private boolean isInFunction;
 	private FunctionBuilder currentFunction;
@@ -41,10 +41,10 @@ public class ScriptParser {
 	}
 
 	public void resetParseStatus() {
-		variableDefinitionList = new ArrayList<Variable>();
+		variableDefinitionList = new ArrayList<Identifier>();
 		functionDefinitionList = new ArrayList<Function>();
-		globalVariableDeclarationList = new HashMap<String, Variable>();
-		localVariableDeclarationList = new HashMap<String, Variable>();
+		globalIdentifierDeclarationList = new HashMap<String, Identifier>();
+		localIdentifierDeclarationList = new HashMap<String, Identifier>();
 		isInFunction = false;
 		currentFunction = null;
 		instructionStack = new ArrayDeque<InstructionBuilder>();
@@ -121,12 +121,12 @@ public class ScriptParser {
 		return true;
 	}
 
-	public Variable lookupVariable(String name) {
+	public Identifier lookupIdentifier(String name) {
 		if (isInFunction) {
-			Variable hit = localVariableDeclarationList.get(name);
+			Identifier hit = localIdentifierDeclarationList.get(name);
 			if (hit != null) return hit;
 		}
-		return globalVariableDeclarationList.get(name);
+		return globalIdentifierDeclarationList.get(name);
 	}
 
 	private void disallowOutsideFunction(String name) {
@@ -188,7 +188,7 @@ public class ScriptParser {
 			}
 			DataType returnType = DataType.parse(nameAndType[1], this);
 			DataType thisFunctionType = new FunctionType(returnType);
-			Variable existingFunction = lookupVariable(nameAndType[0]);
+			Identifier existingFunction = lookupIdentifier(nameAndType[0]);
 			if (existingFunction != null) {
 				if (existingFunction.getDataType().equals(thisFunctionType)) {
 					// 同じ名前の宣言が既にあり、型が同じ → 定義されているかを調べる
@@ -204,15 +204,15 @@ public class ScriptParser {
 				}
 			}
 			// 関数の宣言を登録する
-			Variable newFunction = new Variable(nameAndType[0],
-				thisFunctionType, Variable.Kind.GLOBAL_VARIABLE, functionDefinitionList.size());
-			globalVariableDeclarationList.put(nameAndType[0], newFunction);
+			Identifier newFunction = new Identifier(nameAndType[0],
+				thisFunctionType, Identifier.Kind.GLOBAL_VARIABLE, functionDefinitionList.size());
+			globalIdentifierDeclarationList.put(nameAndType[0], newFunction);
 			// 関数の定義を開始する
 			isInFunction = true;
 			currentFunction = new FunctionBuilder(nameAndType[0], returnType);
 			instructionStack.clear();
 			instructionStack.addFirst(currentFunction);
-			localVariableDeclarationList.clear();
+			localIdentifierDeclarationList.clear();
 		}
 	}
 
@@ -242,22 +242,22 @@ public class ScriptParser {
 		}
 		if (isInFunction) {
 			// ローカル変数の重複チェック
-			Variable existingVariable = lookupVariable(nameAndType[0]);
-			if (existingVariable != null && existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE &&
-			existingVariable.getKind() != Variable.Kind.ADDRESS_VARIABLE) {
+			Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
+			if (existingIdentifier != null && existingIdentifier.getKind() != Identifier.Kind.GLOBAL_VARIABLE &&
+			existingIdentifier.getKind() != Identifier.Kind.ADDRESS_VARIABLE) {
 				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 			}
 			// ローカル変数を作成して登録する
-			Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1], this));
-			localVariableDeclarationList.put(nameAndType[0], var);
+			Identifier var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1], this));
+			localIdentifierDeclarationList.put(nameAndType[0], var);
 		} else {
 			DataType varType = DataType.parse(nameAndType[1], this);
 			// グローバル変数の重複チェック
-			Variable existingVariable = lookupVariable(nameAndType[0]);
-			if (existingVariable != null) {
-				if (existingVariable.getDataType().equals(varType)) {
+			Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
+			if (existingIdentifier != null) {
+				if (existingIdentifier.getDataType().equals(varType)) {
 					// 同じ名前の宣言が既にあり、型が同じ → 定義されているかを調べる
-					for (Iterator<Variable> it = variableDefinitionList.iterator(); it.hasNext(); ) {
+					for (Iterator<Identifier> it = variableDefinitionList.iterator(); it.hasNext(); ) {
 						if (it.next().getName().equals(nameAndType[0])) {
 							// 同じ名前の変数が定義されている
 							throw new SyntaxException("variable " + nameAndType[0] + " is already defined");
@@ -275,10 +275,10 @@ public class ScriptParser {
 				}
 			}
 			// グローバル変数を作成して登録する
-			Variable var = new Variable(nameAndType[0], varType,
-				Variable.Kind.GLOBAL_VARIABLE, variableDefinitionList.size());
+			Identifier var = new Identifier(nameAndType[0], varType,
+				Identifier.Kind.GLOBAL_VARIABLE, variableDefinitionList.size());
 			variableDefinitionList.add(var);
-			globalVariableDeclarationList.put(nameAndType[0], var);
+			globalIdentifierDeclarationList.put(nameAndType[0], var);
 		}
 	}
 
@@ -292,14 +292,14 @@ public class ScriptParser {
 			throw new SyntaxException("parameter type not found");
 		}
 		// 引数の重複チェック
-		Variable existingVariable = lookupVariable(nameAndType[0]);
-		if (existingVariable != null && existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE &&
-		existingVariable.getKind() != Variable.Kind.ADDRESS_VARIABLE) {
+		Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
+		if (existingIdentifier != null && existingIdentifier.getKind() != Identifier.Kind.GLOBAL_VARIABLE &&
+		existingIdentifier.getKind() != Identifier.Kind.ADDRESS_VARIABLE) {
 			throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 		}
 		// 引数を作成して登録する
-		Variable var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1], this));
-		localVariableDeclarationList.put(nameAndType[0], var);
+		Identifier var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1], this));
+		localIdentifierDeclarationList.put(nameAndType[0], var);
 	}
 
 	private void processVardeclare(String data) {
@@ -311,32 +311,32 @@ public class ScriptParser {
 			throw new SyntaxException("variable type not found");
 		}
 		DataType varType = DataType.parse(nameAndType[1], this);
-		Variable existingVariable = lookupVariable(nameAndType[0]);
+		Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
 		if (isInFunction) {
 			// ローカル変数と重複しているかチェック
-			if (existingVariable != null) {
-				if (existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE &&
-				existingVariable.getKind() != Variable.Kind.ADDRESS_VARIABLE) {
+			if (existingIdentifier != null) {
+				if (existingIdentifier.getKind() != Identifier.Kind.GLOBAL_VARIABLE &&
+				existingIdentifier.getKind() != Identifier.Kind.ADDRESS_VARIABLE) {
 					throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
-				} else if (!existingVariable.getDataType().equals(varType)) {
+				} else if (!existingIdentifier.getDataType().equals(varType)) {
 					throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
 				}
 			} else {
 				// ローカルの宣言を作成して登録する
-				Variable var = new Variable(nameAndType[0], varType,
-					Variable.Kind.GLOBAL_VARIABLE, -1);
-				localVariableDeclarationList.put(nameAndType[0], var);
+				Identifier var = new Identifier(nameAndType[0], varType,
+					Identifier.Kind.GLOBAL_VARIABLE, -1);
+				localIdentifierDeclarationList.put(nameAndType[0], var);
 			}
 		} else {
 			// グローバル変数の重複チェック
-			if (existingVariable != null && !existingVariable.getDataType().equals(varType)) {
+			if (existingIdentifier != null && !existingIdentifier.getDataType().equals(varType)) {
 				// 同じ名前の宣言が既にあり、型が違う
 				throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
 			}
 			// グローバル変数を作成して登録する
-			Variable var = new Variable(nameAndType[0], varType,
-				Variable.Kind.GLOBAL_VARIABLE, -1);
-			globalVariableDeclarationList.put(nameAndType[0], var);
+			Identifier var = new Identifier(nameAndType[0], varType,
+				Identifier.Kind.GLOBAL_VARIABLE, -1);
+			globalIdentifierDeclarationList.put(nameAndType[0], var);
 		}
 	}
 
@@ -350,32 +350,32 @@ public class ScriptParser {
 		}
 		DataType returnType = DataType.parse(nameAndType[1], this);
 		DataType functionType = new FunctionType(returnType);
-		Variable existingVariable = lookupVariable(nameAndType[0]);
+		Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
 		if (isInFunction) {
 			// ローカル変数と重複しているかチェック
-			if (existingVariable != null) {
-				if (existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE &&
-				existingVariable.getKind() != Variable.Kind.ADDRESS_VARIABLE) {
+			if (existingIdentifier != null) {
+				if (existingIdentifier.getKind() != Identifier.Kind.GLOBAL_VARIABLE &&
+				existingIdentifier.getKind() != Identifier.Kind.ADDRESS_VARIABLE) {
 					throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
-				} else if (!existingVariable.getDataType().equals(functionType)) {
+				} else if (!existingIdentifier.getDataType().equals(functionType)) {
 					throw new SyntaxException("declaration of function " + nameAndType[0] + " conflicts");
 				}
 			} else {
 				// ローカルの宣言を作成して登録する
-				Variable var = new Variable(nameAndType[0], functionType,
-					Variable.Kind.GLOBAL_VARIABLE, -1);
-				localVariableDeclarationList.put(nameAndType[0], var);
+				Identifier var = new Identifier(nameAndType[0], functionType,
+					Identifier.Kind.GLOBAL_VARIABLE, -1);
+				localIdentifierDeclarationList.put(nameAndType[0], var);
 			}
 		} else {
 			// グローバルの重複チェック
-			if (existingVariable != null && !existingVariable.getDataType().equals(functionType)) {
+			if (existingIdentifier != null && !existingIdentifier.getDataType().equals(functionType)) {
 				// 同じ名前の宣言が既にあり、型が違う
 				throw new SyntaxException("declaration of function " + nameAndType[0] + " conflicts");
 			}
 			// グローバルの宣言を作成して登録する
-			Variable var = new Variable(nameAndType[0], functionType,
-				Variable.Kind.GLOBAL_VARIABLE, -1);
-			globalVariableDeclarationList.put(nameAndType[0], var);
+			Identifier var = new Identifier(nameAndType[0], functionType,
+				Identifier.Kind.GLOBAL_VARIABLE, -1);
+			globalIdentifierDeclarationList.put(nameAndType[0], var);
 		}
 	}
 
@@ -396,23 +396,23 @@ public class ScriptParser {
 		if (!(address instanceof IntegerLiteral)) {
 			throw new SyntaxException("address have to be an constant");
 		}
-		Variable newValue = new Variable(nameAndType[0], varType,
-			Variable.Kind.ADDRESS_VARIABLE, ((IntegerLiteral)address).getValue());
-		Variable existingVariable = lookupVariable(nameAndType[0]);
+		Identifier newValue = new Identifier(nameAndType[0], varType,
+			Identifier.Kind.ADDRESS_VARIABLE, ((IntegerLiteral)address).getValue());
+		Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
 		if (isInFunction) {
 			// ローカル変数の重複チェック
-			if (existingVariable != null && existingVariable.getKind() != Variable.Kind.GLOBAL_VARIABLE &&
-			existingVariable.getKind() != Variable.Kind.ADDRESS_VARIABLE) {
+			if (existingIdentifier != null && existingIdentifier.getKind() != Identifier.Kind.GLOBAL_VARIABLE &&
+			existingIdentifier.getKind() != Identifier.Kind.ADDRESS_VARIABLE) {
 				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 			}
 			// ローカル変数を登録する
-			localVariableDeclarationList.put(nameAndType[0], newValue);
+			localIdentifierDeclarationList.put(nameAndType[0], newValue);
 		} else {
 			// グローバル変数の重複チェック
-			if (existingVariable != null) {
-				if (existingVariable.getDataType().equals(varType)) {
+			if (existingIdentifier != null) {
+				if (existingIdentifier.getDataType().equals(varType)) {
 					// 同じ名前の宣言が既にあり、型が同じ → 定義されているかを調べる
-					for (Iterator<Variable> it = variableDefinitionList.iterator(); it.hasNext(); ) {
+					for (Iterator<Identifier> it = variableDefinitionList.iterator(); it.hasNext(); ) {
 						if (it.next().getName().equals(nameAndType[0])) {
 							// 同じ名前の変数が定義されている
 							throw new SyntaxException("variable " + nameAndType[0] + " is already defined");
@@ -430,7 +430,7 @@ public class ScriptParser {
 				}
 			}
 			// グローバル変数を作成して登録する
-			globalVariableDeclarationList.put(nameAndType[0], newValue);
+			globalIdentifierDeclarationList.put(nameAndType[0], newValue);
 		}
 	}
 

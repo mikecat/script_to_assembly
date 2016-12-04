@@ -1,36 +1,19 @@
-public class Variable {
-	public static enum Kind {
-		GLOBAL_VARIABLE,
-		LOCAL_VARIABLE,
-		ARGUMENT,
-		ADDRESS_VARIABLE
+public class Variable extends Expression {
+	private Identifier var;
+
+	public Variable(Identifier var) {
+		this.var = var;
 	}
 
-	private String name;
-	private DataType dataType;
-	private Kind kind;
-	private long value;
-
-	public Variable(String name, DataType dataType, Kind kind, long value) {
-		this.name = name;
-		this.dataType = dataType;
-		this.kind = kind;
-		this.value = value;
-	}
-
-	public String getName() {
-		return name;
+	public Identifier getIdentifier() {
+		return var;
 	}
 
 	public DataType getDataType() {
-		return dataType;
+		return var.getDataType();
 	}
 
-	public Kind getKind() {
-		return kind;
-	}
-
-	public long getValue() {
-		return value;
+	public Expression evaluate() {
+		return this;
 	}
 }

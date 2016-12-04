@@ -4,14 +4,14 @@ import java.util.ArrayList;
 public class FunctionBuilder extends InstructionBuilder {
 	private String name;
 	private DataType dataType;
-	private List<Variable> variableList;
+	private List<Identifier> variableList;
 	private List<Instruction> instructionList;
 	private int variableCount, argumentCount;
 
 	public FunctionBuilder(String name, DataType dataType) {
 		this.name = name;
 		this.dataType = dataType;
-		this.variableList = new ArrayList<Variable>();
+		this.variableList = new ArrayList<Identifier>();
 		this.instructionList = new ArrayList<Instruction>();
 		this.variableCount = 0;
 		this.argumentCount = 0;
@@ -21,14 +21,14 @@ public class FunctionBuilder extends InstructionBuilder {
 		return "function";
 	}
 
-	public Variable addVariable(String name, DataType dataType) {
-		Variable newVariable = new Variable(name, dataType, Variable.Kind.LOCAL_VARIABLE, variableCount++);
+	public Identifier addVariable(String name, DataType dataType) {
+		Identifier newVariable = new Identifier(name, dataType, Identifier.Kind.LOCAL_VARIABLE, variableCount++);
 		variableList.add(newVariable);
 		return newVariable;
 	}
 
-	public Variable addArgument(String name, DataType dataType) {
-		Variable newArgument = new Variable(name, dataType, Variable.Kind.ARGUMENT, argumentCount++);
+	public Identifier addArgument(String name, DataType dataType) {
+		Identifier newArgument = new Identifier(name, dataType, Identifier.Kind.ARGUMENT, argumentCount++);
 		variableList.add(newArgument);
 		return newArgument;
 	}

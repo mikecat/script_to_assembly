@@ -1,19 +1,36 @@
-public class Identifier extends Expression {
-	private Variable var;
-
-	public Identifier(Variable var) {
-		this.var = var;
+public class Identifier {
+	public static enum Kind {
+		GLOBAL_VARIABLE,
+		LOCAL_VARIABLE,
+		ARGUMENT,
+		ADDRESS_VARIABLE
 	}
 
-	public Variable getVariable() {
-		return var;
+	private String name;
+	private DataType dataType;
+	private Kind kind;
+	private long value;
+
+	public Identifier(String name, DataType dataType, Kind kind, long value) {
+		this.name = name;
+		this.dataType = dataType;
+		this.kind = kind;
+		this.value = value;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public DataType getDataType() {
-		return var.getDataType();
+		return dataType;
 	}
 
-	public Expression evaluate() {
-		return this;
+	public Kind getKind() {
+		return kind;
+	}
+
+	public long getValue() {
+		return value;
 	}
 }

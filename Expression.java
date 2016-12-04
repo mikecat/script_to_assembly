@@ -344,11 +344,11 @@ public abstract class Expression {
 					if (!expression.substring(j, j + 1).matches("\\A[_a-zA-Z0-9]\\z")) break;
 				}
 				String identifierName = expression.substring(i, j);
-				Variable var = tableObject.lookupVariable(identifierName);
+				Identifier var = tableObject.lookupIdentifier(identifierName);
 				if (var == null) {
 					throw new SyntaxException("identifier " + identifierName + " is not declared");
 				}
-				valueStack.addFirst(new Identifier(var));
+				valueStack.addFirst(new Variable(var));
 				i = j - 1;
 				expectNumber = false;
 				continue;
