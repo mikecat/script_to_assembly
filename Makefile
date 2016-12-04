@@ -3,7 +3,7 @@ CLASSES = \
 	ScriptToAssembly.class \
 	ScriptParser.class \
 	DataType.class \
-	PrimitiveType.class \
+	IntegerType.class \
 	PointerType.class \
 	ArrayType.class \
 	FunctionType.class \

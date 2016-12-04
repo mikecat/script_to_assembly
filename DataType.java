@@ -139,7 +139,7 @@ public abstract class DataType {
 			} else {
 				throw new SyntaxException("unknown type \"" + trimmedData + "\"");
 			}
-			return new PrimitiveType(width, signed);
+			return new IntegerType(width, signed);
 		}
 	}
 

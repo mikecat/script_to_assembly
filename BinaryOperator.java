@@ -32,11 +32,11 @@ public class BinaryOperator extends Expression {
 	private DataType dataType;
 
 	private DataType getAritimeticDataType(DataType left, DataType right) {
-		if (!(left instanceof PrimitiveType) || !(right instanceof PrimitiveType)) {
+		if (!(left instanceof IntegerType) || !(right instanceof IntegerType)) {
 			throw new SyntaxException("invalid operand for aritimetic");
 		}
-		PrimitiveType pt1 = (PrimitiveType)this.left.getDataType();
-		PrimitiveType pt2 = (PrimitiveType)this.right.getDataType();
+		IntegerType pt1 = (IntegerType)this.left.getDataType();
+		IntegerType pt2 = (IntegerType)this.right.getDataType();
 		// 大きい方の型に合わせる
 		if (pt1.getWidth() > pt2.getWidth()) {
 			return pt1;
@@ -44,7 +44,7 @@ public class BinaryOperator extends Expression {
 			return pt2;
 		} else {
 			// サイズが同じ場合、少なくとも1方が符号なしなら符号なし
-			return new PrimitiveType(pt1.getWidth(), pt1.isSigned() && pt2.isSigned());
+			return new IntegerType(pt1.getWidth(), pt1.isSigned() && pt2.isSigned());
 		}
 	}
 
@@ -70,7 +70,7 @@ public class BinaryOperator extends Expression {
 			this.dataType = null;
 			break;
 		case OP_ARRAY:
-			if (!(this.left.getDataType() instanceof PointerType) || !(this.right.getDataType() instanceof PrimitiveType)) {
+			if (!(this.left.getDataType() instanceof PointerType) || !(this.right.getDataType() instanceof IntegerType)) {
 				throw new SyntaxException("invalid operand for array indexing");
 			}
 			this.dataType = ((PointerType)this.left.getDataType()).getPointsAt();
@@ -84,21 +84,21 @@ public class BinaryOperator extends Expression {
 			this.dataType = getAritimeticDataType(this.left.getDataType(), this.right.getDataType());
 			break;
 		case OP_ADD:
-			if (this.left.getDataType() instanceof PrimitiveType && this.right.getDataType() instanceof PrimitiveType) {
+			if (this.left.getDataType() instanceof IntegerType && this.right.getDataType() instanceof IntegerType) {
 				this.dataType = getAritimeticDataType(this.left.getDataType(), this.right.getDataType());
-			} else if (this.left.getDataType() instanceof PointerType && this.right.getDataType() instanceof PrimitiveType) {
+			} else if (this.left.getDataType() instanceof PointerType && this.right.getDataType() instanceof IntegerType) {
 				this.dataType = this.left.getDataType();
-			} else if (this.left.getDataType() instanceof PrimitiveType && this.right.getDataType() instanceof PointerType) {
+			} else if (this.left.getDataType() instanceof IntegerType && this.right.getDataType() instanceof PointerType) {
 				this.dataType = this.right.getDataType();
 			} else {
 				throw new SyntaxException("invalid operand for addition");
 			}
 			break;
 		case OP_SUB:
-			if (this.left.getDataType() instanceof PrimitiveType && this.right.getDataType() instanceof PrimitiveType) {
+			if (this.left.getDataType() instanceof IntegerType && this.right.getDataType() instanceof IntegerType) {
 				this.dataType = getAritimeticDataType(this.left.getDataType(), this.right.getDataType());
 			} else if (this.left.getDataType() instanceof PointerType && this.right.getDataType() instanceof PointerType) {
-				this.dataType = new PrimitiveType(4, true);
+				this.dataType = new IntegerType(4, true);
 			} else {
 				throw new SyntaxException("invalid operand for subtraction");
 			}
@@ -117,10 +117,10 @@ public class BinaryOperator extends Expression {
 		case OP_GTE:
 		case OP_LT:
 		case OP_LTE:
-			if (this.left.getDataType() instanceof PrimitiveType && this.right.getDataType() instanceof PrimitiveType) {
+			if (this.left.getDataType() instanceof IntegerType && this.right.getDataType() instanceof IntegerType) {
 				// 整数同士の比較はできる
-				PrimitiveType pt1 = (PrimitiveType)this.left.getDataType();
-				PrimitiveType pt2 = (PrimitiveType)this.right.getDataType();
+				IntegerType pt1 = (IntegerType)this.left.getDataType();
+				IntegerType pt2 = (IntegerType)this.right.getDataType();
 				// ただし、同じサイズで符号の有無が違う場合はめんどいからダメ
 				if (pt1.getWidth() == pt2.getWidth() && pt1.isSigned() != pt2.isSigned()) {
 					throw new SyntaxException("comparing primitives with same width and different signedness isn't allowed");
@@ -129,14 +129,14 @@ public class BinaryOperator extends Expression {
 				// ポインタ同士の比較はできる、それ以外はエラー
 				throw new SyntaxException("invaild operands for comparision");
 			}
-			this.dataType = new PrimitiveType(4, true);
+			this.dataType = new IntegerType(4, true);
 			break;
 		case OP_EQUAL:
 		case OP_NOT_EQUAL:
-			if (this.left.getDataType() instanceof PrimitiveType && this.right.getDataType() instanceof PrimitiveType) {
+			if (this.left.getDataType() instanceof IntegerType && this.right.getDataType() instanceof IntegerType) {
 				// 整数同士の等価かの判断はできる
-				PrimitiveType pt1 = (PrimitiveType)this.left.getDataType();
-				PrimitiveType pt2 = (PrimitiveType)this.right.getDataType();
+				IntegerType pt1 = (IntegerType)this.left.getDataType();
+				IntegerType pt2 = (IntegerType)this.right.getDataType();
 				// ただし、同じサイズで符号の有無が違う場合はめんどいからダメ
 				if (pt1.getWidth() == pt2.getWidth() && pt1.isSigned() != pt2.isSigned()) {
 					throw new SyntaxException("checking equality of primitives with same width and different signedness isn't allowed");
@@ -146,11 +146,11 @@ public class BinaryOperator extends Expression {
 				// ポインタや関数同士の等価かの判断はできる、それ以外はエラー
 				throw new SyntaxException("invaild operands for equality check");
 			}
-			this.dataType = new PrimitiveType(4, true);
+			this.dataType = new IntegerType(4, true);
 			break;
 		case OP_LOGICAL_AND:
 		case OP_LOGICAL_OR:
-			this.dataType = new PrimitiveType(4, true);
+			this.dataType = new IntegerType(4, true);
 			break;
 		}
 	}

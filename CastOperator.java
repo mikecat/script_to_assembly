@@ -12,7 +12,7 @@ public class CastOperator extends Expression {
 	}
 
 	public Expression evaluate() {
-		if (!(destType instanceof PrimitiveType)) {
+		if (!(destType instanceof IntegerType)) {
 			// 整数型以外への変換はできない
 			return this;
 		}
@@ -22,6 +22,6 @@ public class CastOperator extends Expression {
 			return this;
 		}
 		IntegerLiteral op = (IntegerLiteral)operand;
-		return new IntegerLiteral(op.getValue(), destType.getWidth(), ((PrimitiveType)destType).isSigned());
+		return new IntegerLiteral(op.getValue(), destType.getWidth(), ((IntegerType)destType).isSigned());
 	}
 }

@@ -8,7 +8,7 @@ public class IntegerLiteral extends Expression {
 		this.value = value;
 		this.width = width;
 		this.signed = signed;
-		this.dataType = new PrimitiveType(width, signed);
+		this.dataType = new IntegerType(width, signed);
 		if (this.signed && this.value < 0) {
 			this.value |= ~((((1L << (8 * width - 1)) - 1) << 1) + 1);
 		} else {

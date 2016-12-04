@@ -36,7 +36,7 @@ public class UnaryOperator extends Expression {
 			this.dataType = this.operand.getDataType();
 			break;
 		case UNARY_LOGICAL_NOT:
-			this.dataType = new PrimitiveType(4, true); // TBD
+			this.dataType = new IntegerType(4, true); // TBD
 			break;
 		case UNARY_DEREFERENCE:
 			if (this.operand.getDataType() instanceof PointerType) {
@@ -49,7 +49,7 @@ public class UnaryOperator extends Expression {
 			this.dataType = new PointerType(this.operand.getDataType());
 			break;
 		case UNARY_SIZE:
-			this.dataType = new PrimitiveType(4, false); // ターゲットに依存するので後でなんとかする
+			this.dataType = new IntegerType(4, false); // ターゲットに依存するので後でなんとかする
 			break;
 		case UNARY_AUTO_TO_POINTER:
 			if (this.operand.getDataType() instanceof ArrayType) {

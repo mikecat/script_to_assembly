@@ -1,8 +1,8 @@
-public class PrimitiveType extends DataType {
+public class IntegerType extends DataType {
 	private int width; // バイト数
 	private boolean signed;
 
-	public PrimitiveType(int width, boolean signed) {
+	public IntegerType(int width, boolean signed) {
 		this.width = width;
 		this.signed = signed;
 	}
@@ -15,10 +15,10 @@ public class PrimitiveType extends DataType {
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof PrimitiveType)) {
+		if (!(o instanceof IntegerType)) {
 			return false;
 		}
-		PrimitiveType target = (PrimitiveType)o;
+		IntegerType target = (IntegerType)o;
 		return width == target.width && signed == target.signed;
 	}
 }
