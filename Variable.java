@@ -8,13 +8,13 @@ public class Variable {
 	private String name;
 	private DataType dataType;
 	private Kind kind;
-	private int id;
+	private long value;
 
-	public Variable(String name, DataType dataType, Kind kind, int id) {
+	public Variable(String name, DataType dataType, Kind kind, long value) {
 		this.name = name;
 		this.dataType = dataType;
 		this.kind = kind;
-		this.id = id;
+		this.value = value;
 	}
 
 	public String getName() {
@@ -29,7 +29,7 @@ public class Variable {
 		return kind;
 	}
 
-	public int getId() {
-		return id;
+	public long getValue() {
+		return value;
 	}
 }
