@@ -1,4 +1,32 @@
 public abstract class DataType {
+	private static int systemIntSize = 4;
+	private static int pointerSize = 4;
+	private static int functionSize = 4;
+
+	public static void setSystemIntSize(int systemIntSize) {
+		DataType.systemIntSize = systemIntSize;
+	}
+
+	public static int getSystemIntSize() {
+		return systemIntSize;
+	}
+
+	public static void setPointerSize(int pointerSize) {
+		DataType.pointerSize = pointerSize;
+	}
+
+	public static int getPointerSize() {
+		return pointerSize;
+	}
+
+	public static void setFunctionSize(int functionSize) {
+		DataType.functionSize = functionSize;
+	}
+
+	public static int getFunctionSize() {
+		return functionSize;
+	}
+
 	public static DataType parse(String data, ScriptParser tableObject) {
 		String trimmedData = data.trim();
 		if (trimmedData.startsWith("*")) {
@@ -48,6 +76,24 @@ public abstract class DataType {
 				signed = true;
 			} else if (trimmedData.equals("uint32") || trimmedData.equals("uint")) {
 				width = 4;
+				signed = false;
+			} else if (trimmedData.equals("sysint")) {
+				width = DataType.getSystemIntSize();
+				signed = true;
+			} else if (trimmedData.equals("sysuint")) {
+				width = DataType.getSystemIntSize();
+				signed = false;
+			} else if (trimmedData.equals("ptrint")) {
+				width = DataType.getPointerSize();
+				signed = true;
+			} else if (trimmedData.equals("ptruint")) {
+				width = DataType.getPointerSize();
+				signed = false;
+			} else if (trimmedData.equals("funcint")) {
+				width = DataType.getFunctionSize();
+				signed = true;
+			} else if (trimmedData.equals("funcuint")) {
+				width = DataType.getFunctionSize();
 				signed = false;
 			} else if (trimmedData.equals("none")) {
 				return new NoneType();

@@ -10,7 +10,7 @@ public class PointerType extends DataType {
 	}
 
 	public int getWidth() {
-		return 4; // ターゲットに依存するので、後でなんとかする
+		return DataType.getPointerSize();
 	}
 
 	public boolean equals(Object o) {

@@ -10,7 +10,7 @@ public class FunctionType extends DataType {
 	}
 
 	public int getWidth() {
-		return 4; // ターゲットに依存するので後でなんとかする
+		return DataType.getFunctionSize();
 	}
 
 	public boolean equals(Object o) {
