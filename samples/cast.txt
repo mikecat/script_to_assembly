@@ -1,0 +1,8 @@
+function hoge none
+	var a int
+	var b int
+	var c *int
+	a = 123
+	b = {ptruint}a
+	c = {*int}b
+endfunction

@@ -1,5 +1,6 @@
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -45,6 +46,18 @@ public abstract class Expression {
 
 		public UnaryOperator.Kind getKind() {
 			return kind;
+		}
+	}
+
+	private static class CastOperatorInExpression extends OperatorInExpression {
+		private DataType destType;
+		public CastOperatorInExpression(DataType destType, int precedence, boolean rightAssociative) {
+			super(precedence, rightAssociative);
+			this.destType = destType;
+		}
+
+		public DataType getDestType() {
+			return destType;
 		}
 	}
 
@@ -132,6 +145,40 @@ public abstract class Expression {
 					break;
 				}
 			}
+			// キャスト演算子か？
+			if (operator == null && expression.charAt(i) == '{') {
+				int j = i + 1;
+				Deque<Character> parenthesisStack = new ArrayDeque<>();
+				parenthesisStack.addFirst('{');
+				for (; j < expression.length() && !parenthesisStack.isEmpty(); j++) {
+					boolean parenthesisMismatch = false;
+					switch(expression.charAt(j)) {
+					case '(':
+					case '{':
+					case '[':
+						parenthesisStack.addFirst(expression.charAt(j));
+						break;
+					case ')':
+						parenthesisMismatch = (parenthesisStack.removeFirst() != '(');
+						break;
+					case '}':
+						parenthesisMismatch = (parenthesisStack.removeFirst() != '{');
+						break;
+					case ']':
+						parenthesisMismatch = (parenthesisStack.removeFirst() != '[');
+						break;
+					}
+					if (parenthesisMismatch) {
+						throw new SyntaxException("parenthesis mismatch in cast operator");
+					}
+				}
+				if (!parenthesisStack.isEmpty()) {
+					throw new SyntaxException("unterminated cast operator");
+				}
+				operator = new CastOperatorInExpression(
+					DataType.parse(expression.substring(i + 1, j - 1), tableObject), 1, true);
+				i = j - 1;
+			}
 			if (operator != null) {
 				// 演算子である
 				while (expStack.size() > 0 && expStack.peekFirst().shouldPopBefore(operator)) {
@@ -140,9 +187,14 @@ public abstract class Expression {
 						Expression right = valueStack.removeFirst();
 						Expression left = valueStack.removeFirst();
 						valueStack.addFirst(new BinaryOperator(((BinaryOperatorInExpression)popOperator).getKind(), left, right));
-					} else {
+					} else if (popOperator instanceof UnaryOperatorInExpression) {
 						Expression operand = valueStack.removeFirst();
 						valueStack.addFirst(new UnaryOperator(((UnaryOperatorInExpression)popOperator).getKind(), operand));
+					} else if (popOperator instanceof CastOperatorInExpression) {
+						Expression operand = valueStack.removeFirst();
+						valueStack.addFirst(new CastOperator(((CastOperatorInExpression)popOperator).getDestType(), operand));
+					} else {
+						throw new SystemLimitException("unknown operator type");
 					}
 				}
 				expStack.addFirst(operator);
@@ -184,9 +236,14 @@ public abstract class Expression {
 							Expression right = valueStack.removeFirst();
 							Expression left = valueStack.removeFirst();
 							valueStack.addFirst(new BinaryOperator(((BinaryOperatorInExpression)popOperator).getKind(), left, right));
-						} else {
+						} else if (popOperator instanceof UnaryOperatorInExpression) {
 							Expression operand = valueStack.removeFirst();
 							valueStack.addFirst(new UnaryOperator(((UnaryOperatorInExpression)popOperator).getKind(), operand));
+						} else if (popOperator instanceof CastOperatorInExpression) {
+							Expression operand = valueStack.removeFirst();
+							valueStack.addFirst(new CastOperator(((CastOperatorInExpression)popOperator).getDestType(), operand));
+						} else {
+							throw new SystemLimitException("unknown operator type");
 						}
 					}
 					if (parenthesisFound == null) {
@@ -316,9 +373,14 @@ public abstract class Expression {
 				Expression right = valueStack.removeFirst();
 				Expression left = valueStack.removeFirst();
 				valueStack.addFirst(new BinaryOperator(((BinaryOperatorInExpression)popOperator).getKind(), left, right));
-			} else {
+			} else if (popOperator instanceof UnaryOperatorInExpression) {
 				Expression operand = valueStack.removeFirst();
 				valueStack.addFirst(new UnaryOperator(((UnaryOperatorInExpression)popOperator).getKind(), operand));
+			} else if (popOperator instanceof CastOperatorInExpression) {
+				Expression operand = valueStack.removeFirst();
+				valueStack.addFirst(new CastOperator(((CastOperatorInExpression)popOperator).getDestType(), operand));
+			} else {
+				throw new SystemLimitException("unknown operator type");
 			}
 		}
 		return valueStack.removeFirst();
