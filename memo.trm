@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/04 13:53:27"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/04 14:15:11"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -327,6 +327,8 @@ sysint : ターゲットで都合の良いサイズの符号付き整数
 sysuint : ターゲットで都合の良いサイズの符号なし整数
 ptrint : ポインタ(アドレス)と同じサイズの符号付き整数
 ptruint : ポインタ(アドレス)と同じサイズの符号なし整数
+funcint : 関数と同じサイズの符号付き整数
+funcuint : 関数と同じサイズの符号なし整数
 
 none : データなし
 
