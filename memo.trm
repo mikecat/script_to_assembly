@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/01 21:33:16"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/04 12:12:32"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -15,7 +15,7 @@ http://kazina.com/treepad/index.html
 まずはスクリプトを読み込む。
 </text><node name="文法" expanded="yes" selstart="0" sellength="0"><text>
 文法は大事である。
-</text><node name="ファイルの取り込み" expanded="no" selstart="0" sellength="0"><text>
+</text><node name="ファイルの取り込み" expanded="yes" selstart="0" sellength="0"><text>
 ファイルの取り込み
 C言語でいうところの#include的なやつ
 
@@ -27,11 +27,29 @@ C言語でいうところの#include的なやつ
   uselib パス
 
 無限再帰にならないように、適当な深さで打ち切る。
-</text></node><node name="定数の定義" expanded="no" selstart="0" sellength="0"><text>
+</text></node><node name="宣言・定義" expanded="yes" selstart="0" sellength="0"><text>
+宣言・定義
+
+宣言は、変数や関数の存在のみを示すもので、実体の作成を指示しない。
+定義は、変数や関数の実体の作成を指示する。
+
+関数内での宣言や定義はローカル(その関数内で有効)、
+関数外での宣言や定義はグローバル(プログラム全体で有効)である。
+ただし、「プログラム全体」といっても宣言や定義の前では使用できない。
+
+型が同じ宣言は、同じ名前で何回でもしていい。
+定義の後でも同じ型なら同じ名前の宣言をしていい。
+同じ名前で型が違う宣言はエラーである。
+
+ローカル変数(引数を含む)の定義はできるが、宣言はできない。
+ローカルでの宣言がローカル変数と同じ名前の場合、エラーである。
+ローカル変数の定義がグローバルの宣言や定義と同じ名前の場合、
+ローカル変数が優先される。
+</text><node name="定数の定義" expanded="no" selstart="0" sellength="0"><text>
 定数の定義
 
 定数を定義する
-  define 識別子 型 = 定数式
+  define 識別子 型 : 定数式
 
 定数式とは、変数や関数の呼び出しを含まない式である。
 </text></node><node name="変数の定義" expanded="no" selstart="0" sellength="0"><text>
@@ -44,14 +62,14 @@ C言語でいうところの#include的なやつ
 ローカル変数を定義する
 (関数の定義中で)
   var 識別子 型
+
+アドレスを指定した(グローバル)変数を定義する
+  address 識別子 型 : アドレスを表す定数式
 </text></node><node name="変数の宣言" expanded="no" selstart="0" sellength="0"><text>
 変数の宣言
 
-変数を宣言だけして定義しない
+グローバル変数を宣言だけして定義しない
   vardeclare 識別子 型
-
-アドレスを指定して変数を宣言する
-  address 識別子 型 = アドレスを表す定数式
 </text></node><node name="関数の定義" expanded="no" selstart="0" sellength="0"><text>
 関数の定義
 このスクリプトでの「関数」は、
@@ -77,7 +95,7 @@ C言語的な意味での関数、すなわちサブルーチンのようなも�
 
 関数の宣言
   funcdeclare 識別子 型
-</text></node><node name="条件分岐・ループ" expanded="yes" selstart="0" sellength="0"><text>
+</text></node></node><node name="条件分岐・ループ" expanded="yes" selstart="0" sellength="0"><text>
 条件分岐・ループ
 
 条件分岐
@@ -115,6 +133,8 @@ whileループ
 
 内側からn番目(1-origin)のループの最初の処理に戻る
   continue n
+
+nは定数でないといけない。
 </text></node></node><node name="関数から戻る" expanded="no" selstart="0" sellength="0"><text>
 関数から戻る
 
@@ -150,7 +170,6 @@ whileループ
   半角英アルファベット大文字、小文字
   数字 (識別子の1文字目には不可)
   アンダーバー
-  全て0x80以上のバイトで表現される文字
 
 識別子の処理 : 親に指示される
   ・値を取得する
@@ -169,6 +188,7 @@ whileループ
 *x : ポインタxが指すデータ
 &amp;x : xのアドレス
 #x : xのバイト数(C言語のsizeof演算子)
+{型}x : xを型とみなしたデータ(キャスト)
 </text></node><node name="二項演算子" expanded="no" selstart="0" sellength="0"><text>
 二項演算子
 
@@ -215,7 +235,7 @@ whileループ
 
 ↑高い
 左結合: ()
-右結合: 単項- 単項+ ! ~ 単項* 単項&amp; #
+右結合: 単項- 単項+ ! ~ 単項* 単項&amp; # {型}
 左結合: @
 左結合: 二項* 二項/ %
 左結合: 二項+ 二項-
@@ -303,14 +323,20 @@ uint32 : 4バイト符号なし整数
 int: 4バイト符号付き整数 (int32と同じ)
 uint : 4バイト符号なし整数 (uint32と同じ)
 
+sysint : ターゲットで都合の良いサイズの符号付き整数
+sysuint : ターゲットで都合の良いサイズの符号なし整数
+ptrint : ポインタ(アドレス)と同じサイズの符号付き整数
+ptruint : ポインタ(アドレス)と同じサイズの符号なし整数
+
 none : データなし
 
 C言語のvoid的なやつ
 
 func : 関数
 
-「関数」のデータの実体は、典型的には関数の先頭アドレスである。
-C言語と異なり、関数が勝手にポインタとして扱われることはない。
+「関数」は関数の定義を表す型として用いる。
+変数だとするとラムダ式のようなイメージだが、ラムダ式の実装の予定はない。
+式中の「関数」は、C言語のように基本的にその関数へのポインタに変換する。
 
 (TODO: 「関数」に戻り値の型の情報を入れる)
 </text></node><node name="派生型" expanded="no" selstart="0" sellength="0"><text>
