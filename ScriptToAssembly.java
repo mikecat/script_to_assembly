@@ -5,6 +5,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.FileReader;
 import java.io.File;
+import java.io.Writer;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.io.BufferedWriter;
 
 public class ScriptToAssembly {
 	private List<String> inputFileName = new java.util.ArrayList<String>();
@@ -12,6 +16,7 @@ public class ScriptToAssembly {
 	private List<String> libraryDir = new java.util.ArrayList<String>();
 	private String targetName = null;
 	private int ttl = 10;
+	private AssemblyGenerator asmGen = null;
 	private boolean debug = false;
 
 	public void addInputFileName(String inputFileName) {
@@ -34,11 +39,21 @@ public class ScriptToAssembly {
 		this.ttl = ttl;
 	}
 
+	public void setAssemblyGenerator(AssemblyGenerator asmGen) {
+		this.asmGen = asmGen;
+	}
+
 	public void setDebug(boolean debug) {
 		this.debug = debug;
 	}
 
 	public void doWork() throws Exception {
+		// ターゲットによって決まるデータの大きさを設定する
+		if (asmGen != null) {
+			DataType.setSystemIntSize(asmGen.getSystemIntSize());
+			DataType.setPointerSize(asmGen.getPointerSize());
+			DataType.setFunctionSize(asmGen.getFunctionSize());
+		}
 		// パーサを初期化する
 		ScriptParser parser = new ScriptParser();
 		parser.setLibraryDir(libraryDir);
@@ -56,6 +71,19 @@ public class ScriptToAssembly {
 				parser.parse(br, inputFile, ttl);
 				// 入力のファイルを閉じる
 				br.close();
+			}
+		}
+
+		// アセンブリ言語を出力する
+		if (asmGen != null) {
+			Writer writer;
+			if (outputFileName == null) {
+				writer = new OutputStreamWriter(System.out);
+			} else {
+				writer = new FileWriter(outputFileName);
+				asmGen.generateAssembly(new BufferedWriter(writer),
+						parser.getStaticVariableDefinitionList(),
+					parser.getFunctionDefinitionList());
 			}
 		}
 	}
