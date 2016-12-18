@@ -35,6 +35,7 @@ CLASSES = \
 	ReturnInstruction.class \
 	BreakInstruction.class \
 	ContinueInstruction.class \
+	AssemblyGenerator.class \
 # blank line (allow \ after the last class)
 
 $(TARGET): $(CLASSES) jar-manifest.txt
