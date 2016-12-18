@@ -22,7 +22,7 @@ public class FunctionBuilder extends InstructionBuilder {
 	}
 
 	public Identifier addVariable(String name, DataType dataType) {
-		LocalVariable newVariable = new LocalVariable(name, dataType, false, variableCount++);
+		AutomaticVariable newVariable = new AutomaticVariable(name, dataType, false, variableCount++);
 		variableList.add(newVariable);
 		return newVariable;
 	}

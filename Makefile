@@ -11,8 +11,8 @@ CLASSES = \
 	IntegerLiteral.class \
 	StringLiteral.class \
 	Identifier.class \
-	LocalVariable.class \
-	GlobalVariable.class \
+	AutomaticVariable.class \
+	StaticVariable.class \
 	Argument.class \
 	AddressVariable.class \
 	DefinedValue.class \
