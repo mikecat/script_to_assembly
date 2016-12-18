@@ -20,7 +20,7 @@ CLASSES = \
 	SystemLimitException.class \
 	FunctionBuilder.class \
 	NoneType.class \
-	Variable.class \
+	VariableAccess.class \
 	InstructionBuilder.class \
 	InfiniteLoop.class \
 	InfiniteLoopBuilder.class \

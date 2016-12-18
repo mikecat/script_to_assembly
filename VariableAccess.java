@@ -1,7 +1,7 @@
-public class Variable extends Expression {
+public class VariableAccess extends Expression {
 	private Identifier var;
 
-	public Variable(Identifier var) {
+	public VariableAccess(Identifier var) {
 		this.var = var;
 	}
 

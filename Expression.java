@@ -348,7 +348,7 @@ public abstract class Expression {
 				if (var == null) {
 					throw new SyntaxException("identifier " + identifierName + " is not declared");
 				}
-				valueStack.addFirst(new Variable(var));
+				valueStack.addFirst(new VariableAccess(var));
 				i = j - 1;
 				expectNumber = false;
 				continue;
