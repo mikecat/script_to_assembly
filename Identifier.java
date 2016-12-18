@@ -1,4 +1,4 @@
-public class Identifier {
+public abstract class Identifier {
 	private String name;
 	private DataType dataType;
 	private boolean globalDeclaration;
