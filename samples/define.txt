@@ -1,0 +1,6 @@
+define hoge int : 123
+define fuga uint8 : 255
+
+function foo none
+	define hoge int : 456
+endfunction

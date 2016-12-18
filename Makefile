@@ -15,6 +15,7 @@ CLASSES = \
 	GlobalVariable.class \
 	Argument.class \
 	AddressVariable.class \
+	DefinedValue.class \
 	UnaryOperator.class \
 	BinaryOperator.class \
 	Function.class \

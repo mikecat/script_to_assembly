@@ -87,6 +87,8 @@ public class ScriptParser {
 					processFuncdeclare(data);
 				} else if (action.equals("address")) {
 					processAddress(data);
+				} else if (action.equals("define")) {
+					processDefine(data);
 				} else if (action.equals("loop")) {
 					processLoop();
 				} else if (action.equals("endloop")) {
@@ -400,6 +402,60 @@ public class ScriptParser {
 			// グローバル変数の重複チェック
 			if (existingIdentifier != null) {
 				if (existingIdentifier.getDataType().equals(varType)) {
+					// 同じ名前の宣言が既にあり、型が同じ → 定義されているかを調べる
+					for (Iterator<Identifier> it = variableDefinitionList.iterator(); it.hasNext(); ) {
+						if (it.next().getName().equals(nameAndType[0])) {
+							// 同じ名前の変数が定義されている
+							throw new SyntaxException("variable " + nameAndType[0] + " is already defined");
+						}
+					}
+					for (Iterator<Function> it = functionDefinitionList.iterator(); it.hasNext(); ) {
+						if (it.next().getName().equals(nameAndType[0])) {
+							// 同じ名前の関数が定義されている
+							throw new SyntaxException(nameAndType[0] + " is already defined as function");
+						}
+					}
+				} else {
+					// 同じ名前の宣言が既にあり、型が違う
+					throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
+				}
+			}
+			// グローバル変数を作成して登録する
+			globalIdentifierDeclarationList.put(nameAndType[0], newValue);
+		}
+	}
+
+	private void processDefine(String data) {
+		if (data == null) {
+			throw new SyntaxException("identifire to define not found");
+		}
+		String[] nameAndType = data.split("\\s+", 2);
+		if (nameAndType.length < 2) {
+			throw new SyntaxException("data type for define not found");
+		}
+		String[] typeAndValue = nameAndType[1].split("\\s*:\\s*", 2);
+		if (typeAndValue.length < 2) {
+			throw new SyntaxException("value for define not found");
+		}
+		DataType dataType = DataType.parse(typeAndValue[0], this);
+		Expression value = Expression.parse(typeAndValue[1], this).evaluate();
+		if (!(value instanceof IntegerLiteral)) {
+			throw new SyntaxException("value to define have to be an integer constant");
+		}
+		DefinedValue newValue = new DefinedValue(nameAndType[0], dataType,
+			!isInFunction, ((IntegerLiteral)value).getValue());
+		Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
+		if (isInFunction) {
+			// ローカル変数の重複チェック
+			if (existingIdentifier != null && !existingIdentifier.isGlobalDeclaration()) {
+				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
+			}
+			// ローカル変数を登録する
+			localIdentifierDeclarationList.put(nameAndType[0], newValue);
+		} else {
+			// グローバル変数の重複チェック
+			if (existingIdentifier != null) {
+				if (existingIdentifier.getDataType().equals(dataType)) {
 					// 同じ名前の宣言が既にあり、型が同じ → 定義されているかを調べる
 					for (Iterator<Identifier> it = variableDefinitionList.iterator(); it.hasNext(); ) {
 						if (it.next().getName().equals(nameAndType[0])) {
