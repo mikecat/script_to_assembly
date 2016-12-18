@@ -22,13 +22,13 @@ public class FunctionBuilder extends InstructionBuilder {
 	}
 
 	public Identifier addVariable(String name, DataType dataType) {
-		Identifier newVariable = new Identifier(name, dataType, Identifier.Kind.LOCAL_VARIABLE, variableCount++);
+		LocalVariable newVariable = new LocalVariable(name, dataType, false, variableCount++);
 		variableList.add(newVariable);
 		return newVariable;
 	}
 
 	public Identifier addArgument(String name, DataType dataType) {
-		Identifier newArgument = new Identifier(name, dataType, Identifier.Kind.ARGUMENT, argumentCount++);
+		Argument newArgument = new Argument(name, dataType, false, argumentCount++);
 		variableList.add(newArgument);
 		return newArgument;
 	}

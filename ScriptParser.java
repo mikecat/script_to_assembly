@@ -204,8 +204,7 @@ public class ScriptParser {
 				}
 			}
 			// 関数の宣言を登録する
-			Variable newFunction = new Variable(nameAndType[0],
-				thisFunctionType, true, functionDefinitionList.size());
+			GlobalVariable newFunction = new GlobalVariable(nameAndType[0], thisFunctionType, true);
 			globalIdentifierDeclarationList.put(nameAndType[0], newFunction);
 			// 関数の定義を開始する
 			isInFunction = true;
@@ -274,7 +273,7 @@ public class ScriptParser {
 				}
 			}
 			// グローバル変数を作成して登録する
-			Variable var = new Variable(nameAndType[0], varType, true, variableDefinitionList.size());
+			GlobalVariable var = new GlobalVariable(nameAndType[0], varType, true);
 			variableDefinitionList.add(var);
 			globalIdentifierDeclarationList.put(nameAndType[0], var);
 		}
@@ -319,7 +318,7 @@ public class ScriptParser {
 				}
 			} else {
 				// ローカルの宣言を作成して登録する
-				Variable var = new Variable(nameAndType[0], varType, false, -1);
+				GlobalVariable var = new GlobalVariable(nameAndType[0], varType, false);
 				localIdentifierDeclarationList.put(nameAndType[0], var);
 			}
 		} else {
@@ -329,7 +328,7 @@ public class ScriptParser {
 				throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
 			}
 			// グローバル変数を作成して登録する
-			Variable var = new Variable(nameAndType[0], varType, true, -1);
+			GlobalVariable var = new GlobalVariable(nameAndType[0], varType, true);
 			globalIdentifierDeclarationList.put(nameAndType[0], var);
 		}
 	}
@@ -355,7 +354,7 @@ public class ScriptParser {
 				}
 			} else {
 				// ローカルの宣言を作成して登録する
-				Variable var = new Variable(nameAndType[0], functionType, false, -1);
+				GlobalVariable var = new GlobalVariable(nameAndType[0], functionType, false);
 				localIdentifierDeclarationList.put(nameAndType[0], var);
 			}
 		} else {
@@ -365,7 +364,7 @@ public class ScriptParser {
 				throw new SyntaxException("declaration of function " + nameAndType[0] + " conflicts");
 			}
 			// グローバルの宣言を作成して登録する
-			Variable var = new Variable(nameAndType[0], functionType, true, -1);
+			GlobalVariable var = new GlobalVariable(nameAndType[0], functionType, true);
 			globalIdentifierDeclarationList.put(nameAndType[0], var);
 		}
 	}
