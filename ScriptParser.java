@@ -252,7 +252,7 @@ public class ScriptParser {
 				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 			}
 			// ローカル変数を作成して登録する
-			Identifier var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1], this));
+			Identifier var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1], this), false);
 			localIdentifierDeclarationList.put(nameAndType[0], var);
 		} else {
 			DataType varType = DataType.parse(nameAndType[1], this);
@@ -300,7 +300,7 @@ public class ScriptParser {
 			throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 		}
 		// 引数を作成して登録する
-		Identifier var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1], this));
+		Identifier var = currentFunction.addVariable(nameAndType[0], DataType.parse(nameAndType[1], this), true);
 		localIdentifierDeclarationList.put(nameAndType[0], var);
 	}
 

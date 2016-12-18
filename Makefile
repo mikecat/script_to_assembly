@@ -13,7 +13,6 @@ CLASSES = \
 	Identifier.class \
 	AutomaticVariable.class \
 	StaticVariable.class \
-	Argument.class \
 	AddressVariable.class \
 	DefinedValue.class \
 	UnaryOperator.class \

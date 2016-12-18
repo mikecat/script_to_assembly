@@ -3,13 +3,13 @@ import java.util.List;
 public class Function {
 	private String name;
 	private DataType dataType;
-	private Identifier[] variableList;
+	private AutomaticVariable[] variableList;
 	private Instruction[] instructionList;
 
-	public Function(String name, DataType dataType, List<Identifier> variableList, List<Instruction> instructionList) {
+	public Function(String name, DataType dataType, List<AutomaticVariable> variableList, List<Instruction> instructionList) {
 		this.name = name;
 		this.dataType = dataType;
-		this.variableList = variableList.toArray(new Identifier[variableList.size()]);
+		this.variableList = variableList.toArray(new AutomaticVariable[variableList.size()]);
 		this.instructionList = instructionList.toArray(new Instruction[instructionList.size()]);
 	}
 
@@ -25,7 +25,7 @@ public class Function {
 		return variableList.length;
 	}
 
-	public Identifier getVariable(int index) {
+	public AutomaticVariable getVariable(int index) {
 		return variableList[index];
 	}
 
