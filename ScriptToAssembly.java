@@ -1,20 +1,21 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.FileReader;
 import java.io.File;
 
 public class ScriptToAssembly {
-	private String inputFileName = null;
+	private List<String> inputFileName = new java.util.ArrayList<String>();
 	private String outputFileName = null;
 	private List<String> libraryDir = new java.util.ArrayList<String>();
 	private String targetName = null;
 	private int ttl = 10;
 	private boolean debug = false;
 
-	public void setInputFileName(String inputFileName) {
-		this.inputFileName = inputFileName;
+	public void addInputFileName(String inputFileName) {
+		this.inputFileName.add(inputFileName);
 	}
 
 	public void setOutputFileName(String outputFileName) {
@@ -38,23 +39,25 @@ public class ScriptToAssembly {
 	}
 
 	public void doWork() throws Exception {
-		// 入力のファイルを開く
-		BufferedReader br;
-		File inputFile;
-		if (inputFileName == null) {
-			inputFile = null;
-			br = new BufferedReader(new InputStreamReader(System.in));
-		} else {
-			inputFile = new File(inputFileName);
-			br = new BufferedReader(new FileReader(inputFile));
-		}
-		// パース処理を実行する
+		// パーサを初期化する
 		ScriptParser parser = new ScriptParser();
 		parser.setLibraryDir(libraryDir);
 		parser.setDebug(debug);
-		parser.parse(br, inputFile, ttl);
-		// 入力のファイルを閉じる
-		br.close();
+		if (inputFileName.isEmpty()) {
+			// 標準入力を処理する
+			parser.parse(new BufferedReader(new InputStreamReader(System.in)), null, ttl);
+		} else {
+			Iterator<String> itr = inputFileName.iterator();
+			while (itr.hasNext()) {
+				// 入力のファイルを開く
+				File inputFile = new File(itr.next());
+				BufferedReader br = new BufferedReader(new FileReader(inputFile));
+				// パース処理を実行する
+				parser.parse(br, inputFile, ttl);
+				// 入力のファイルを閉じる
+				br.close();
+			}
+		}
 	}
 
 	public static void printHelp() {
@@ -85,7 +88,7 @@ public class ScriptToAssembly {
 			for (int i = 0; i < args.length; i++) {
 				if (args[i].equals("-i")) {
 					if (i + 1 < args.length) {
-						sta.setInputFileName(args[++i]);
+						sta.addInputFileName(args[++i]);
 					} else {
 						throw new IllegalArgumentException("file name not specified for -i");
 					}
