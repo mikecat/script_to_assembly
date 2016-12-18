@@ -1,12 +1,12 @@
 public class Identifier {
 	private String name;
 	private DataType dataType;
-	private boolean global;
+	private boolean globalDeclaration;
 
-	public Identifier(String name, DataType dataType, boolean global) {
+	public Identifier(String name, DataType dataType, boolean globalDeclaration) {
 		this.name = name;
 		this.dataType = dataType;
-		this.global = global;
+		this.globalDeclaration = globalDeclaration;
 	}
 
 	public String getName() {
@@ -17,7 +17,7 @@ public class Identifier {
 		return dataType;
 	}
 
-	public boolean isGlobal() {
-		return global;
+	public boolean isGlobalDeclaration() {
+		return globalDeclaration;
 	}
 }

@@ -243,7 +243,7 @@ public class ScriptParser {
 		if (isInFunction) {
 			// ローカル変数の重複チェック
 			Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
-			if (existingIdentifier != null && !existingIdentifier.isGlobal()) {
+			if (existingIdentifier != null && !existingIdentifier.isGlobalDeclaration()) {
 				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 			}
 			// ローカル変数を作成して登録する
@@ -291,7 +291,7 @@ public class ScriptParser {
 		}
 		// 引数の重複チェック
 		Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
-		if (existingIdentifier != null && !existingIdentifier.isGlobal()) {
+		if (existingIdentifier != null && !existingIdentifier.isGlobalDeclaration()) {
 			throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 		}
 		// 引数を作成して登録する
@@ -312,7 +312,7 @@ public class ScriptParser {
 		if (isInFunction) {
 			// ローカル変数と重複しているかチェック
 			if (existingIdentifier != null) {
-				if (!existingIdentifier.isGlobal()) {
+				if (!existingIdentifier.isGlobalDeclaration()) {
 					throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 				} else if (!existingIdentifier.getDataType().equals(varType)) {
 					throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
@@ -348,7 +348,7 @@ public class ScriptParser {
 		if (isInFunction) {
 			// ローカル変数と重複しているかチェック
 			if (existingIdentifier != null) {
-				if (!existingIdentifier.isGlobal()) {
+				if (!existingIdentifier.isGlobalDeclaration()) {
 					throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 				} else if (!existingIdentifier.getDataType().equals(functionType)) {
 					throw new SyntaxException("declaration of function " + nameAndType[0] + " conflicts");
@@ -392,7 +392,7 @@ public class ScriptParser {
 		Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
 		if (isInFunction) {
 			// ローカル変数の重複チェック
-			if (existingIdentifier != null && !existingIdentifier.isGlobal()) {
+			if (existingIdentifier != null && !existingIdentifier.isGlobalDeclaration()) {
 				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 			}
 			// ローカル変数を登録する
