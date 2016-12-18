@@ -1,0 +1,6 @@
+define base ptruint : 0x1000
+address reg1 byte : base + 0
+address reg2 byte : base + 1
+address reg3 byte : base + 2
+address reg4 byte : base + 3
+address wordreg uint32 : base + 4

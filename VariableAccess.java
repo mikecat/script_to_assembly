@@ -14,6 +14,11 @@ public class VariableAccess extends Expression {
 	}
 
 	public Expression evaluate() {
-		return this;
+		if (var instanceof DefinedValue) {
+			DefinedValue dvar = (DefinedValue)var;
+			return new IntegerLiteral(dvar.getValue(), dvar.getWidth(), dvar.isSigned());
+		} else {
+			return this;
+		}
 	}
 }

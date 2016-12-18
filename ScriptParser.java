@@ -438,12 +438,15 @@ public class ScriptParser {
 			throw new SyntaxException("value for define not found");
 		}
 		DataType dataType = DataType.parse(typeAndValue[0], this);
+		if(!(dataType instanceof IntegerType)) {
+			throw new SyntaxException("data type for define has to be an integer");
+		}
 		Expression value = Expression.parse(typeAndValue[1], this).evaluate();
 		if (!(value instanceof IntegerLiteral)) {
 			throw new SyntaxException("value to define have to be an integer constant");
 		}
-		DefinedValue newValue = new DefinedValue(nameAndType[0], dataType,
-			!isInFunction, ((IntegerLiteral)value).getValue());
+		DefinedValue newValue = new DefinedValue(nameAndType[0], !isInFunction, ((IntegerLiteral)value).getValue(),
+			((IntegerType)dataType).getWidth(), ((IntegerType)dataType).isSigned());
 		Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
 		if (isInFunction) {
 			// ローカル変数の重複チェック
