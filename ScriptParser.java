@@ -14,7 +14,7 @@ public class ScriptParser {
 	private String[] libraryDir = new String[0];
 	private boolean debug = false;
 
-	private List<Identifier> variableDefinitionList;
+	private List<StaticVariable> staticVariableDefinitionList;
 	private List<Function> functionDefinitionList;
 
 	private Map<String, Identifier> globalIdentifierDeclarationList;
@@ -36,12 +36,16 @@ public class ScriptParser {
 		this.debug = debug;
 	}
 
+	public StaticVariable[] getStaticVariableDefinitionList() {
+		return staticVariableDefinitionList.toArray(new StaticVariable[staticVariableDefinitionList.size()]);
+	}
+
 	public Function[] getFunctionDefinitionList() {
 		return functionDefinitionList.toArray(new Function[functionDefinitionList.size()]);
 	}
 
 	public void resetParseStatus() {
-		variableDefinitionList = new ArrayList<Identifier>();
+		staticVariableDefinitionList = new ArrayList<StaticVariable>();
 		functionDefinitionList = new ArrayList<Function>();
 		globalIdentifierDeclarationList = new HashMap<String, Identifier>();
 		localIdentifierDeclarationList = new HashMap<String, Identifier>();
@@ -257,7 +261,7 @@ public class ScriptParser {
 			if (existingIdentifier != null) {
 				if (existingIdentifier.getDataType().equals(varType)) {
 					// 同じ名前の宣言が既にあり、型が同じ → 定義されているかを調べる
-					for (Iterator<Identifier> it = variableDefinitionList.iterator(); it.hasNext(); ) {
+					for (Iterator<StaticVariable> it = staticVariableDefinitionList.iterator(); it.hasNext(); ) {
 						if (it.next().getName().equals(nameAndType[0])) {
 							// 同じ名前の変数が定義されている
 							throw new SyntaxException("variable " + nameAndType[0] + " is already defined");
@@ -276,7 +280,7 @@ public class ScriptParser {
 			}
 			// グローバル変数を作成して登録する
 			StaticVariable var = new StaticVariable(nameAndType[0], varType, true);
-			variableDefinitionList.add(var);
+			staticVariableDefinitionList.add(var);
 			globalIdentifierDeclarationList.put(nameAndType[0], var);
 		}
 	}
@@ -403,7 +407,7 @@ public class ScriptParser {
 			if (existingIdentifier != null) {
 				if (existingIdentifier.getDataType().equals(varType)) {
 					// 同じ名前の宣言が既にあり、型が同じ → 定義されているかを調べる
-					for (Iterator<Identifier> it = variableDefinitionList.iterator(); it.hasNext(); ) {
+					for (Iterator<StaticVariable> it = staticVariableDefinitionList.iterator(); it.hasNext(); ) {
 						if (it.next().getName().equals(nameAndType[0])) {
 							// 同じ名前の変数が定義されている
 							throw new SyntaxException("variable " + nameAndType[0] + " is already defined");
@@ -460,7 +464,7 @@ public class ScriptParser {
 			if (existingIdentifier != null) {
 				if (existingIdentifier.getDataType().equals(dataType)) {
 					// 同じ名前の宣言が既にあり、型が同じ → 定義されているかを調べる
-					for (Iterator<Identifier> it = variableDefinitionList.iterator(); it.hasNext(); ) {
+					for (Iterator<StaticVariable> it = staticVariableDefinitionList.iterator(); it.hasNext(); ) {
 						if (it.next().getName().equals(nameAndType[0])) {
 							// 同じ名前の変数が定義されている
 							throw new SyntaxException("variable " + nameAndType[0] + " is already defined");
