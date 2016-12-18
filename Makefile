@@ -11,6 +11,9 @@ CLASSES = \
 	IntegerLiteral.class \
 	StringLiteral.class \
 	Identifier.class \
+	Variable.class \
+	Argument.class \
+	AddressVariable.class \
 	UnaryOperator.class \
 	BinaryOperator.class \
 	Function.class \

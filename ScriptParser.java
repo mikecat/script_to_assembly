@@ -204,8 +204,8 @@ public class ScriptParser {
 				}
 			}
 			// 関数の宣言を登録する
-			Identifier newFunction = new Identifier(nameAndType[0],
-				thisFunctionType, Identifier.Kind.GLOBAL_VARIABLE, functionDefinitionList.size());
+			Variable newFunction = new Variable(nameAndType[0],
+				thisFunctionType, true, functionDefinitionList.size());
 			globalIdentifierDeclarationList.put(nameAndType[0], newFunction);
 			// 関数の定義を開始する
 			isInFunction = true;
@@ -243,8 +243,7 @@ public class ScriptParser {
 		if (isInFunction) {
 			// ローカル変数の重複チェック
 			Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
-			if (existingIdentifier != null && existingIdentifier.getKind() != Identifier.Kind.GLOBAL_VARIABLE &&
-			existingIdentifier.getKind() != Identifier.Kind.ADDRESS_VARIABLE) {
+			if (existingIdentifier != null && !existingIdentifier.isGlobal()) {
 				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 			}
 			// ローカル変数を作成して登録する
@@ -275,8 +274,7 @@ public class ScriptParser {
 				}
 			}
 			// グローバル変数を作成して登録する
-			Identifier var = new Identifier(nameAndType[0], varType,
-				Identifier.Kind.GLOBAL_VARIABLE, variableDefinitionList.size());
+			Variable var = new Variable(nameAndType[0], varType, true, variableDefinitionList.size());
 			variableDefinitionList.add(var);
 			globalIdentifierDeclarationList.put(nameAndType[0], var);
 		}
@@ -293,8 +291,7 @@ public class ScriptParser {
 		}
 		// 引数の重複チェック
 		Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
-		if (existingIdentifier != null && existingIdentifier.getKind() != Identifier.Kind.GLOBAL_VARIABLE &&
-		existingIdentifier.getKind() != Identifier.Kind.ADDRESS_VARIABLE) {
+		if (existingIdentifier != null && !existingIdentifier.isGlobal()) {
 			throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 		}
 		// 引数を作成して登録する
@@ -315,16 +312,14 @@ public class ScriptParser {
 		if (isInFunction) {
 			// ローカル変数と重複しているかチェック
 			if (existingIdentifier != null) {
-				if (existingIdentifier.getKind() != Identifier.Kind.GLOBAL_VARIABLE &&
-				existingIdentifier.getKind() != Identifier.Kind.ADDRESS_VARIABLE) {
+				if (!existingIdentifier.isGlobal()) {
 					throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 				} else if (!existingIdentifier.getDataType().equals(varType)) {
 					throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
 				}
 			} else {
 				// ローカルの宣言を作成して登録する
-				Identifier var = new Identifier(nameAndType[0], varType,
-					Identifier.Kind.GLOBAL_VARIABLE, -1);
+				Variable var = new Variable(nameAndType[0], varType, false, -1);
 				localIdentifierDeclarationList.put(nameAndType[0], var);
 			}
 		} else {
@@ -334,8 +329,7 @@ public class ScriptParser {
 				throw new SyntaxException("declaration of variable " + nameAndType[0] + " conflicts");
 			}
 			// グローバル変数を作成して登録する
-			Identifier var = new Identifier(nameAndType[0], varType,
-				Identifier.Kind.GLOBAL_VARIABLE, -1);
+			Variable var = new Variable(nameAndType[0], varType, true, -1);
 			globalIdentifierDeclarationList.put(nameAndType[0], var);
 		}
 	}
@@ -354,16 +348,14 @@ public class ScriptParser {
 		if (isInFunction) {
 			// ローカル変数と重複しているかチェック
 			if (existingIdentifier != null) {
-				if (existingIdentifier.getKind() != Identifier.Kind.GLOBAL_VARIABLE &&
-				existingIdentifier.getKind() != Identifier.Kind.ADDRESS_VARIABLE) {
+				if (!existingIdentifier.isGlobal()) {
 					throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 				} else if (!existingIdentifier.getDataType().equals(functionType)) {
 					throw new SyntaxException("declaration of function " + nameAndType[0] + " conflicts");
 				}
 			} else {
 				// ローカルの宣言を作成して登録する
-				Identifier var = new Identifier(nameAndType[0], functionType,
-					Identifier.Kind.GLOBAL_VARIABLE, -1);
+				Variable var = new Variable(nameAndType[0], functionType, false, -1);
 				localIdentifierDeclarationList.put(nameAndType[0], var);
 			}
 		} else {
@@ -373,8 +365,7 @@ public class ScriptParser {
 				throw new SyntaxException("declaration of function " + nameAndType[0] + " conflicts");
 			}
 			// グローバルの宣言を作成して登録する
-			Identifier var = new Identifier(nameAndType[0], functionType,
-				Identifier.Kind.GLOBAL_VARIABLE, -1);
+			Variable var = new Variable(nameAndType[0], functionType, true, -1);
 			globalIdentifierDeclarationList.put(nameAndType[0], var);
 		}
 	}
@@ -396,13 +387,12 @@ public class ScriptParser {
 		if (!(address instanceof IntegerLiteral)) {
 			throw new SyntaxException("address have to be an constant");
 		}
-		Identifier newValue = new Identifier(nameAndType[0], varType,
-			Identifier.Kind.ADDRESS_VARIABLE, ((IntegerLiteral)address).getValue());
+		AddressVariable newValue = new AddressVariable(nameAndType[0], varType,
+			!isInFunction, ((IntegerLiteral)address).getValue());
 		Identifier existingIdentifier = lookupIdentifier(nameAndType[0]);
 		if (isInFunction) {
 			// ローカル変数の重複チェック
-			if (existingIdentifier != null && existingIdentifier.getKind() != Identifier.Kind.GLOBAL_VARIABLE &&
-			existingIdentifier.getKind() != Identifier.Kind.ADDRESS_VARIABLE) {
+			if (existingIdentifier != null && !existingIdentifier.isGlobal()) {
 				throw new SyntaxException("local variable " + nameAndType[0] + " is already defined");
 			}
 			// ローカル変数を登録する
