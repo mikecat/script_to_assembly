@@ -17,6 +17,7 @@ CLASSES = \
 	DefinedValue.class \
 	UnaryOperator.class \
 	BinaryOperator.class \
+	FunctionCallOperator.class \
 	Function.class \
 	Instruction.class \
 	NormalExpression.class \

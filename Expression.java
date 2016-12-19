@@ -186,7 +186,11 @@ public abstract class Expression {
 					if (popOperator instanceof BinaryOperatorInExpression) {
 						Expression right = valueStack.removeFirst();
 						Expression left = valueStack.removeFirst();
-						valueStack.addFirst(new BinaryOperator(((BinaryOperatorInExpression)popOperator).getKind(), left, right));
+						if (((BinaryOperatorInExpression)popOperator).getKind() == BinaryOperator.Kind.OP_FUNCTION_CALL) {
+							valueStack.addFirst(new FunctionCallOperator(left, right));
+						} else {
+							valueStack.addFirst(new BinaryOperator(((BinaryOperatorInExpression)popOperator).getKind(), left, right));
+						}
 					} else if (popOperator instanceof UnaryOperatorInExpression) {
 						Expression operand = valueStack.removeFirst();
 						valueStack.addFirst(new UnaryOperator(((UnaryOperatorInExpression)popOperator).getKind(), operand));
@@ -253,7 +257,7 @@ public abstract class Expression {
 						// 関数呼び出しである
 						Expression right = valueStack.removeFirst();
 						Expression left = valueStack.removeFirst();
-						valueStack.addFirst(new BinaryOperator(BinaryOperator.Kind.OP_FUNCTION_CALL, left, right));
+						valueStack.addFirst(new FunctionCallOperator(left, right));
 					}
 					expectNumber = false;
 					functionNest = functionNestStack.removeFirst();
@@ -262,7 +266,7 @@ public abstract class Expression {
 					// 引数なしで関数を呼び出す時の閉じカッコ
 					expStack.removeFirst();
 					Expression operand = valueStack.removeFirst();
-					valueStack.addFirst(new UnaryOperator(UnaryOperator.Kind.UNARY_FUNCTION_CALL, operand));
+					valueStack.addFirst(new FunctionCallOperator(operand, null));
 					expectNumber = false;
 					functionNest = functionNestStack.removeFirst();
 					continue;
