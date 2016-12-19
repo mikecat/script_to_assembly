@@ -1,0 +1,12 @@
+funcdeclare putchar int
+var i int
+
+function main int
+	i = 48
+	while i < 58
+		putchar(i)
+		i = i + 1
+	endwhile
+	putchar(10)
+	return 0
+endfunction

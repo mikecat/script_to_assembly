@@ -74,9 +74,32 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		} else if (inst instanceof ConditionalBranch) {
 			throw new SystemLimitException("ConditionalBranch not implemented yet");
 		} else if (inst instanceof InfiniteLoop) {
-			throw new SystemLimitException("InfiniteLoop not implemented yet");
+			InfiniteLoop infLoop = (InfiniteLoop)inst;
+			int insNum = infLoop.getInstructionNumber();
+			String label = getNextLabel();
+			out.println(label + ":");
+			for (int i = 0; i < insNum; i++) {
+				generateInstruction(infLoop.getInstruction(i));
+			}
+			out.println("\tjmp " + label);
 		} else if (inst instanceof WhileLoop) {
-			throw new SystemLimitException("WhileLoop not implemented yet");
+			WhileLoop wLoop = (WhileLoop)inst;
+			int insNum = wLoop.getInstructionNumber();
+			String label1 = getNextLabel();
+			String label2 = getNextLabel();
+			String label3 = getNextLabel();
+			out.println(label1 + ":");
+			generateExpressionEvaluation(wLoop.getCondition());
+			out.println("\tpop %eax");
+			out.println("\ttest %eax, %eax");
+			out.println("\tjnz " + label3);
+			out.println("\tjmp " + label2);
+			out.println(label3 + ":");
+			for (int i = 0; i < insNum; i++) {
+				generateInstruction(wLoop.getInstruction(i));
+			}
+			out.println("\tjmp " + label1);
+			out.println(label2 + ":");
 		} else if (inst instanceof BreakInstruction) {
 			throw new SystemLimitException("BreakInstruction not implemented yet");
 		} else if (inst instanceof ContinueInstruction) {
