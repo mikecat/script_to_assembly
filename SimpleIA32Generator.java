@@ -68,4 +68,26 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			throw new SystemLimitException("ContinueInstruction not implemented yet");
 		}
 	}
+
+	private void generateExpressionEvaluation(Expression expr) {
+		generateExpressionEvaluation(expr, false);
+	}
+
+	private void generateExpressionEvaluation(Expression expr, boolean wantAddress) {
+		if (expr instanceof BinaryOperator) {
+			throw new SystemLimitException("BinaryOperator not implemented yet");
+		} else if (expr instanceof UnaryOperator) {
+			throw new SystemLimitException("UnaryOperator not implemented yet");
+		} else if (expr instanceof FunctionCallOperator) {
+			throw new SystemLimitException("FunctionCallOperator not implemented yet");
+		} else if (expr instanceof CastOperator) {
+			throw new SystemLimitException("CastOperator not implemented yet");
+		} else if (expr instanceof VariableAccess) {
+			throw new SystemLimitException("VariableAccess not implemented yet");
+		} else if (expr instanceof IntegerLiteral) {
+			throw new SystemLimitException("IntegerLiteral not implemented yet");
+		} else if (expr instanceof StringLiteral) {
+			throw new SystemLimitException("StringLiteral not implemented yet");
+		}
+	}
 }
