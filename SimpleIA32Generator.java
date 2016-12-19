@@ -72,7 +72,33 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			}
 			out.println("\tjmp stoa.funcend." + currentFunctionName);
 		} else if (inst instanceof ConditionalBranch) {
-			throw new SystemLimitException("ConditionalBranch not implemented yet");
+			ConditionalBranch cb = (ConditionalBranch)inst;
+			int insNum;
+			generateExpressionEvaluation(cb.getCondition());
+			out.println("\tpop %eax");
+			out.println("\ttest %eax, %eax");
+			String label1 = getNextLabel();
+			String label2 = getNextLabel();
+			String label3 = null;
+			out.println("\tjnz " + label1);
+			out.println("\tjmp " + label2);
+			out.println(label1 + ":");
+			insNum = cb.getThenInstructionNumber();
+			for (int i = 0; i < insNum; i++) {
+				generateInstruction(cb.getThenInstruction(i));
+			}
+			if (cb.hasElse()) {
+				label3 = getNextLabel();
+				out.println("\tjmp " + label3);
+			}
+			out.println(label2 + ":");
+			if (cb.hasElse()) {
+				insNum = cb.getElseInstructionNumber();
+				for (int i = 0; i < insNum; i++) {
+					generateInstruction(cb.getElseInstruction(i));
+				}
+				out.println(label3 + ":");
+			}
 		} else if (inst instanceof InfiniteLoop) {
 			InfiniteLoop infLoop = (InfiniteLoop)inst;
 			int insNum = infLoop.getInstructionNumber();
