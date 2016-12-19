@@ -1,0 +1,7 @@
+funcdeclare putchar int
+
+function main int
+	putchar(48)
+	putchar(10)
+	return 0
+endfunction

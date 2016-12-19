@@ -174,7 +174,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			}
 			generateExpressionEvaluation(funcCall.getFunction());
 			out.println("\tpop %eax");
-			out.println("\tcall *(%eax)");
+			out.println("\tcall *%eax");
 			out.println("\tadd $" + (4 * argumentNum) + ", %esp");
 			out.println("\tpush %eax");
 		} else if (expr instanceof CastOperator) {
