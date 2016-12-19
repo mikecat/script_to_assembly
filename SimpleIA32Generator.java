@@ -167,7 +167,16 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		} else if (expr instanceof UnaryOperator) {
 			throw new SystemLimitException("UnaryOperator not implemented yet");
 		} else if (expr instanceof FunctionCallOperator) {
-			throw new SystemLimitException("FunctionCallOperator not implemented yet");
+			FunctionCallOperator funcCall = (FunctionCallOperator)expr;
+			int argumentNum = funcCall.getArgumentsNum();
+			for (int i = argumentNum - 1; i >= 0; i--) {
+				generateExpressionEvaluation(funcCall.getArgument(i));
+			}
+			generateExpressionEvaluation(funcCall.getFunction());
+			out.println("\tpop %eax");
+			out.println("\tcall *(%eax)");
+			out.println("\tadd $" + (4 * argumentNum) + ", %esp");
+			out.println("\tpush %eax");
 		} else if (expr instanceof CastOperator) {
 			throw new SystemLimitException("CastOperator not implemented yet");
 		} else if (expr instanceof VariableAccess) {
