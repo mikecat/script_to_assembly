@@ -159,6 +159,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 				} else {
 					out.println("\tmul %ecx");
 				}
+				break;
 			case OP_DIV:
 				if (((IntegerType)expr.getDataType()).isSigned()) {
 					out.println("\tcdq");
@@ -167,6 +168,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 					out.println("xor %edx, %edx");
 					out.println("\tdiv %ecx");
 				}
+				break;
 			case OP_MOD:
 				if (((IntegerType)expr.getDataType()).isSigned()) {
 					out.println("\tcdq");
@@ -176,6 +178,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 					out.println("\tdiv %ecx");
 				}
 				out.println("\tmov %edx, %eax");
+				break;
 			case OP_ADD:
 				out.println("\tadd %ecx, %eax");
 				break;
