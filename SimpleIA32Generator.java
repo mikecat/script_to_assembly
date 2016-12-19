@@ -20,10 +20,20 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 	StaticVariable[] staticVariableDefinitionList,
 	Function[] functionDefinitionList) {
 		this.out = new PrintWriter(out);
+
+		// プログラムを出力する
 		this.out.println(".section .text");
 		for (int i = 0; i < functionDefinitionList.length; i++) {
 			generateFunction(functionDefinitionList[i]);
 		}
+
+		// データの領域を出力する
+		this.out.println(".section .bss");
+		for (int i = 0; i < staticVariableDefinitionList.length; i++) {
+			StaticVariable sv = staticVariableDefinitionList[i];
+			this.out.println(".comm " + sv.getName() + ", " + sv.getDataType().getWidth());
+		}
+
 		this.out.flush();
 	}
 
