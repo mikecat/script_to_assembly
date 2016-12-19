@@ -1,0 +1,77 @@
+funcdeclare getchar int
+funcdeclare putchar int
+
+var readintwork int
+var readintinput int
+function readint int
+	readintwork = 0
+	loop
+		readintinput = getchar()
+		if readintinput < '0'
+			return readintwork
+		endif
+		if '9' < readintinput
+			return readintwork
+		endif
+		readintwork = readintwork * 10 + (readintinput - '0')
+	endloop
+endfunction
+
+var printinttarget int
+var printintdiv int
+function printint none
+	printintdiv = 1
+	while printintdiv * 10 <= printinttarget
+		printintdiv = printintdiv * 10
+	endwhile
+	while printintdiv > 0
+		putchar((printinttarget / printintdiv) % 10 + '0')
+		printintdiv = printintdiv / 10
+	endwhile
+endfunction
+
+var isprimetarget int
+var isprimei int
+function isprime int
+	if isprimetarget < 2
+		return 0
+	endif
+	isprimei = 2
+	while isprimei * isprimei <= isprimetarget
+		if isprimetarget % isprimei == 0
+			return 0
+		endif
+		isprimei = isprimei + 1
+	endwhile
+	return 1
+endfunction
+
+var max int
+var summode int
+var sum int
+var i int
+function main int
+	max = readint()
+	summode = readint()
+	sum = 0
+	i = 0
+	while i <= max
+		isprimetarget = i
+		if isprime()
+			if summode
+				sum = sum + i
+			else
+				printinttarget = i
+				printint()
+				putchar(10)
+			endif
+		endif
+		i = i + 1
+	endwhile
+	if summode
+		printinttarget = sum
+		printint()
+		putchar(10)
+	endif
+	return 0
+endfunction
