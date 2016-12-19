@@ -81,10 +81,10 @@ public class ScriptToAssembly {
 				writer = new OutputStreamWriter(System.out);
 			} else {
 				writer = new FileWriter(outputFileName);
-				asmGen.generateAssembly(new BufferedWriter(writer),
-						parser.getStaticVariableDefinitionList(),
-					parser.getFunctionDefinitionList());
 			}
+			asmGen.generateAssembly(new BufferedWriter(writer),
+				parser.getStaticVariableDefinitionList(),
+				parser.getFunctionDefinitionList());
 		}
 	}
 
