@@ -98,15 +98,34 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			case OP_ARRAY:
 				throw new SystemLimitException("OP_ARRAY not implemented yet");
 			case OP_MUL:
-				throw new SystemLimitException("OP_MUL not implemented yet");
+				if (((IntegerType)expr.getDataType()).isSigned()) {
+					out.println("\timul %ecx");
+				} else {
+					out.println("\tmul %ecx");
+				}
 			case OP_DIV:
-				throw new SystemLimitException("OP_DIV not implemented yet");
+				if (((IntegerType)expr.getDataType()).isSigned()) {
+					out.println("\tcdq");
+					out.println("\tidiv %ecx");
+				} else {
+					out.println("xor %edx, %edx");
+					out.println("\tdiv %ecx");
+				}
 			case OP_MOD:
-				throw new SystemLimitException("OP_MOD not implemented yet");
+				if (((IntegerType)expr.getDataType()).isSigned()) {
+					out.println("\tcdq");
+					out.println("\tidiv %ecx");
+				} else {
+					out.println("xor %edx, %edx");
+					out.println("\tdiv %ecx");
+				}
+				out.println("\tmov %edx, %eax");
 			case OP_ADD:
-				throw new SystemLimitException("OP_ADD not implemented yet");
+				out.println("\tadd %ecx, %eax");
+				break;
 			case OP_SUB:
-				throw new SystemLimitException("OP_SUB not implemented yet");
+				out.println("\tsub %ecx, %eax");
+				break;
 			case OP_LEFT_SHIFT:
 				throw new SystemLimitException("OP_LEFT_SHIFT not implemented yet");
 			case OP_RIGHT_SHIFT_ARITIMETIC:
@@ -144,6 +163,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			default:
 				throw new SystemLimitException("unexpected kind of BinaryOperator: " + op.getKind());
 			}
+			out.println("\tpush %eax");
 		} else if (expr instanceof UnaryOperator) {
 			throw new SystemLimitException("UnaryOperator not implemented yet");
 		} else if (expr instanceof FunctionCallOperator) {
