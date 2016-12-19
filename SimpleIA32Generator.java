@@ -16,11 +16,17 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 
 	PrintWriter out;
 	private String currentFunctionName;
+	private int nextLabelId;
+
+	private String getNextLabel() {
+		return "stoa.label." + (nextLabelId++);
+	}
 
 	public void generateAssembly(Writer out,
 	StaticVariable[] staticVariableDefinitionList,
 	Function[] functionDefinitionList) {
 		this.out = new PrintWriter(out);
+		nextLabelId = 0;
 
 		// プログラムを出力する
 		this.out.println(".section .text");
@@ -94,6 +100,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			}
 			out.println("\tpop %eax");
 			// 計算を行う
+			String comparisionOperatorInstruction = null;
 			switch(op.getKind()) {
 			case OP_ARRAY:
 				throw new SystemLimitException("OP_ARRAY not implemented yet");
@@ -145,23 +152,37 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			case OP_ASSIGN:
 				throw new SystemLimitException("OP_ASSIGN not implemented yet");
 			case OP_GT:
-				throw new SystemLimitException("OP_GT not implemented yet");
+				comparisionOperatorInstruction = ((IntegerType)expr.getDataType()).isSigned() ? "jng" : "jna";
+				break;
 			case OP_GTE:
-				throw new SystemLimitException("OP_GTE not implemented yet");
+				comparisionOperatorInstruction = ((IntegerType)expr.getDataType()).isSigned() ? "jnge" : "jnae";
+				break;
 			case OP_LT:
-				throw new SystemLimitException("OP_LT not implemented yet");
+				comparisionOperatorInstruction = ((IntegerType)expr.getDataType()).isSigned() ? "jnl" : "jnb";
+				break;
 			case OP_LTE:
-				throw new SystemLimitException("OP_LTE not implemented yet");
+				comparisionOperatorInstruction = ((IntegerType)expr.getDataType()).isSigned() ? "jnle" : "jnbe";
+				break;
 			case OP_EQUAL:
-				throw new SystemLimitException("OP_EQUAL not implemented yet");
+				comparisionOperatorInstruction = "jne";
+				break;
 			case OP_NOT_EQUAL:
-				throw new SystemLimitException("OP_NOT_EQUAL not implemented yet");
+				comparisionOperatorInstruction = "je";
+				break;
 			case OP_LOGICAL_AND:
 				throw new SystemLimitException("OP_LOGICAL_AND not implemented yet");
 			case OP_LOGICAL_OR:
 				throw new SystemLimitException("OP_LOGICAL_OR not implemented yet");
 			default:
 				throw new SystemLimitException("unexpected kind of BinaryOperator: " + op.getKind());
+			}
+			if (comparisionOperatorInstruction != null) {
+				String label = getNextLabel();
+				out.println("\tcmp %ecx, %eax");
+				out.println("\tmov $0, %eax");
+				out.println("\t" + comparisionOperatorInstruction + " " + label);
+				out.println("\tinc %eax");
+				out.println(label + ":");
 			}
 			out.println("\tpush %eax");
 		} else if (expr instanceof UnaryOperator) {
