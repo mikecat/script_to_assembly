@@ -159,6 +159,7 @@ public class ScriptToAssembly {
 			} else if (wantVersion) {
 				printVersion();
 			} else {
+				sta.setAssemblyGenerator(new SimpleIA32Generator());
 				sta.doWork();
 			}
 		} catch (Exception e) {
