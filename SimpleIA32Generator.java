@@ -153,7 +153,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		} else if (expr instanceof VariableAccess) {
 			throw new SystemLimitException("VariableAccess not implemented yet");
 		} else if (expr instanceof IntegerLiteral) {
-			throw new SystemLimitException("IntegerLiteral not implemented yet");
+			out.println("\tpushl $" + ((IntegerLiteral)expr).getValue());
 		} else if (expr instanceof StringLiteral) {
 			throw new SystemLimitException("StringLiteral not implemented yet");
 		}
