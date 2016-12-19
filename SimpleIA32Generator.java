@@ -15,6 +15,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 	}
 
 	PrintWriter out;
+	private String currentFunctionName;
 
 	public void generateAssembly(Writer out,
 	StaticVariable[] staticVariableDefinitionList,
@@ -39,23 +40,31 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 
 	private void generateFunction(Function func) {
 		// 関数の開始
-		out.println(".globl " + func.getName());
-		out.println(func.getName() + ":");
+		currentFunctionName = func.getName();
+		out.println(".globl " + currentFunctionName);
+		out.println(currentFunctionName + ":");
 		// 関数内の命令をそれぞれ出力する
 		int instNum = func.getInstructionNumber();
 		for (int i = 0; i < instNum; i++) {
 			generateInstruction(func.getInstruction(i));
 		}
 		// 関数の終わり
-		out.println("stoa.funcend." + func.getName() + ":");
+		out.println("stoa.funcend." + currentFunctionName + ":");
 		out.println("\tret");
 	}
 
 	private void generateInstruction(Instruction inst) {
 		if (inst instanceof NormalExpression) {
-			throw new SystemLimitException("NormalExpression not implemented yet");
+			Expression expr = ((NormalExpression)inst).getExpression();
+			generateExpressionEvaluation(expr);
+			out.println("\tpop %eax");
 		} else if (inst instanceof ReturnInstruction) {
-			throw new SystemLimitException("ReturnInstruction not implemented yet");
+			ReturnInstruction ret = (ReturnInstruction)inst;
+			if (ret.hasExpression()) {
+				generateExpressionEvaluation(ret.getExpression());
+				out.println("\tpop %eax");
+			}
+			out.println("\tjmp stoa.funcend." + currentFunctionName);
 		} else if (inst instanceof ConditionalBranch) {
 			throw new SystemLimitException("ConditionalBranch not implemented yet");
 		} else if (inst instanceof InfiniteLoop) {
