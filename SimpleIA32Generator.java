@@ -38,7 +38,34 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 	}
 
 	private void generateFunction(Function func) {
+		// 関数の開始
 		out.println(".globl " + func.getName());
 		out.println(func.getName() + ":");
+		// 関数内の命令をそれぞれ出力する
+		int instNum = func.getInstructionNumber();
+		for (int i = 0; i < instNum; i++) {
+			generateInstruction(func.getInstruction(i));
+		}
+		// 関数の終わり
+		out.println("stoa.funcend." + func.getName() + ":");
+		out.println("\tret");
+	}
+
+	private void generateInstruction(Instruction inst) {
+		if (inst instanceof NormalExpression) {
+			throw new SystemLimitException("NormalExpression not implemented yet");
+		} else if (inst instanceof ReturnInstruction) {
+			throw new SystemLimitException("ReturnInstruction not implemented yet");
+		} else if (inst instanceof ConditionalBranch) {
+			throw new SystemLimitException("ConditionalBranch not implemented yet");
+		} else if (inst instanceof InfiniteLoop) {
+			throw new SystemLimitException("InfiniteLoop not implemented yet");
+		} else if (inst instanceof WhileLoop) {
+			throw new SystemLimitException("WhileLoop not implemented yet");
+		} else if (inst instanceof BreakInstruction) {
+			throw new SystemLimitException("BreakInstruction not implemented yet");
+		} else if (inst instanceof ContinueInstruction) {
+			throw new SystemLimitException("ContinueInstruction not implemented yet");
+		}
 	}
 }
