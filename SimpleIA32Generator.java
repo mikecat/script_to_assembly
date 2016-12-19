@@ -84,7 +84,66 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 
 	private void generateExpressionEvaluation(Expression expr, boolean wantAddress) {
 		if (expr instanceof BinaryOperator) {
-			throw new SystemLimitException("BinaryOperator not implemented yet");
+			BinaryOperator op = (BinaryOperator)expr;
+			// オペランドを評価する
+			generateExpressionEvaluation(op.getLeft(), op.getKind() == BinaryOperator.Kind.OP_ASSIGN);
+			if (op.getKind() != BinaryOperator.Kind.OP_LOGICAL_AND &&
+			op.getKind() != BinaryOperator.Kind.OP_LOGICAL_OR) {
+				generateExpressionEvaluation(op.getRight(), false);
+				out.println("\tpop %ecx");
+			}
+			out.println("\tpop %eax");
+			// 計算を行う
+			switch(op.getKind()) {
+			case OP_ARRAY:
+				throw new SystemLimitException("OP_ARRAY not implemented yet");
+			case OP_MUL:
+				throw new SystemLimitException("OP_MUL not implemented yet");
+			case OP_DIV:
+				throw new SystemLimitException("OP_DIV not implemented yet");
+			case OP_MOD:
+				throw new SystemLimitException("OP_MOD not implemented yet");
+			case OP_ADD:
+				throw new SystemLimitException("OP_ADD not implemented yet");
+			case OP_SUB:
+				throw new SystemLimitException("OP_SUB not implemented yet");
+			case OP_LEFT_SHIFT:
+				throw new SystemLimitException("OP_LEFT_SHIFT not implemented yet");
+			case OP_RIGHT_SHIFT_ARITIMETIC:
+				throw new SystemLimitException("OP_RIGHT_SHIFT_ARITIMETIC not implemented yet");
+			case OP_RIGHT_SHIFT_LOGICAL:
+				throw new SystemLimitException("OP_RIGHT_SHIFT_LOGICAL not implemented yet");
+			case OP_LEFT_ROTATE:
+				throw new SystemLimitException("OP_LEFT_ROTATE not implemented yet");
+			case OP_RIGHT_ROTATE:
+				throw new SystemLimitException("OP_RIGHT_ROTATE not implemented yet");
+			case OP_BIT_AND:
+				throw new SystemLimitException("OP_BIT_AND not implemented yet");
+			case OP_BIT_OR:
+				throw new SystemLimitException("OP_BIT_OR not implemented yet");
+			case OP_BIT_XOR:
+				throw new SystemLimitException("OP_BIT_XOR not implemented yet");
+			case OP_ASSIGN:
+				throw new SystemLimitException("OP_ASSIGN not implemented yet");
+			case OP_GT:
+				throw new SystemLimitException("OP_GT not implemented yet");
+			case OP_GTE:
+				throw new SystemLimitException("OP_GTE not implemented yet");
+			case OP_LT:
+				throw new SystemLimitException("OP_LT not implemented yet");
+			case OP_LTE:
+				throw new SystemLimitException("OP_LTE not implemented yet");
+			case OP_EQUAL:
+				throw new SystemLimitException("OP_EQUAL not implemented yet");
+			case OP_NOT_EQUAL:
+				throw new SystemLimitException("OP_NOT_EQUAL not implemented yet");
+			case OP_LOGICAL_AND:
+				throw new SystemLimitException("OP_LOGICAL_AND not implemented yet");
+			case OP_LOGICAL_OR:
+				throw new SystemLimitException("OP_LOGICAL_OR not implemented yet");
+			default:
+				throw new SystemLimitException("unexpected kind of BinaryOperator: " + op.getKind());
+			}
 		} else if (expr instanceof UnaryOperator) {
 			throw new SystemLimitException("UnaryOperator not implemented yet");
 		} else if (expr instanceof FunctionCallOperator) {
