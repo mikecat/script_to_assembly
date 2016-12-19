@@ -150,7 +150,9 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			case OP_BIT_XOR:
 				throw new SystemLimitException("OP_BIT_XOR not implemented yet");
 			case OP_ASSIGN:
-				throw new SystemLimitException("OP_ASSIGN not implemented yet");
+				out.println("\txchg %ecx, %eax");
+				out.println("\tmov %eax, (%ecx)");
+				break;
 			case OP_GT:
 				comparisionOperatorInstruction = ((IntegerType)expr.getDataType()).isSigned() ? "jng" : "jna";
 				break;
