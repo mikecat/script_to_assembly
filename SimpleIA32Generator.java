@@ -180,7 +180,27 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		} else if (expr instanceof CastOperator) {
 			throw new SystemLimitException("CastOperator not implemented yet");
 		} else if (expr instanceof VariableAccess) {
-			throw new SystemLimitException("VariableAccess not implemented yet");
+			if (expr.getDataType().getWidth() != 4) {
+				throw new SystemLimitException("currently only 4-byte variable is supported");
+			}
+			Identifier ident = ((VariableAccess)expr).getIdentifier();
+			if (ident instanceof StaticVariable) {
+				if (wantAddress || expr.getDataType() instanceof FunctionType) {
+					out.println("\tpushl $" + ident.getName());
+				} else {
+					out.println("\tpushl (" + ident.getName() + ")");
+				}
+			} else if (ident instanceof AutomaticVariable) {
+				throw new SystemLimitException("AutomaticVariable not implemented yet");
+			} else if (ident instanceof DefinedValue) {
+				out.println("\tpushl $" + ((DefinedValue)ident).getValue());
+			} else if (ident instanceof AddressVariable) {
+				if (wantAddress) {
+					out.println("\tpushl $" + ((AddressVariable)ident).getAddress());
+				} else {
+					out.println("\tpushl (" + ((AddressVariable)ident).getAddress() + ")");
+				}
+			}
 		} else if (expr instanceof IntegerLiteral) {
 			out.println("\tpushl $" + ((IntegerLiteral)expr).getValue());
 		} else if (expr instanceof StringLiteral) {
