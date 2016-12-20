@@ -129,7 +129,7 @@ public class BinaryOperator extends Expression {
 				// ポインタ同士の比較はできる、それ以外はエラー
 				throw new SyntaxException("invaild operands for comparision");
 			}
-			this.dataType = new IntegerType(4, true);
+			this.dataType = new IntegerType(DataType.getSystemIntSize(), true);
 			break;
 		case OP_EQUAL:
 		case OP_NOT_EQUAL:
@@ -146,11 +146,11 @@ public class BinaryOperator extends Expression {
 				// ポインタや関数同士の等価かの判断はできる、それ以外はエラー
 				throw new SyntaxException("invaild operands for equality check");
 			}
-			this.dataType = new IntegerType(4, true);
+			this.dataType = new IntegerType(DataType.getSystemIntSize(), true);
 			break;
 		case OP_LOGICAL_AND:
 		case OP_LOGICAL_OR:
-			this.dataType = new IntegerType(4, true);
+			this.dataType = new IntegerType(DataType.getSystemIntSize(), true);
 			break;
 		}
 	}
@@ -220,32 +220,32 @@ public class BinaryOperator extends Expression {
 		case OP_BIT_XOR:
 			return new IntegerLiteral(lop.getValue() ^ rop.getValue(), width, isSigned);
 		case OP_GT:
-			return new IntegerLiteral(lop.getValue() > rop.getValue() ? 1 : 0, 4, true);
+			return new IntegerLiteral(lop.getValue() > rop.getValue() ? 1 : 0, DataType.getSystemIntSize(), true);
 		case OP_GTE:
-			return new IntegerLiteral(lop.getValue() >= rop.getValue() ? 1 : 0, 4, true);
+			return new IntegerLiteral(lop.getValue() >= rop.getValue() ? 1 : 0, DataType.getSystemIntSize(), true);
 		case OP_LT:
-			return new IntegerLiteral(lop.getValue() < rop.getValue() ? 1 : 0, 4, true);
+			return new IntegerLiteral(lop.getValue() < rop.getValue() ? 1 : 0, DataType.getSystemIntSize(), true);
 		case OP_LTE:
-			return new IntegerLiteral(lop.getValue() <= rop.getValue() ? 1 : 0, 4, true);
+			return new IntegerLiteral(lop.getValue() <= rop.getValue() ? 1 : 0, DataType.getSystemIntSize(), true);
 		case OP_EQUAL:
-			return new IntegerLiteral(lop.getValue() == rop.getValue() ? 1 : 0, 4, true);
+			return new IntegerLiteral(lop.getValue() == rop.getValue() ? 1 : 0, DataType.getSystemIntSize(), true);
 		case OP_NOT_EQUAL:
-			return new IntegerLiteral(lop.getValue() != rop.getValue() ? 1 : 0, 4, true);
+			return new IntegerLiteral(lop.getValue() != rop.getValue() ? 1 : 0, DataType.getSystemIntSize(), true);
 		case OP_LOGICAL_AND:
 			if (!(left instanceof IntegerLiteral)) return this;
 			if (((IntegerLiteral)left).getValue() == 0) {
-				return new IntegerLiteral(0, 4, true);
+				return new IntegerLiteral(0, DataType.getSystemIntSize(), true);
 			} else {
 				if (!(right instanceof IntegerLiteral)) return this;
-				return new IntegerLiteral(((IntegerLiteral)right).getValue() == 0 ? 0 : 1, 4, true);
+				return new IntegerLiteral(((IntegerLiteral)right).getValue() == 0 ? 0 : 1, DataType.getSystemIntSize(), true);
 			}
 		case OP_LOGICAL_OR:
 			if (!(left instanceof IntegerLiteral)) return this;
 			if (((IntegerLiteral)left).getValue() != 0) {
-				return new IntegerLiteral(1, 4, true);
+				return new IntegerLiteral(1, DataType.getSystemIntSize(), true);
 			} else {
 				if (!(right instanceof IntegerLiteral)) return this;
-				return new IntegerLiteral(((IntegerLiteral)right).getValue() == 0 ? 0 : 1, 4, true);
+				return new IntegerLiteral(((IntegerLiteral)right).getValue() == 0 ? 0 : 1, DataType.getSystemIntSize(), true);
 			}
 		case OP_FUNCTION_CALL:
 		case OP_FUNCTION_ARGS_SEPARATOR:

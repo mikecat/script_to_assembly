@@ -29,7 +29,7 @@ public class UnaryOperator extends Expression {
 			this.dataType = this.operand.getDataType();
 			break;
 		case UNARY_LOGICAL_NOT:
-			this.dataType = new IntegerType(4, true); // TBD
+			this.dataType = new IntegerType(DataType.getSystemIntSize(), true);
 			break;
 		case UNARY_DEREFERENCE:
 			if (this.operand.getDataType() instanceof PointerType) {
@@ -84,7 +84,7 @@ public class UnaryOperator extends Expression {
 		case UNARY_PLUS:
 			return op;
 		case UNARY_LOGICAL_NOT:
-			return new IntegerLiteral(op.getValue() == 0 ? 1 : 0, 4, true);
+			return new IntegerLiteral(op.getValue() == 0 ? 1 : 0, DataType.getSystemIntSize(), true);
 		case UNARY_BIT_NOT:
 			return new IntegerLiteral(~op.getValue(), op.getWidth(), op.isSigned());
 		case UNARY_SIZE:
