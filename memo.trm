@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/05 00:27:44"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
+<?xml version="1.0" encoding="UTF-8"?><treepad><file version="2" modified="2016/12/21 01:11:44"/><node name="人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)" expanded="yes" selstart="0" sellength="0" selected="yes"><text>
 「人間にやさしいスクリプトをアセンブリ言語に変換するやつ(仮)」とは
 
 人間にやさしいスクリプトをアセンブリ言語に変換するやつである。
@@ -242,12 +242,19 @@ nは定数でないといけない。
 左結合: 二項+ 二項-
 左結合: &lt;&lt; &gt;&gt; &gt;&gt;&gt; ^&lt; &gt;^
 左結合: 二項&amp;
-左結合: | ^
-右結合: =
-左結合: &gt; &gt;= &lt; &lt;= == !=
+左結合: ^
+左結合: |
+左結合: &gt; &gt;= &lt; &lt;=
+左結合: == !=
 左結合: &amp;&amp;
 左結合: ||
+右結合: =
 ↓低い
+
+ほぼC言語と同じですが
+C言語とは違い、ビット演算子(&amp;, |, ^)の優先順位が比較演算子より高いです。
+a &amp; 3 == 3と書いた時、やりたいことはaと3 == 3、すなわち1のANDじゃなくて、
+a &amp; 3と3の等価判定でしょ？
 </text></node></node><node name="式をASTに変換する" expanded="no" selstart="0" sellength="0"><text>
 式をASTに変換する
 

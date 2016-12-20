@@ -65,8 +65,8 @@ public abstract class Expression {
 	private static int longestOperatorSize = 3;
 	private static Map<String, OperatorInExpression> binaryOperators;
 	private static Map<String, OperatorInExpression> unaryOperators;
-	private static OperatorInExpression functionCall = new BinaryOperatorInExpression(BinaryOperator.Kind.OP_FUNCTION_CALL, 12, false);
-	private static OperatorInExpression parenthesis = new BinaryOperatorInExpression(null, 12, false);
+	private static OperatorInExpression functionCall = new BinaryOperatorInExpression(BinaryOperator.Kind.OP_FUNCTION_CALL, 15, false);
+	private static OperatorInExpression parenthesis = new BinaryOperatorInExpression(null, 15, false);
 
 	private static void initializeOperatorList() {
 		if (initialized) return;
@@ -89,22 +89,25 @@ public abstract class Expression {
 
 		binaryOperators.put("&", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_BIT_AND, 6, false));
 
-		binaryOperators.put("|", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_BIT_OR, 7, false));
 		binaryOperators.put("^", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_BIT_XOR, 7, false));
 
-		binaryOperators.put("=", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_ASSIGN, 8, true));
+		binaryOperators.put("|", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_BIT_OR, 8, false));
 
 		binaryOperators.put(">", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_GT, 9, false));
 		binaryOperators.put(">=", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_GTE, 9, false));
 		binaryOperators.put("<", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_LT, 9, false));
 		binaryOperators.put("<=", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_LTE, 9, false));
-		binaryOperators.put("==", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_EQUAL, 9, false));
-		binaryOperators.put("!=", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_NOT_EQUAL, 9, false));
 
-		binaryOperators.put("&&", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_LOGICAL_AND, 10, false));
-		binaryOperators.put("||", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_LOGICAL_OR, 10, false));
+		binaryOperators.put("==", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_EQUAL, 10, false));
+		binaryOperators.put("!=", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_NOT_EQUAL, 10, false));
 
-		binaryOperators.put(",", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_FUNCTION_ARGS_SEPARATOR, 11, true));
+		binaryOperators.put("&&", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_LOGICAL_AND, 11, false));
+
+		binaryOperators.put("||", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_LOGICAL_OR, 12, false));
+
+		binaryOperators.put("=", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_ASSIGN, 13, true));
+
+		binaryOperators.put(",", new BinaryOperatorInExpression(BinaryOperator.Kind.OP_FUNCTION_ARGS_SEPARATOR, 14, true));
 
 		unaryOperators = new HashMap<String, OperatorInExpression>();
 		unaryOperators.put("-", new UnaryOperatorInExpression(UnaryOperator.Kind.UNARY_MINUS, 1, true));
