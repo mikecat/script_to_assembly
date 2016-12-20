@@ -148,6 +148,16 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 				out.println("\tpop %ecx");
 			}
 			out.println("\tpop %eax");
+			boolean isComparisionSigned = false;
+			if (op.getLeft().getDataType() instanceof IntegerType && op.getRight().getDataType() instanceof IntegerType) {
+				IntegerType leftType = (IntegerType)op.getLeft().getDataType();
+				IntegerType rightType = (IntegerType)op.getRight().getDataType();
+				if (leftType.getWidth() >= rightType.getWidth()) {
+					isComparisionSigned = leftType.isSigned();
+				} else {
+					isComparisionSigned = rightType.isSigned();
+				}
+			}
 			// 計算を行う
 			String comparisionOperatorInstruction = null;
 			switch(op.getKind()) {
@@ -206,16 +216,16 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 				out.println("\tmov %eax, (%ecx)");
 				break;
 			case OP_GT:
-				comparisionOperatorInstruction = ((IntegerType)expr.getDataType()).isSigned() ? "jng" : "jna";
+				comparisionOperatorInstruction = isComparisionSigned ? "jng" : "jna";
 				break;
 			case OP_GTE:
-				comparisionOperatorInstruction = ((IntegerType)expr.getDataType()).isSigned() ? "jnge" : "jnae";
+				comparisionOperatorInstruction = isComparisionSigned ? "jnge" : "jnae";
 				break;
 			case OP_LT:
-				comparisionOperatorInstruction = ((IntegerType)expr.getDataType()).isSigned() ? "jnl" : "jnb";
+				comparisionOperatorInstruction = isComparisionSigned ? "jnl" : "jnb";
 				break;
 			case OP_LTE:
-				comparisionOperatorInstruction = ((IntegerType)expr.getDataType()).isSigned() ? "jnle" : "jnbe";
+				comparisionOperatorInstruction = isComparisionSigned ? "jnle" : "jnbe";
 				break;
 			case OP_EQUAL:
 				comparisionOperatorInstruction = "jne";
