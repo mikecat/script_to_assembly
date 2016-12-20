@@ -6,7 +6,7 @@ public class StringLiteral extends Expression {
 	public StringLiteral(String string) {
 		this.string = string;
 		this.bytes = string.getBytes();
-		this.dataType = new ArrayType(new PrimitiveType(1, false), bytes.length + 1);
+		this.dataType = new ArrayType(new IntegerType(1, false), bytes.length + 1);
 	}
 
 	public String getString() {
