@@ -1,0 +1,6 @@
+funcdeclare puts int
+
+function main int
+	puts("hello, world")
+	return 0
+endfunction

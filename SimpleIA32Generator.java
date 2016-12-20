@@ -1,5 +1,7 @@
 import java.io.Writer;
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.ArrayList;
 
 public class SimpleIA32Generator extends AssemblyGenerator {
 	public int getSystemIntSize() {
@@ -17,6 +19,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 	PrintWriter out;
 	private String currentFunctionName;
 	private int nextLabelId;
+	private List<String> stringLiteralList;
 
 	private String getNextLabel() {
 		return "stoa.label." + (nextLabelId++);
@@ -27,6 +30,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 	Function[] functionDefinitionList) {
 		this.out = new PrintWriter(out);
 		nextLabelId = 0;
+		stringLiteralList = new ArrayList<String>();
 
 		// プログラムを出力する
 		this.out.println(".section .text");
@@ -39,6 +43,20 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		for (int i = 0; i < staticVariableDefinitionList.length; i++) {
 			StaticVariable sv = staticVariableDefinitionList[i];
 			this.out.println(".comm " + sv.getName() + ", " + sv.getDataType().getWidth());
+		}
+
+		// 文字列リテラルを出力する
+		this.out.println(".section .rodata");
+		for (int i = 0; i < stringLiteralList.size(); i++) {
+			this.out.println("stoa.string" + i + ":");
+			this.out.print("\t.byte ");
+			byte[] b = stringLiteralList.get(i).getBytes();
+			for (int j = 0; j < b.length; j++) {
+				int num = b[j];
+				if (num < 0) num += 256;
+				this.out.print(num + ", ");
+			}
+			this.out.println("0");
 		}
 
 		this.out.flush();
@@ -289,7 +307,14 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		} else if (expr instanceof IntegerLiteral) {
 			out.println("\tpushl $" + ((IntegerLiteral)expr).getValue());
 		} else if (expr instanceof StringLiteral) {
-			throw new SystemLimitException("StringLiteral not implemented yet");
+			StringLiteral sl = (StringLiteral)expr;
+			String str = sl.getString();
+			int idx = stringLiteralList.indexOf(str);
+			if (idx < 0) {
+				idx = stringLiteralList.size();
+				stringLiteralList.add(str);
+			}
+			out.println("\tpushl $stoa.string" + idx);
 		}
 	}
 }
