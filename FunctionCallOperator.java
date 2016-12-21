@@ -20,6 +20,10 @@ public class FunctionCallOperator extends Expression {
 				this.arguments.add(((BinaryOperator)arguments).getLeft());
 				arguments = ((BinaryOperator)arguments).getRight();
 			}
+			// 単体だとBinaryOperatorでの変換が行われないので、配列を先頭要素へのポインタに変換する
+			if (arguments.getDataType() instanceof ArrayType) {
+				arguments = new UnaryOperator(UnaryOperator.Kind.UNARY_AUTO_TO_POINTER, arguments);
+			}
 			this.arguments.add(arguments);
 		}
 	}
