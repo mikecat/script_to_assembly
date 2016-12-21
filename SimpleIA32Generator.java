@@ -158,7 +158,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		if (expr instanceof BinaryOperator) {
 			generateBinaryOperatorEvaluation((BinaryOperator)expr, requestedSize, wantAddress);
 		} else if (expr instanceof UnaryOperator) {
-			throw new SystemLimitException("UnaryOperator not implemented yet");
+			generateUnaryOperatorEvaluation((UnaryOperator)expr, requestedSize, wantAddress);
 		} else if (expr instanceof FunctionCallOperator) {
 			FunctionCallOperator funcCall = (FunctionCallOperator)expr;
 			int argumentNum = funcCall.getArgumentsNum();
@@ -317,6 +317,48 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			out.println("\t" + comparisionOperatorInstruction + " " + label);
 			out.println("\tinc %eax");
 			out.println(label + ":");
+		}
+		out.println("\tpush %eax");
+	}
+
+	private void generateUnaryOperatorEvaluation(UnaryOperator op, int requestedSize, boolean wantAddress) {
+		// オペランドを評価する
+		if (op.getKind() != UnaryOperator.Kind.UNARY_SIZE) {
+			generateExpressionEvaluation(op.getOperand(), op.getDataType().getWidth(),
+				op.getKind() == UnaryOperator.Kind.UNARY_DEREFERENCE || op.getKind() == UnaryOperator.Kind.UNARY_ADDRESS);
+			out.println("\tpop %eax");
+		}
+		switch(op.getKind()) {
+		case UNARY_MINUS:
+			out.println("\tneg %eax");
+			break;
+		case UNARY_PLUS:
+			// 何もしない
+			break;
+		case UNARY_LOGICAL_NOT:
+			break;
+		case UNARY_BIT_NOT:
+			out.println("\tnot %eax");
+			break;
+		case UNARY_DEREFERENCE:
+			if (!wantAddress) {
+				out.println("\tmov (%eax), %eax");
+			}
+			break;
+		case UNARY_ADDRESS:
+			// 下からアドレスが来るので、そのまま渡す
+			// すなわち、何もしない
+			break;
+		case UNARY_SIZE:
+			// 式を評価せず、結果のサイズを積む
+			out.println("\tmov $" + op.getDataType().getWidth() + ", %eax");
+			break;
+		case UNARY_AUTO_TO_POINTER:
+			// 下からポインタの値が来るので、そのまま渡す
+			// すなわち、何もしない
+			break;
+		default:
+			throw new SystemLimitException("unexpected kind of UnaryOperator: " + op.getKind());
 		}
 		out.println("\tpush %eax");
 	}
