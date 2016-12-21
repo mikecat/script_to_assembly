@@ -18,6 +18,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 
 	PrintWriter out;
 	private String currentFunctionName;
+	private DataType currentFunctionReturnType;
 	private int nextLabelId;
 	private List<String> stringLiteralList;
 
@@ -65,6 +66,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 	private void generateFunction(Function func) {
 		// 関数の開始
 		currentFunctionName = func.getName();
+		currentFunctionReturnType = func.getDataType();
 		out.println(".globl " + currentFunctionName);
 		out.println(currentFunctionName + ":");
 		// 関数内の命令をそれぞれ出力する
@@ -80,19 +82,20 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 	private void generateInstruction(Instruction inst) {
 		if (inst instanceof NormalExpression) {
 			Expression expr = ((NormalExpression)inst).getExpression();
-			generateExpressionEvaluation(expr);
+			generateExpressionEvaluation(expr, 0, false);
 			out.println("\tpop %eax");
 		} else if (inst instanceof ReturnInstruction) {
 			ReturnInstruction ret = (ReturnInstruction)inst;
 			if (ret.hasExpression()) {
-				generateExpressionEvaluation(ret.getExpression());
+				generateExpressionEvaluation(ret.getExpression(),
+					currentFunctionReturnType.getWidth(), false);
 				out.println("\tpop %eax");
 			}
 			out.println("\tjmp stoa.funcend." + currentFunctionName);
 		} else if (inst instanceof ConditionalBranch) {
 			ConditionalBranch cb = (ConditionalBranch)inst;
 			int insNum;
-			generateExpressionEvaluation(cb.getCondition());
+			generateExpressionEvaluation(cb.getCondition(), 4, false);
 			out.println("\tpop %eax");
 			out.println("\ttest %eax, %eax");
 			String label1 = getNextLabel();
@@ -133,7 +136,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			String label2 = getNextLabel();
 			String label3 = getNextLabel();
 			out.println(label1 + ":");
-			generateExpressionEvaluation(wLoop.getCondition());
+			generateExpressionEvaluation(wLoop.getCondition(), 4, false);
 			out.println("\tpop %eax");
 			out.println("\ttest %eax, %eax");
 			out.println("\tjnz " + label3);
@@ -151,18 +154,15 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		}
 	}
 
-	private void generateExpressionEvaluation(Expression expr) {
-		generateExpressionEvaluation(expr, false);
-	}
-
-	private void generateExpressionEvaluation(Expression expr, boolean wantAddress) {
+	private void generateExpressionEvaluation(Expression expr, int requestedSize, boolean wantAddress) {
 		if (expr instanceof BinaryOperator) {
 			BinaryOperator op = (BinaryOperator)expr;
 			// オペランドを評価する
-			generateExpressionEvaluation(op.getLeft(), op.getKind() == BinaryOperator.Kind.OP_ASSIGN);
+			generateExpressionEvaluation(op.getLeft(), expr.getDataType().getWidth(),
+				op.getKind() == BinaryOperator.Kind.OP_ASSIGN);
 			if (op.getKind() != BinaryOperator.Kind.OP_LOGICAL_AND &&
 			op.getKind() != BinaryOperator.Kind.OP_LOGICAL_OR) {
-				generateExpressionEvaluation(op.getRight(), false);
+				generateExpressionEvaluation(op.getRight(), expr.getDataType().getWidth(), false);
 				out.println("\tpop %ecx");
 			}
 			out.println("\tpop %eax");
@@ -273,9 +273,9 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			FunctionCallOperator funcCall = (FunctionCallOperator)expr;
 			int argumentNum = funcCall.getArgumentsNum();
 			for (int i = argumentNum - 1; i >= 0; i--) {
-				generateExpressionEvaluation(funcCall.getArgument(i));
+				generateExpressionEvaluation(funcCall.getArgument(i), 4, false);
 			}
-			generateExpressionEvaluation(funcCall.getFunction());
+			generateExpressionEvaluation(funcCall.getFunction(), 4, false);
 			out.println("\tpop %eax");
 			out.println("\tcall *%eax");
 			out.println("\tadd $" + (4 * argumentNum) + ", %esp");
