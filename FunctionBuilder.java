@@ -3,14 +3,14 @@ import java.util.ArrayList;
 
 public class FunctionBuilder extends InstructionBuilder {
 	private String name;
-	private DataType dataType;
+	private DataType returnType;
 	private List<AutomaticVariable> variableList;
 	private List<Instruction> instructionList;
 	private int variableCount, argumentCount;
 
-	public FunctionBuilder(String name, DataType dataType) {
+	public FunctionBuilder(String name, DataType returnType) {
 		this.name = name;
-		this.dataType = dataType;
+		this.returnType = returnType;
 		this.variableList = new ArrayList<AutomaticVariable>();
 		this.instructionList = new ArrayList<Instruction>();
 		this.variableCount = 0;
@@ -31,6 +31,6 @@ public class FunctionBuilder extends InstructionBuilder {
 	}
 
 	public Function toFunction() {
-		return new Function(name, dataType, variableList, instructionList);
+		return new Function(name, returnType, variableList, instructionList);
 	}
 }

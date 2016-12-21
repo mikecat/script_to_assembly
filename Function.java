@@ -2,13 +2,14 @@ import java.util.List;
 
 public class Function {
 	private String name;
-	private DataType dataType;
+	private DataType returnType;
 	private AutomaticVariable[] variableList;
 	private Instruction[] instructionList;
 
-	public Function(String name, DataType dataType, List<AutomaticVariable> variableList, List<Instruction> instructionList) {
+	public Function(String name, DataType returnType,
+	List<AutomaticVariable> variableList, List<Instruction> instructionList) {
 		this.name = name;
-		this.dataType = dataType;
+		this.returnType = returnType;
 		this.variableList = variableList.toArray(new AutomaticVariable[variableList.size()]);
 		this.instructionList = instructionList.toArray(new Instruction[instructionList.size()]);
 	}
@@ -17,8 +18,8 @@ public class Function {
 		return name;
 	}
 
-	public DataType getDataType() {
-		return dataType;
+	public DataType getReturnType() {
+		return returnType;
 	}
 
 	public int getVariableNumber() {

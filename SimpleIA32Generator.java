@@ -66,7 +66,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 	private void generateFunction(Function func) {
 		// 関数の開始
 		currentFunctionName = func.getName();
-		currentFunctionReturnType = func.getDataType();
+		currentFunctionReturnType = func.getReturnType();
 		out.println(".globl " + currentFunctionName);
 		out.println(currentFunctionName + ":");
 		// 関数内の命令をそれぞれ出力する
