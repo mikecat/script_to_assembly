@@ -1,0 +1,22 @@
+funcdeclare scanf int
+funcdeclare printf int
+
+var i int
+var j int
+var n int
+
+function main int
+	scanf("%d", &n)
+	i = 0
+	while i < n
+		printf("%4d : ", i)
+		j = 0
+		while j < i
+			printf("*")
+			j = j + 1
+		endwhile
+		printf("%c", 10)
+		i = i + 1
+	endwhile
+	return 0
+endfunction
