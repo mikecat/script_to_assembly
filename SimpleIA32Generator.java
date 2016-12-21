@@ -156,117 +156,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 
 	private void generateExpressionEvaluation(Expression expr, int requestedSize, boolean wantAddress) {
 		if (expr instanceof BinaryOperator) {
-			BinaryOperator op = (BinaryOperator)expr;
-			// オペランドを評価する
-			generateExpressionEvaluation(op.getLeft(), expr.getDataType().getWidth(),
-				op.getKind() == BinaryOperator.Kind.OP_ASSIGN);
-			if (op.getKind() != BinaryOperator.Kind.OP_LOGICAL_AND &&
-			op.getKind() != BinaryOperator.Kind.OP_LOGICAL_OR) {
-				generateExpressionEvaluation(op.getRight(), expr.getDataType().getWidth(), false);
-				out.println("\tpop %ecx");
-			}
-			out.println("\tpop %eax");
-			boolean isComparisionSigned = false;
-			if (op.getLeft().getDataType() instanceof IntegerType && op.getRight().getDataType() instanceof IntegerType) {
-				IntegerType leftType = (IntegerType)op.getLeft().getDataType();
-				IntegerType rightType = (IntegerType)op.getRight().getDataType();
-				if (leftType.getWidth() >= rightType.getWidth()) {
-					isComparisionSigned = leftType.isSigned();
-				} else {
-					isComparisionSigned = rightType.isSigned();
-				}
-			}
-			// 計算を行う
-			String comparisionOperatorInstruction = null;
-			switch(op.getKind()) {
-			case OP_ARRAY:
-				throw new SystemLimitException("OP_ARRAY not implemented yet");
-			case OP_MUL:
-				if (((IntegerType)expr.getDataType()).isSigned()) {
-					out.println("\timul %ecx");
-				} else {
-					out.println("\tmul %ecx");
-				}
-				break;
-			case OP_DIV:
-				if (((IntegerType)expr.getDataType()).isSigned()) {
-					out.println("\tcdq");
-					out.println("\tidiv %ecx");
-				} else {
-					out.println("xor %edx, %edx");
-					out.println("\tdiv %ecx");
-				}
-				break;
-			case OP_MOD:
-				if (((IntegerType)expr.getDataType()).isSigned()) {
-					out.println("\tcdq");
-					out.println("\tidiv %ecx");
-				} else {
-					out.println("xor %edx, %edx");
-					out.println("\tdiv %ecx");
-				}
-				out.println("\tmov %edx, %eax");
-				break;
-			case OP_ADD:
-				out.println("\tadd %ecx, %eax");
-				break;
-			case OP_SUB:
-				out.println("\tsub %ecx, %eax");
-				break;
-			case OP_LEFT_SHIFT:
-				throw new SystemLimitException("OP_LEFT_SHIFT not implemented yet");
-			case OP_RIGHT_SHIFT_ARITIMETIC:
-				throw new SystemLimitException("OP_RIGHT_SHIFT_ARITIMETIC not implemented yet");
-			case OP_RIGHT_SHIFT_LOGICAL:
-				throw new SystemLimitException("OP_RIGHT_SHIFT_LOGICAL not implemented yet");
-			case OP_LEFT_ROTATE:
-				throw new SystemLimitException("OP_LEFT_ROTATE not implemented yet");
-			case OP_RIGHT_ROTATE:
-				throw new SystemLimitException("OP_RIGHT_ROTATE not implemented yet");
-			case OP_BIT_AND:
-				throw new SystemLimitException("OP_BIT_AND not implemented yet");
-			case OP_BIT_OR:
-				throw new SystemLimitException("OP_BIT_OR not implemented yet");
-			case OP_BIT_XOR:
-				throw new SystemLimitException("OP_BIT_XOR not implemented yet");
-			case OP_ASSIGN:
-				out.println("\txchg %ecx, %eax");
-				out.println("\tmov %eax, (%ecx)");
-				break;
-			case OP_GT:
-				comparisionOperatorInstruction = isComparisionSigned ? "jng" : "jna";
-				break;
-			case OP_GTE:
-				comparisionOperatorInstruction = isComparisionSigned ? "jnge" : "jnae";
-				break;
-			case OP_LT:
-				comparisionOperatorInstruction = isComparisionSigned ? "jnl" : "jnb";
-				break;
-			case OP_LTE:
-				comparisionOperatorInstruction = isComparisionSigned ? "jnle" : "jnbe";
-				break;
-			case OP_EQUAL:
-				comparisionOperatorInstruction = "jne";
-				break;
-			case OP_NOT_EQUAL:
-				comparisionOperatorInstruction = "je";
-				break;
-			case OP_LOGICAL_AND:
-				throw new SystemLimitException("OP_LOGICAL_AND not implemented yet");
-			case OP_LOGICAL_OR:
-				throw new SystemLimitException("OP_LOGICAL_OR not implemented yet");
-			default:
-				throw new SystemLimitException("unexpected kind of BinaryOperator: " + op.getKind());
-			}
-			if (comparisionOperatorInstruction != null) {
-				String label = getNextLabel();
-				out.println("\tcmp %ecx, %eax");
-				out.println("\tmov $0, %eax");
-				out.println("\t" + comparisionOperatorInstruction + " " + label);
-				out.println("\tinc %eax");
-				out.println(label + ":");
-			}
-			out.println("\tpush %eax");
+			generateBinaryOperatorEvaluation((BinaryOperator)expr, requestedSize, wantAddress);
 		} else if (expr instanceof UnaryOperator) {
 			throw new SystemLimitException("UnaryOperator not implemented yet");
 		} else if (expr instanceof FunctionCallOperator) {
@@ -316,5 +206,118 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			}
 			out.println("\tpushl $stoa.string" + idx);
 		}
+	}
+
+	private void generateBinaryOperatorEvaluation(BinaryOperator op, int requestedSize, boolean wantAddress) {
+		// オペランドを評価する
+		generateExpressionEvaluation(op.getLeft(), op.getDataType().getWidth(),
+			op.getKind() == BinaryOperator.Kind.OP_ASSIGN);
+		if (op.getKind() != BinaryOperator.Kind.OP_LOGICAL_AND &&
+		op.getKind() != BinaryOperator.Kind.OP_LOGICAL_OR) {
+			generateExpressionEvaluation(op.getRight(), op.getDataType().getWidth(), false);
+			out.println("\tpop %ecx");
+		}
+		out.println("\tpop %eax");
+		boolean isComparisionSigned = false;
+		if (op.getLeft().getDataType() instanceof IntegerType && op.getRight().getDataType() instanceof IntegerType) {
+			IntegerType leftType = (IntegerType)op.getLeft().getDataType();
+			IntegerType rightType = (IntegerType)op.getRight().getDataType();
+			if (leftType.getWidth() >= rightType.getWidth()) {
+				isComparisionSigned = leftType.isSigned();
+			} else {
+				isComparisionSigned = rightType.isSigned();
+			}
+		}
+		// 計算を行う
+		String comparisionOperatorInstruction = null;
+		switch(op.getKind()) {
+		case OP_ARRAY:
+			throw new SystemLimitException("OP_ARRAY not implemented yet");
+		case OP_MUL:
+			if (((IntegerType)op.getDataType()).isSigned()) {
+				out.println("\timul %ecx");
+			} else {
+				out.println("\tmul %ecx");
+			}
+			break;
+		case OP_DIV:
+			if (((IntegerType)op.getDataType()).isSigned()) {
+				out.println("\tcdq");
+				out.println("\tidiv %ecx");
+			} else {
+				out.println("xor %edx, %edx");
+				out.println("\tdiv %ecx");
+			}
+			break;
+		case OP_MOD:
+			if (((IntegerType)op.getDataType()).isSigned()) {
+				out.println("\tcdq");
+				out.println("\tidiv %ecx");
+			} else {
+				out.println("xor %edx, %edx");
+				out.println("\tdiv %ecx");
+			}
+			out.println("\tmov %edx, %eax");
+			break;
+		case OP_ADD:
+			out.println("\tadd %ecx, %eax");
+			break;
+		case OP_SUB:
+			out.println("\tsub %ecx, %eax");
+			break;
+		case OP_LEFT_SHIFT:
+			throw new SystemLimitException("OP_LEFT_SHIFT not implemented yet");
+		case OP_RIGHT_SHIFT_ARITIMETIC:
+			throw new SystemLimitException("OP_RIGHT_SHIFT_ARITIMETIC not implemented yet");
+		case OP_RIGHT_SHIFT_LOGICAL:
+			throw new SystemLimitException("OP_RIGHT_SHIFT_LOGICAL not implemented yet");
+		case OP_LEFT_ROTATE:
+			throw new SystemLimitException("OP_LEFT_ROTATE not implemented yet");
+		case OP_RIGHT_ROTATE:
+			throw new SystemLimitException("OP_RIGHT_ROTATE not implemented yet");
+		case OP_BIT_AND:
+			throw new SystemLimitException("OP_BIT_AND not implemented yet");
+		case OP_BIT_OR:
+			throw new SystemLimitException("OP_BIT_OR not implemented yet");
+		case OP_BIT_XOR:
+			throw new SystemLimitException("OP_BIT_XOR not implemented yet");
+		case OP_ASSIGN:
+			out.println("\txchg %ecx, %eax");
+			out.println("\tmov %eax, (%ecx)");
+			break;
+		case OP_GT:
+			comparisionOperatorInstruction = isComparisionSigned ? "jng" : "jna";
+			break;
+		case OP_GTE:
+			comparisionOperatorInstruction = isComparisionSigned ? "jnge" : "jnae";
+			break;
+		case OP_LT:
+			comparisionOperatorInstruction = isComparisionSigned ? "jnl" : "jnb";
+			break;
+		case OP_LTE:
+			comparisionOperatorInstruction = isComparisionSigned ? "jnle" : "jnbe";
+			break;
+		case OP_EQUAL:
+			comparisionOperatorInstruction = "jne";
+			break;
+		case OP_NOT_EQUAL:
+			comparisionOperatorInstruction = "je";
+			break;
+		case OP_LOGICAL_AND:
+			throw new SystemLimitException("OP_LOGICAL_AND not implemented yet");
+		case OP_LOGICAL_OR:
+			throw new SystemLimitException("OP_LOGICAL_OR not implemented yet");
+		default:
+			throw new SystemLimitException("unexpected kind of BinaryOperator: " + op.getKind());
+		}
+		if (comparisionOperatorInstruction != null) {
+			String label = getNextLabel();
+			out.println("\tcmp %ecx, %eax");
+			out.println("\tmov $0, %eax");
+			out.println("\t" + comparisionOperatorInstruction + " " + label);
+			out.println("\tinc %eax");
+			out.println(label + ":");
+		}
+		out.println("\tpush %eax");
 	}
 }
