@@ -16,7 +16,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		return 4;
 	}
 
-	PrintWriter out;
+	private PrintWriter out;
 	private String currentFunctionName;
 	private DataType currentFunctionReturnType;
 	private int nextLabelId;
