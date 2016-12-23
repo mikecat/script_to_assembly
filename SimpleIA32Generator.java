@@ -312,6 +312,17 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			}
 			break;
 		case OP_ADD:
+			if (op.getLeft().getDataType() instanceof PointerType) {
+				out.println("\txchg %ecx, %eax");
+				out.println("\tmov $" + ((PointerType)op.getLeft().getDataType()).getPointsAt().getWidth() + ", %edx");
+				out.println((op.getRight().getDataType() instanceof IntegerType &&
+					((IntegerType)op.getRight().getDataType()).isSigned() ? "\timul" : "\tmul") + " %edx");
+				out.println("\txchg %ecx, %eax");
+			} else if (op.getRight().getDataType() instanceof PointerType) {
+				out.println("\tmov $" + ((PointerType)op.getRight().getDataType()).getPointsAt().getWidth() + ", %edx");
+				out.println((op.getRight().getDataType() instanceof IntegerType &&
+					((IntegerType)op.getRight().getDataType()).isSigned() ? "\timul" : "\tmul") + " %edx");
+			}
 			out.println("\tadd " + regSrc + ", " + regDest);
 			break;
 		case OP_SUB:

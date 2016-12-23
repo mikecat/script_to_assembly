@@ -1,0 +1,44 @@
+funcdeclare scanf int
+funcdeclare printf int
+funcdeclare malloc *int
+funcdeclare free none
+
+var n int
+var data *int
+var i int
+var j int
+var temp int
+
+function main int
+	scanf("%d", &n)
+	data = malloc(#temp * n)
+
+	i = 0
+	while i < n
+		scanf("%d", data + i)
+		i = i + 1
+	endwhile
+
+	i = n - 1
+	while i > 0
+		j = 0
+		while j < i
+			if *(data + j) > *(data + (j + 1))
+				temp = *(data + j)
+				*(j + data) = *(j + data + 1)
+				*(data + j + 1) = temp
+			endif
+			j = j + 1
+		endwhile
+		i = i - 1
+	endwhile
+
+	i = 0
+	while i < n
+		printf("%d ", *(i + data))
+		i = i + 1
+	endwhile
+	printf("%c", 10)
+	free(data)
+	return 0
+endfunction
