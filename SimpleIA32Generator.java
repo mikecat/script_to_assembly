@@ -345,9 +345,14 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 
 	private void generateUnaryOperatorEvaluation(UnaryOperator op, int requestedSize, boolean wantAddress) {
 		// オペランドを評価する
+		boolean requestAddress = op.getKind() == UnaryOperator.Kind.UNARY_DEREFERENCE ||
+			op.getKind() == UnaryOperator.Kind.UNARY_ADDRESS;
+		int requestSize = requestAddress ? 4 : // アドレス
+			op.getKind() == UnaryOperator.Kind.UNARY_LOGICAL_NOT ? 4 : // 整数として評価する
+			op.getDataType().getWidth(); // データを要求する
+		int dataSize = requestSize;
 		if (op.getKind() != UnaryOperator.Kind.UNARY_SIZE) {
-			generateExpressionEvaluation(op.getOperand(), op.getDataType().getWidth(),
-				op.getKind() == UnaryOperator.Kind.UNARY_DEREFERENCE || op.getKind() == UnaryOperator.Kind.UNARY_ADDRESS);
+			generateExpressionEvaluation(op.getOperand(), requestSize, requestAddress);
 			out.println("\tpop %eax");
 		}
 		switch(op.getKind()) {
@@ -358,13 +363,20 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			// 何もしない
 			break;
 		case UNARY_LOGICAL_NOT:
+			dataSize = 4;
 			break;
 		case UNARY_BIT_NOT:
 			out.println("\tnot %eax");
 			break;
 		case UNARY_DEREFERENCE:
 			if (!wantAddress) {
-				out.println("\tmov (%eax), %eax");
+				switch (op.getDataType().getWidth()) {
+				case 1: out.println("\tmovb (%eax), %al"); break;
+				case 2: out.println("\tmovw (%eax), %ax"); break;
+				case 4: out.println("\tmovl (%eax), %eax"); break;
+				default: throw new SystemLimitException("dereferencing " +
+					op.getDataType().getWidth() + "-byte data is not supported");
+				}
 			}
 			break;
 		case UNARY_ADDRESS:
@@ -374,6 +386,7 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		case UNARY_SIZE:
 			// 式を評価せず、結果のサイズを積む
 			out.println("\tmov $" + op.getDataType().getWidth() + ", %eax");
+			dataSize = 4;
 			break;
 		case UNARY_AUTO_TO_POINTER:
 			// 下からポインタの値が来るので、そのまま渡す
@@ -381,6 +394,16 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			break;
 		default:
 			throw new SystemLimitException("unexpected kind of UnaryOperator: " + op.getKind());
+		}
+		if (!wantAddress) {
+			boolean isSigned = op.getDataType() instanceof IntegerType && ((IntegerType)op.getDataType()).isSigned();
+			if (dataSize == 1 && requestedSize == 2) {
+				out.println((isSigned ? "\tmovsbw" : "\tmovzbw") + " %al, %ax");
+			} else if (dataSize == 1 && requestedSize == 4) {
+				out.println((isSigned ? "\tmovsbl" : "\tmovzbl") + " %al, %eax");
+			} else if (dataSize == 2 && requestedSize == 4) {
+				out.println((isSigned ? "\tmovswl" : "\tmovzwl") + " %ax, %eax");
+			}
 		}
 		out.println("\tpush %eax");
 	}
