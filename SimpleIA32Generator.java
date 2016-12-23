@@ -173,15 +173,20 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		} else if (expr instanceof CastOperator) {
 			throw new SystemLimitException("CastOperator not implemented yet");
 		} else if (expr instanceof VariableAccess) {
-			if (expr.getDataType().getWidth() != 4) {
-				throw new SystemLimitException("currently only 4-byte variable is supported");
-			}
+			boolean pushLater = false;
+			int dataWidth = expr.getDataType().getWidth();
 			Identifier ident = ((VariableAccess)expr).getIdentifier();
 			if (ident instanceof StaticVariable) {
 				if (wantAddress || expr.getDataType() instanceof FunctionType) {
 					out.println("\tpushl $" + ident.getName());
 				} else {
-					out.println("\tpushl (" + ident.getName() + ")");
+					pushLater = true;
+					switch (dataWidth) {
+					case 1: out.println("\tmovb (" + ident.getName() + "), %al"); break;
+					case 2: out.println("\tmovw (" + ident.getName() + "), %ax"); break;
+					case 4: out.println("\tmovl (" + ident.getName() + "), %eax"); break;
+					default: throw new SystemLimitException(dataWidth + "-byte variable not implemented");
+					}
 				}
 			} else if (ident instanceof AutomaticVariable) {
 				throw new SystemLimitException("AutomaticVariable not implemented yet");
@@ -191,8 +196,25 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 				if (wantAddress) {
 					out.println("\tpushl $" + ((AddressVariable)ident).getAddress());
 				} else {
-					out.println("\tpushl (" + ((AddressVariable)ident).getAddress() + ")");
+					pushLater = true;
+					switch (dataWidth) {
+					case 1: out.println("\tmovb (" + ((AddressVariable)ident).getAddress() + "), %al"); break;
+					case 2: out.println("\tmovw (" + ((AddressVariable)ident).getAddress() + "), %ax"); break;
+					case 4: out.println("\tmovl (" + ((AddressVariable)ident).getAddress() + "), %eax"); break;
+					default: throw new SystemLimitException(dataWidth + "-byte variable not implemented");
+					}
 				}
+			}
+			if (pushLater) {
+				boolean isSigned = expr.getDataType() instanceof IntegerType && ((IntegerType)expr.getDataType()).isSigned();
+				if (dataWidth == 1 && requestedSize == 2) {
+					out.println((isSigned ? "\tmovsbw" : "\tmovzbw") + " %al, %ax");
+				} else if (dataWidth == 1 && requestedSize == 4) {
+					out.println((isSigned ? "\tmovsbl" : "\tmovzbl") + " %al, %eax");
+				} else if (dataWidth == 2 && requestedSize == 4) {
+					out.println((isSigned ? "\tmovswl" : "\tmovzwl") + " %ax, %eax");
+				}
+				out.println("\tpushl %eax");
 			}
 		} else if (expr instanceof IntegerLiteral) {
 			out.println("\tpushl $" + ((IntegerLiteral)expr).getValue());
