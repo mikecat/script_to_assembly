@@ -363,6 +363,15 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			// 何もしない
 			break;
 		case UNARY_LOGICAL_NOT:
+			{
+				String label = getNextLabel();
+				out.println("\txor %ecx, %ecx");
+				out.println("\ttest %eax, %eax");
+				out.println("\tjnz " + label);
+				out.println("\tinc %ecx");
+				out.println(label + ":");
+				out.println("\tmov %ecx, %eax");
+			}
 			dataSize = 4;
 			break;
 		case UNARY_BIT_NOT:

@@ -1,0 +1,11 @@
+funcdeclare printf int
+
+var i int
+function main int
+	i = 0
+	while i < 10
+		printf("%d %d%c", i, !(i % 3), 10)
+		i = i + 1
+	endwhile
+	return 0
+endfunction
