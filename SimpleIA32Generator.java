@@ -251,41 +251,71 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			}
 		}
 		// 計算を行う
+		int dataSize = op.getDataType().getWidth();
+		String regSrc, regDest;
+		switch (op.getDataType().getWidth()) {
+		case 1: regSrc = "%cl"; regDest = "%al"; break;
+		case 2: regSrc = "%cx"; regDest = "%ax"; break;
+		case 4: regSrc = "%ecx"; regDest = "%eax"; break;
+		default: throw new SystemLimitException(op.getDataType().getWidth() + "-byte calculation not supported");
+		}
 		String comparisionOperatorInstruction = null;
 		switch(op.getKind()) {
 		case OP_ARRAY:
 			throw new SystemLimitException("OP_ARRAY not implemented yet");
 		case OP_MUL:
 			if (((IntegerType)op.getDataType()).isSigned()) {
-				out.println("\timul %ecx");
+				out.println("\timul " + regSrc);
 			} else {
-				out.println("\tmul %ecx");
+				out.println("\tmul " + regSrc);
 			}
 			break;
 		case OP_DIV:
-			if (((IntegerType)op.getDataType()).isSigned()) {
-				out.println("\tcdq");
-				out.println("\tidiv %ecx");
-			} else {
-				out.println("xor %edx, %edx");
-				out.println("\tdiv %ecx");
-			}
-			break;
 		case OP_MOD:
 			if (((IntegerType)op.getDataType()).isSigned()) {
-				out.println("\tcdq");
-				out.println("\tidiv %ecx");
+				switch (dataSize) {
+				case 1:
+					out.println("\tcbw");
+					out.println("\tidiv %cl");
+					break;
+				case 2:
+					out.println("\tcwd");
+					out.println("\tidiv %cx");
+					break;
+				case 4:
+					out.println("\tcdq");
+					out.println("\tidiv %ecx");
+					break;
+				}
 			} else {
-				out.println("xor %edx, %edx");
-				out.println("\tdiv %ecx");
+				switch (dataSize) {
+				case 1:
+					out.println("xor %ah, %ah");
+					out.println("\tdiv %cl");
+					break;
+				case 2:
+					out.println("xor %dx, %dx");
+					out.println("\tdiv %cx");
+					break;
+				case 4:
+					out.println("xor %edx, %edx");
+					out.println("\tdiv %ecx");
+					break;
+				}
 			}
-			out.println("\tmov %edx, %eax");
+			if (op.getKind() == BinaryOperator.Kind.OP_MOD) {
+				switch (dataSize) {
+				case 1: out.println("\tmov %ah, %al"); break;
+				case 2: out.println("\tmov %dx, %ex"); break;
+				case 4: out.println("\tmov %edx, %eax"); break;
+				}
+			}
 			break;
 		case OP_ADD:
-			out.println("\tadd %ecx, %eax");
+			out.println("\tadd " + regSrc + ", " + regDest);
 			break;
 		case OP_SUB:
-			out.println("\tsub %ecx, %eax");
+			out.println("\tsub " + regSrc + ", " + regDest);
 			break;
 		case OP_LEFT_SHIFT:
 			throw new SystemLimitException("OP_LEFT_SHIFT not implemented yet");
@@ -305,7 +335,11 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			throw new SystemLimitException("OP_BIT_XOR not implemented yet");
 		case OP_ASSIGN:
 			out.println("\txchg %ecx, %eax");
-			out.println("\tmov %eax, (%ecx)");
+			switch (dataSize) {
+			case 1: out.println("\tmovb %al, (%ecx)"); break;
+			case 2: out.println("\tmovw %ax, (%ecx)"); break;
+			case 4: out.println("\tmovl %eax, (%ecx)"); break;
+			}
 			break;
 		case OP_GT:
 			comparisionOperatorInstruction = isComparisionSigned ? "jng" : "jna";
@@ -334,11 +368,21 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		}
 		if (comparisionOperatorInstruction != null) {
 			String label = getNextLabel();
-			out.println("\tcmp %ecx, %eax");
+			out.println("\tcmp " + regSrc + ", " + regDest);
 			out.println("\tmov $0, %eax");
 			out.println("\t" + comparisionOperatorInstruction + " " + label);
 			out.println("\tinc %eax");
 			out.println(label + ":");
+		}
+		if (!wantAddress) {
+			boolean isSigned = op.getDataType() instanceof IntegerType && ((IntegerType)op.getDataType()).isSigned();
+			if (dataSize == 1 && requestedSize == 2) {
+				out.println((isSigned ? "\tmovsbw" : "\tmovzbw") + " %al, %ax");
+			} else if (dataSize == 1 && requestedSize == 4) {
+				out.println((isSigned ? "\tmovsbl" : "\tmovzbl") + " %al, %eax");
+			} else if (dataSize == 2 && requestedSize == 4) {
+				out.println((isSigned ? "\tmovswl" : "\tmovzwl") + " %ax, %eax");
+			}
 		}
 		out.println("\tpush %eax");
 	}
