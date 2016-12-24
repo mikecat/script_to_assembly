@@ -252,17 +252,33 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		}
 		// 計算を行う
 		int dataSize = op.getDataType().getWidth();
-		String regSrc, regDest;
+		String regSrc = null, regDest = null;
 		switch (op.getDataType().getWidth()) {
 		case 1: regSrc = "%cl"; regDest = "%al"; break;
 		case 2: regSrc = "%cx"; regDest = "%ax"; break;
 		case 4: regSrc = "%ecx"; regDest = "%eax"; break;
-		default: throw new SystemLimitException(op.getDataType().getWidth() + "-byte calculation not supported");
+		default:
+			if (!wantAddress) {
+				throw new SystemLimitException(op.getDataType().getWidth() + "-byte calculation not supported");
+			}
+			break;
 		}
 		String comparisionOperatorInstruction = null;
 		switch(op.getKind()) {
 		case OP_ARRAY:
-			throw new SystemLimitException("OP_ARRAY not implemented yet");
+			out.println("\txchg %ecx, %eax");
+			out.println("\tmov $" + ((PointerType)op.getLeft().getDataType()).getPointsAt().getWidth() + ", %edx");
+			out.println((op.getRight().getDataType() instanceof IntegerType &&
+				((IntegerType)op.getRight().getDataType()).isSigned() ? "\timul" : "\tmul") + " %edx");
+			out.println("\tadd %ecx, %eax");
+			if (!wantAddress) {
+				switch (dataSize) {
+				case 1: out.println("\tmovb (%eax), %al"); break;
+				case 2: out.println("\tmovw (%eax), %ex"); break;
+				case 4: out.println("\tmovl (%eax), %eax"); break;
+				}
+			}
+			break;
 		case OP_MUL:
 			if (((IntegerType)op.getDataType()).isSigned()) {
 				out.println("\timul " + regSrc);
