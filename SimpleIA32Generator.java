@@ -401,7 +401,8 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 	private void generateUnaryOperatorEvaluation(UnaryOperator op, int requestedSize, boolean wantAddress) {
 		// オペランドを評価する
 		boolean requestAddress = op.getKind() == UnaryOperator.Kind.UNARY_DEREFERENCE ||
-			op.getKind() == UnaryOperator.Kind.UNARY_ADDRESS;
+			op.getKind() == UnaryOperator.Kind.UNARY_ADDRESS ||
+			op.getKind() == UnaryOperator.Kind.UNARY_AUTO_TO_POINTER;
 		int requestSize = requestAddress ? 4 : // アドレス
 			op.getKind() == UnaryOperator.Kind.UNARY_LOGICAL_NOT ? 4 : // 整数として評価する
 			op.getDataType().getWidth(); // データを要求する
