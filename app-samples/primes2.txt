@@ -1,0 +1,74 @@
+funcdeclare getchar int
+funcdeclare putchar int
+
+function readint int
+	var input int
+	var result int
+	result = 0
+	loop
+		input = getchar()
+		if input < '0'
+			return result
+		endif
+		if '9' < input
+			return result
+		endif
+		result = result * 10 + (input - '0')
+	endloop
+endfunction
+
+function printint none
+	argument n int
+	var divider int
+	divider = 1
+	while divider * 10 <= n
+		divider = divider * 10
+	endwhile
+	while divider > 0
+		putchar((n / divider) % 10 + '0')
+		divider = divider / 10
+	endwhile
+endfunction
+
+function isprime int
+	argument n int
+	var i int
+	if n < 2
+		return 0
+	endif
+	i = 2
+	while i * i <= n
+		if n % i == 0
+			return 0
+		endif
+		i = i + 1
+	endwhile
+	return 1
+endfunction
+
+function main int
+	var max int
+	var summode int
+	var sum int
+	var i int
+	max = readint()
+	summode = readint()
+	sum = 0
+	i = 0
+	while i <= max
+		if isprime(i)
+			if summode
+				sum = sum + i
+			else
+				printint(i)
+				putchar(10)
+			endif
+		endif
+		i = i + 1
+	endwhile
+	if summode
+		printint(sum)
+		putchar(10)
+	endif
+	return 0
+endfunction

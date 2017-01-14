@@ -1,0 +1,32 @@
+funcdeclare scanf int
+funcdeclare printf int
+
+var addcount int
+
+function fib int
+	argument n int
+	var prev int
+	var prev2 int
+	if n < 1
+		return 0
+	elseif n == 1
+		return 1
+	else
+		prev = fib(n - 1)
+		prev2 = fib(n - 2)
+		addcount = addcount + 1
+		return prev + prev2
+	endif
+endfunction
+
+function main int
+	var n int
+	addcount = 0
+	if scanf("%d", &n) != 1
+		printf("failed to read n%c", 10)
+		return 1
+	endif
+	printf("fib(%d) = %d%c", n, fib(n), 10)
+	printf("# of addition = %d%c", addcount, 10)
+	return 0
+endfunction
