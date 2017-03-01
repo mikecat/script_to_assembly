@@ -18,6 +18,7 @@ CLASSES = \
 	UnaryOperator.class \
 	BinaryOperator.class \
 	FunctionCallOperator.class \
+	CastOperator.class \
 	Function.class \
 	Instruction.class \
 	NormalExpression.class \
