@@ -407,6 +407,14 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			break;
 		case OP_SUB:
 			out.println("\tsub " + regSrc + ", " + regDest);
+			if (op.getLeft().getDataType() instanceof PointerType && op.getRight().getDataType() instanceof PointerType) {
+				if (op.getLeft().getDataType().getWidth() != 4 || op.getRight().getDataType().getWidth() != 4) {
+					throw new SystemLimitException("subtraction of non 4-byte pointers isn't supported");
+				}
+				out.println("\tmov $" + ((PointerType)op.getLeft().getDataType()).getPointsAt().getWidth() + ", %ecx");
+				out.println("\tcdq");
+				out.println("\tidiv %ecx");
+			}
 			break;
 		case OP_LEFT_SHIFT:
 			out.println("\tshl %cl, " + regDest);
