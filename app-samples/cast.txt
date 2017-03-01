@@ -1,0 +1,13 @@
+funcdeclare printf int
+
+function main int
+	var a uint32
+	a = 0xDEADBEEF
+	printf("a = %x%c", a, 10)
+	printf("{uint16}a = %x%c", {uint16}a, 10)
+	printf("{uint8}a = %x%c", {uint8}a, 10)
+	printf("{int16}a = %x%c", {int16}a, 10)
+	printf("{int8}a = %x%c", {int8}a, 10)
+	printf("{uint16}{int8}a = %x%c", {uint16}{int8}a, 10)
+	return 0
+endfunction

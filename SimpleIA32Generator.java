@@ -208,7 +208,22 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			out.println("\tadd $" + (4 * argumentNum) + ", %esp");
 			out.println("\tpush %eax");
 		} else if (expr instanceof CastOperator) {
-			throw new SystemLimitException("CastOperator not implemented yet");
+			CastOperator co = (CastOperator)expr;
+			DataType coType = co.getDataType();
+			generateExpressionEvaluation(co.getOperand(), coType.getWidth(), false);
+			int srcWidth = coType.getWidth();
+			if (srcWidth < requestedSize) {
+				boolean isSigned = (coType instanceof IntegerType) ? ((IntegerType)coType).isSigned() : false;
+				out.println("\tpop %eax");
+				if (srcWidth == 1 && requestedSize == 2) {
+					out.println((isSigned ? "\tmovsbw" : "\tmovzbw") + " %al, %ax");
+				} else if (srcWidth == 1 && requestedSize == 4) {
+					out.println((isSigned ? "\tmovsbl" : "\tmovzbl") + " %al, %eax");
+				} else if (srcWidth == 2 && requestedSize == 4) {
+					out.println((isSigned ? "\tmovswl" : "\tmovzwl") + " %ax, %eax");
+				}
+				out.println("\tpush %eax");
+			}
 		} else if (expr instanceof VariableAccess) {
 			boolean pushLater = false;
 			int dataWidth = expr.getDataType().getWidth();
