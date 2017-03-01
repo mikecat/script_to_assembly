@@ -1,0 +1,25 @@
+funcdeclare printf int
+
+function evaluate int
+	param name *char
+	param x int
+	printf("evaluate %s = %d%c", name, x, 10)
+	return x
+endfunction
+
+function main int
+	var i int
+	var j int
+	printf("i    j%c", 10)
+	i = 0
+	while i <= 1
+		j = 0
+		while j <= 1
+			printf("%d && %d = %d%c", i, j, evaluate("i", i) && evaluate("j", j), 10)
+			printf("%d || %d = %d%c", i, j, evaluate("i", i) || evaluate("j", j), 10)
+			j = j + 1
+		endwhile
+		i = i + 1
+	endwhile
+	return 0
+endfunction

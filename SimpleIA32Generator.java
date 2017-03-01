@@ -281,14 +281,14 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 
 	private void generateBinaryOperatorEvaluation(BinaryOperator op, int requestedSize, boolean wantAddress) {
 		// オペランドを評価する
-		generateExpressionEvaluation(op.getLeft(), op.getDataType().getWidth(),
-			op.getKind() == BinaryOperator.Kind.OP_ASSIGN);
 		if (op.getKind() != BinaryOperator.Kind.OP_LOGICAL_AND &&
 		op.getKind() != BinaryOperator.Kind.OP_LOGICAL_OR) {
+			generateExpressionEvaluation(op.getLeft(), op.getDataType().getWidth(),
+				op.getKind() == BinaryOperator.Kind.OP_ASSIGN);
 			generateExpressionEvaluation(op.getRight(), op.getDataType().getWidth(), false);
 			out.println("\tpop %ecx");
+			out.println("\tpop %eax");
 		}
-		out.println("\tpop %eax");
 		boolean isComparisionSigned = false;
 		if (op.getLeft().getDataType() instanceof IntegerType && op.getRight().getDataType() instanceof IntegerType) {
 			IntegerType leftType = (IntegerType)op.getLeft().getDataType();
@@ -444,9 +444,45 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			comparisionOperatorInstruction = "je";
 			break;
 		case OP_LOGICAL_AND:
-			throw new SystemLimitException("OP_LOGICAL_AND not implemented yet");
+			{
+				// 左辺を評価する
+				generateExpressionEvaluation(op.getLeft(), 4, false);
+				String label = getNextLabel();
+				out.println("\txor %ecx, %ecx");
+				out.println("\tpop %eax");
+				out.println("\ttest %eax, %eax");
+				out.println("\tjz " + label);
+				// 左辺が0でなければ、右辺を評価する
+				generateExpressionEvaluation(op.getRight(), 4, false);
+				out.println("\txor %ecx, %ecx");
+				out.println("\tpop %eax");
+				out.println("\ttest %eax, %eax");
+				out.println("\tjz " + label);
+				out.println("\tinc %ecx");
+				out.println(label + ":");
+				out.println("\tmov %ecx, %eax");
+			}
+			break;
 		case OP_LOGICAL_OR:
-			throw new SystemLimitException("OP_LOGICAL_OR not implemented yet");
+			{
+				// 左辺を評価する
+				generateExpressionEvaluation(op.getLeft(), 4, false);
+				String label = getNextLabel();
+				out.println("\tmov $1, %ecx");
+				out.println("\tpop %eax");
+				out.println("\ttest %eax, %eax");
+				out.println("\tjnz " + label);
+				// 左辺が0ならば、右辺を評価する
+				generateExpressionEvaluation(op.getRight(), 4, false);
+				out.println("\txor %ecx, %ecx");
+				out.println("\tpop %eax");
+				out.println("\ttest %eax, %eax");
+				out.println("\tjz " + label);
+				out.println("\tinc %ecx");
+				out.println(label + ":");
+				out.println("\tmov %ecx, %eax");
+			}
+			break;
 		default:
 			throw new SystemLimitException("unexpected kind of BinaryOperator: " + op.getKind());
 		}
