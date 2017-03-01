@@ -7,6 +7,10 @@ public class CastOperator extends Expression {
 		this.operand = operand;
 	}
 
+	public Expression getOperand() {
+		return operand;
+	}
+
 	public DataType getDataType() {
 		return destType;
 	}
