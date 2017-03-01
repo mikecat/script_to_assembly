@@ -98,7 +98,10 @@ public class BinaryOperator extends Expression {
 			if (this.left.getDataType() instanceof IntegerType && this.right.getDataType() instanceof IntegerType) {
 				this.dataType = getAritimeticDataType(this.left.getDataType(), this.right.getDataType());
 			} else if (this.left.getDataType() instanceof PointerType && this.right.getDataType() instanceof PointerType) {
-				this.dataType = new IntegerType(4, true);
+				if (!this.left.getDataType().equals(this.right.getDataType())) {
+					throw new SyntaxException("subtraction between different pointers isn't allowed");
+				}
+				this.dataType = new IntegerType(DataType.getSystemIntSize(), true);
 			} else {
 				throw new SyntaxException("invalid operand for subtraction");
 			}
