@@ -404,11 +404,14 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		case OP_RIGHT_ROTATE:
 			throw new SystemLimitException("OP_RIGHT_ROTATE not implemented yet");
 		case OP_BIT_AND:
-			throw new SystemLimitException("OP_BIT_AND not implemented yet");
+			out.println("\tand " + regSrc + ", " + regDest);
+			break;
 		case OP_BIT_OR:
-			throw new SystemLimitException("OP_BIT_OR not implemented yet");
+			out.println("\tor " + regSrc + ", " + regDest);
+			break;
 		case OP_BIT_XOR:
-			throw new SystemLimitException("OP_BIT_XOR not implemented yet");
+			out.println("\txor " + regSrc + ", " + regDest);
+			break;
 		case OP_ASSIGN:
 			out.println("\txchg %ecx, %eax");
 			switch (dataSize) {

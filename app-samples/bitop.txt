@@ -1,0 +1,17 @@
+funcdeclare printf int
+
+function main int
+	var x int
+	var y int
+	x = 0
+	while x < 0x10
+		y = 0
+		while y < 0x10
+			printf("%x & %x = %x, %x | %x = %x, %x ^ %x = %x%c", x, y, x & y, x, y, x | y, x, y, x^ y, 10)
+			y = y + 1
+		endwhile
+		x = x + 1
+	endwhile
+
+	return 0
+endfunction
