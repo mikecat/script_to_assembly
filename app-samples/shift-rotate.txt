@@ -1,0 +1,33 @@
+funcdeclare printf int
+
+function main int
+	var i int
+	var a uint8
+	var b uint16
+	var c uint32
+	a = 0x81
+	b = 0x8001
+	c = 0x80000001
+
+	printf("%02x << 5 = %02x%c", a, a << 5, 10)
+	printf("%04x << 5 = %04x%c", b, b << 5, 10)
+	printf("%08x << 5 = %08x%c", c, c << 5, 10)
+
+	printf("%02x >> 5 = %02x%c", a, a >> 5, 10)
+	printf("%04x >> 5 = %04x%c", b, b >> 5, 10)
+	printf("%08x >> 5 = %08x%c", c, c >> 5, 10)
+
+	printf("%02x >>> 5 = %02x%c", a, a >>> 5, 10)
+	printf("%04x >>> 5 = %04x%c", b, b >>> 5, 10)
+	printf("%08x >>> 5 = %08x%c", c, c >>> 5, 10)
+
+	printf("%02x ^< 5 = %02x%c", a, a ^< 5, 10)
+	printf("%04x ^< 5 = %04x%c", b, b ^< 5, 10)
+	printf("%08x ^< 5 = %08x%c", c, c ^< 5, 10)
+
+	printf("%02x >^ 5 = %02x%c", a, a >^ 5, 10)
+	printf("%04x >^ 5 = %04x%c", b, b >^ 5, 10)
+	printf("%08x >^ 5 = %08x%c", c, c >^ 5, 10)
+
+	return 0
+endfunction

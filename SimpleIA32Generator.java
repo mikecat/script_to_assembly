@@ -394,15 +394,20 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			out.println("\tsub " + regSrc + ", " + regDest);
 			break;
 		case OP_LEFT_SHIFT:
-			throw new SystemLimitException("OP_LEFT_SHIFT not implemented yet");
+			out.println("\tshl %cl, " + regDest);
+			break;
 		case OP_RIGHT_SHIFT_ARITIMETIC:
-			throw new SystemLimitException("OP_RIGHT_SHIFT_ARITIMETIC not implemented yet");
+			out.println("\tsar %cl, " + regDest);
+			break;
 		case OP_RIGHT_SHIFT_LOGICAL:
-			throw new SystemLimitException("OP_RIGHT_SHIFT_LOGICAL not implemented yet");
+			out.println("\tshr %cl, " + regDest);
+			break;
 		case OP_LEFT_ROTATE:
-			throw new SystemLimitException("OP_LEFT_ROTATE not implemented yet");
+			out.println("\trol %cl, " + regDest);
+			break;
 		case OP_RIGHT_ROTATE:
-			throw new SystemLimitException("OP_RIGHT_ROTATE not implemented yet");
+			out.println("\tror %cl, " + regDest);
+			break;
 		case OP_BIT_AND:
 			out.println("\tand " + regSrc + ", " + regDest);
 			break;
