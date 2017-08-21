@@ -1,0 +1,38 @@
+funcdeclare printf int
+
+function main int
+	var i int
+	var j int
+
+	printf("----- test1 -----%c", 10)
+	i = 0
+	loop
+		i = i + 1
+		if i == 5
+			continue
+		elseif i >= 10
+			break
+		endif
+		printf("%d%c", i, 10)
+	endloop
+
+	printf("----- test2 -----%c", 10)
+	i = 0
+	while i < 5
+		j = 0
+		while j < 5
+			if j == 3
+				if i == 3
+					break 2
+				else
+					break
+				endif
+			endif
+			printf("%d %d%c", i, j, 10)
+			j = j + 1
+		endwhile
+		i = i + 1
+	endwhile
+
+	return 0
+endfunction

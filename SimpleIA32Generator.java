@@ -20,6 +20,8 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 	private String currentFunctionName;
 	private DataType currentFunctionReturnType;
 	private List<Integer> currentFunctionVariableOffset;
+	private List<String> continueLabel;
+	private List<String> breakLabel;
 	private int nextLabelId;
 	private List<String> stringLiteralList;
 
@@ -33,6 +35,8 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		this.out = new PrintWriter(out);
 		nextLabelId = 0;
 		stringLiteralList = new ArrayList<String>();
+		continueLabel = new ArrayList<String>();
+		breakLabel = new ArrayList<String>();
 
 		// プログラムを出力する
 		this.out.println(".section .text");
@@ -160,18 +164,26 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 		} else if (inst instanceof InfiniteLoop) {
 			InfiniteLoop infLoop = (InfiniteLoop)inst;
 			int insNum = infLoop.getInstructionNumber();
-			String label = getNextLabel();
-			out.println(label + ":");
+			String label1 = getNextLabel();
+			String label2 = getNextLabel();
+			continueLabel.add(label1);
+			breakLabel.add(label2);
+			out.println(label1 + ":");
 			for (int i = 0; i < insNum; i++) {
 				generateInstruction(infLoop.getInstruction(i));
 			}
-			out.println("\tjmp " + label);
+			out.println("\tjmp " + label1);
+			out.println(label2 + ":");
+			continueLabel.remove(continueLabel.size() - 1);
+			breakLabel.remove(breakLabel.size() - 1);
 		} else if (inst instanceof WhileLoop) {
 			WhileLoop wLoop = (WhileLoop)inst;
 			int insNum = wLoop.getInstructionNumber();
 			String label1 = getNextLabel();
 			String label2 = getNextLabel();
 			String label3 = getNextLabel();
+			continueLabel.add(label1);
+			breakLabel.add(label2);
 			out.println(label1 + ":");
 			generateExpressionEvaluation(wLoop.getCondition(), 4, false);
 			out.println("\tpop %eax");
@@ -184,10 +196,22 @@ public class SimpleIA32Generator extends AssemblyGenerator {
 			}
 			out.println("\tjmp " + label1);
 			out.println(label2 + ":");
+			continueLabel.remove(continueLabel.size() - 1);
+			breakLabel.remove(breakLabel.size() - 1);
 		} else if (inst instanceof BreakInstruction) {
-			throw new SystemLimitException("BreakInstruction not implemented yet");
+			BreakInstruction bi = (BreakInstruction)inst;
+			int level = bi.getLevel();
+			if (level > breakLabel.size()) {
+				throw new SyntaxException("break level too high");
+			}
+			out.println("\tjmp " + breakLabel.get(breakLabel.size() - level));
 		} else if (inst instanceof ContinueInstruction) {
-			throw new SystemLimitException("ContinueInstruction not implemented yet");
+			ContinueInstruction ci = (ContinueInstruction)inst;
+			int level = ci.getLevel();
+			if (level > continueLabel.size()) {
+				throw new SyntaxException("coneinue level too high");
+			}
+			out.println("\tjmp " + continueLabel.get(continueLabel.size() - level));
 		}
 	}
 
