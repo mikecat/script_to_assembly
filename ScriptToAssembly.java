@@ -92,14 +92,16 @@ public class ScriptToAssembly {
 		System.out.println("Usage: java ScriptToAssembly [options]");
 		System.out.println();
 		System.out.println("options:");
-		System.out.println("  -i file_name : specify input file name (use stdin if not specified)");
-		System.out.println("  -o file_name : specify output file name (use stdout if not specified)");
-		System.out.println("  -l directory_name : add library directory");
-		System.out.println("  -t target_name : specify target name");
+		System.out.println("  --input file_name / -i file_name :");
+		System.out.println("    specify input file name (use stdin if not specified)");
+		System.out.println("  --output file_name / -o file_name :");
+		System.out.println("    specify output file name (use stdout if not specified)");
+		System.out.println("  --libdir directory_name / -l directory_name : add library directory");
+		System.out.println("  --target target_name / -t target_name : specify target name");
 		System.out.println("  --ttl ttl_value : specify maximum depth of include (default: 10)");
 		System.out.println("  --debug : turn on stack trace");
-		System.out.println("  -h : print this help");
-		System.out.println("  -v : print version information");
+		System.out.println("  --help / -h : print this help");
+		System.out.println("  --version / -v : print version information");
 	}
 
 	public static void printVersion() {
@@ -114,42 +116,42 @@ public class ScriptToAssembly {
 			boolean wantHelp = false;
 			boolean wantVersion = false;
 			for (int i = 0; i < args.length; i++) {
-				if (args[i].equals("-i")) {
+				if (args[i].equals("-i") || args[i].equals("--input")) {
 					if (i + 1 < args.length) {
 						sta.addInputFileName(args[++i]);
 					} else {
-						throw new IllegalArgumentException("file name not specified for -i");
+						throw new IllegalArgumentException("input file name not specified");
 					}
-				} else if (args[i].equals("-o")) {
+				} else if (args[i].equals("-o") || args[i].equals("--output")) {
 					if (i + 1 < args.length) {
 						sta.setOutputFileName(args[++i]);
 					} else {
-						throw new IllegalArgumentException("file name not specified for -o");
+						throw new IllegalArgumentException("output file name not specified");
 					}
-				} else if (args[i].equals("-l")) {
+				} else if (args[i].equals("-l") || args[i].equals("--libdir")) {
 					if (i + 1 < args.length) {
 						sta.addLibraryDir(args[++i]);
 					} else {
-						throw new IllegalArgumentException("directory name not specified for -l");
+						throw new IllegalArgumentException("library directory name not specified");
 					}
-				} else if (args[i].equals("-t")) {
+				} else if (args[i].equals("-t") || args[i].equals("--target")) {
 					if (i + 1 < args.length) {
 						sta.setTargetName(args[++i]);
 					} else {
-						throw new IllegalArgumentException("target name not specified for -t");
+						throw new IllegalArgumentException("target name not specified");
 					}
 				} else if (args[i].equals("--ttl")) {
 					if (i + 1 < args.length) {
 						sta.setTtl(Integer.parseInt(args[++i]));
 					} else {
-						throw new IllegalArgumentException("TTL value not specified for --ttl");
+						throw new IllegalArgumentException("TTL value not specified");
 					}
 				} else if (args[i].equals("--debug")) {
 					sta.setDebug(true);
 					debug = true;
-				} else if (args[i].equals("-h")) {
+				} else if (args[i].equals("-h") || args[i].equals("--help")) {
 					wantHelp = true;
-				} else if (args[i].equals("-v")) {
+				} else if (args[i].equals("-v") || args[i].equals("--version")) {
 					wantVersion = true;
 				} else {
 					System.err.println("unknown argument: " + args[i]);
