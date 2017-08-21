@@ -89,7 +89,7 @@ public class ScriptToAssembly {
 	}
 
 	public static void printHelp() {
-		System.out.println("Usage: java ScriptToAssembly [options]");
+		System.out.println("Usage: java -jar ScriptToAssembly.jar [options]");
 		System.out.println();
 		System.out.println("options:");
 		System.out.println("  --input file_name / -i file_name :");
