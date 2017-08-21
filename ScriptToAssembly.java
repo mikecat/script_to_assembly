@@ -151,6 +151,9 @@ public class ScriptToAssembly {
 					wantHelp = true;
 				} else if (args[i].equals("-v")) {
 					wantVersion = true;
+				} else {
+					System.err.println("unknown argument: " + args[i]);
+					wantHelp = true;
 				}
 			}
 
