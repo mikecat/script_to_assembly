@@ -1,0 +1,6 @@
+# コメント
+
+function main int
+	comment コメントです
+	return 0
+endfunction

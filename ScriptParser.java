@@ -115,6 +115,8 @@ public class ScriptParser {
 					processBreak(data);
 				} else if (action.equals("continue")) {
 					processContinue(data);
+				} else if (action.equals("comment") || action.equals("#")) {
+					// コメントなので、何もしない
 				} else { // キーワードが無かったので、式とみなす
 					processExpression(line);
 				}
