@@ -302,7 +302,7 @@ public abstract class Expression {
 				} else {
 					number = Long.parseLong(token, 10);
 				}
-				valueStack.addFirst(new IntegerLiteral(number, 4, true));
+				valueStack.addFirst(new IntegerLiteral(number, DataType.getSystemIntSize(), true));
 				expectNumber = false;
 				continue;
 			} else if (expression.charAt(i) == '\'') {
