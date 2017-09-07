@@ -101,7 +101,7 @@ public class BinaryOperator extends Expression {
 				if (!this.left.getDataType().equals(this.right.getDataType())) {
 					throw new SyntaxException("subtraction between different pointers isn't allowed");
 				}
-				this.dataType = new IntegerType(DataType.getSystemIntSize(), true);
+				this.dataType = new IntegerType(DataType.getPointerSize(), true);
 			} else {
 				throw new SyntaxException("invalid operand for subtraction");
 			}
