@@ -1,0 +1,7 @@
+function hoge none
+endfunction
+
+function fuga none
+	var a int
+	a = hoge()
+endfunction
