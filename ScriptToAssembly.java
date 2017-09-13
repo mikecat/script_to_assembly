@@ -112,6 +112,8 @@ public class ScriptToAssembly {
 		boolean debug = false;
 		try {
 			ScriptToAssembly sta = new ScriptToAssembly();
+			String targetName = "IA32";
+			sta.setTargetName(targetName);
 			// オプションを読み込む
 			boolean wantHelp = false;
 			boolean wantVersion = false;
@@ -136,7 +138,7 @@ public class ScriptToAssembly {
 					}
 				} else if (args[i].equals("-t") || args[i].equals("--target")) {
 					if (i + 1 < args.length) {
-						sta.setTargetName(args[++i]);
+						sta.setTargetName(targetName = args[++i]);
 					} else {
 						throw new IllegalArgumentException("target name not specified");
 					}
@@ -164,7 +166,15 @@ public class ScriptToAssembly {
 			} else if (wantVersion) {
 				printVersion();
 			} else {
-				sta.setAssemblyGenerator(new SimpleIA32Generator());
+				AssemblyGenerator asGen = null;
+				if (targetName.equals("IA32")) {
+					asGen = new SimpleIA32Generator();
+				} else if (targetName.equals("LPC1114FN28")) {
+					asGen = new LPC1114FN28Generator();
+				} else {
+					throw new IllegalArgumentException("target name unknown");
+				}
+				sta.setAssemblyGenerator(asGen);
 				sta.doWork();
 			}
 		} catch (Exception e) {

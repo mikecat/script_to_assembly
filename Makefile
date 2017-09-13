@@ -39,6 +39,7 @@ CLASSES = \
 	ContinueInstruction.class \
 	AssemblyGenerator.class \
 	SimpleIA32Generator.class \
+	LPC1114FN28Generator.class \
 # blank line (allow \ after the last class)
 
 $(TARGET): $(CLASSES) jar-manifest.txt
