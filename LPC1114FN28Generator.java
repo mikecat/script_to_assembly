@@ -135,5 +135,97 @@ public class LPC1114FN28Generator extends AssemblyGenerator {
 	}
 
 	private void generateInstruction(Instruction inst) {
+		if (inst instanceof NormalExpression) {
+			Expression expr = ((NormalExpression)inst).getExpression();
+			generateExpressionEvaluation(expr, 0, false,7, 0x3f);
+		} else if (inst instanceof ReturnInstruction) {
+			ReturnInstruction ret = (ReturnInstruction)inst;
+			if (ret.hasExpression()) {
+				generateExpressionEvaluation(ret.getExpression(),
+					currentFunctionReturnType.getWidth(), false, 0, 0xfe);
+			}
+			out.println("\tBL stoa.funcend." + currentFunctionName);
+		} else if (inst instanceof ConditionalBranch) {
+			ConditionalBranch cb = (ConditionalBranch)inst;
+			int insNum;
+			generateExpressionEvaluation(cb.getCondition(), 4, false, 7, 0x3f);
+			out.println("\tTST R7, R7");
+			String label1 = getNextLabel();
+			String label2 = getNextLabel();
+			String label3 = null;
+			out.println("\tBNE " + label1);
+			out.println("\tBL " + label2);
+			out.println(label1 + ":");
+			insNum = cb.getThenInstructionNumber();
+			for (int i = 0; i < insNum; i++) {
+				generateInstruction(cb.getThenInstruction(i));
+			}
+			if (cb.hasElse()) {
+				label3 = getNextLabel();
+				out.println("\tBL " + label3);
+			}
+			out.println(label2 + ":");
+			if (cb.hasElse()) {
+				insNum = cb.getElseInstructionNumber();
+				for (int i = 0; i < insNum; i++) {
+					generateInstruction(cb.getElseInstruction(i));
+				}
+				out.println(label3 + ":");
+			}
+		} else if (inst instanceof InfiniteLoop) {
+			InfiniteLoop infLoop = (InfiniteLoop)inst;
+			int insNum = infLoop.getInstructionNumber();
+			String label1 = getNextLabel();
+			String label2 = getNextLabel();
+			continueLabel.add(label1);
+			breakLabel.add(label2);
+			out.println(label1 + ":");
+			for (int i = 0; i < insNum; i++) {
+				generateInstruction(infLoop.getInstruction(i));
+			}
+			out.println("\tBL " + label1);
+			out.println(label2 + ":");
+			continueLabel.remove(continueLabel.size() - 1);
+			breakLabel.remove(breakLabel.size() - 1);
+		} else if (inst instanceof WhileLoop) {
+			WhileLoop wLoop = (WhileLoop)inst;
+			int insNum = wLoop.getInstructionNumber();
+			String label1 = getNextLabel();
+			String label2 = getNextLabel();
+			String label3 = getNextLabel();
+			continueLabel.add(label1);
+			breakLabel.add(label2);
+			out.println(label1 + ":");
+			generateExpressionEvaluation(wLoop.getCondition(), 4, false, 7, 0x3f);
+			out.println("\tTST R7, R7");
+			out.println("\tBNE " + label3);
+			out.println("\tBL " + label2);
+			out.println(label3 + ":");
+			for (int i = 0; i < insNum; i++) {
+				generateInstruction(wLoop.getInstruction(i));
+			}
+			out.println("\tBL " + label1);
+			out.println(label2 + ":");
+			continueLabel.remove(continueLabel.size() - 1);
+			breakLabel.remove(breakLabel.size() - 1);
+		} else if (inst instanceof BreakInstruction) {
+			BreakInstruction bi = (BreakInstruction)inst;
+			int level = bi.getLevel();
+			if (level > breakLabel.size()) {
+				throw new SyntaxException("break level too high");
+			}
+			out.println("\tBL " + breakLabel.get(breakLabel.size() - level));
+		} else if (inst instanceof ContinueInstruction) {
+			ContinueInstruction ci = (ContinueInstruction)inst;
+			int level = ci.getLevel();
+			if (level > continueLabel.size()) {
+				throw new SyntaxException("coneinue level too high");
+			}
+			out.println("\tBL " + continueLabel.get(continueLabel.size() - level));
+		}
+	}
+
+	private void generateExpressionEvaluation(Expression expr, int requestedSize, boolean wantAddress,
+	int outRegister, int availableRegisters) {
 	}
 }
